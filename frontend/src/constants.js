@@ -1,1 +1,1 @@
-export const APP_API_URL = "http://localhost/php/MDB.GoogleSpreadSheet.TOM/backend/"
+export const APP_API_URL = "http://localhost/MDB.GoogleSpreadSheet.TOM/backend/"
