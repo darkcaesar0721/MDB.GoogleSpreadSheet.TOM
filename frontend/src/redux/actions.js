@@ -26,7 +26,7 @@ export const setMDBPath = (path) => async (dispatch) => {
 
 export const createCampaign = (campaign) => async (dispatch) => {
     const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
-        action: 'create_Campaign',
+        action: 'create_campaign',
         campaign
     }));
 
@@ -38,7 +38,7 @@ export const createCampaign = (campaign) => async (dispatch) => {
 
 export const updateCampaign = (campaign) => async (dispatch) => {
     const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
-        action: 'update_Campaign',
+        action: 'update_campaign',
         campaign
     }));
 
@@ -50,7 +50,7 @@ export const updateCampaign = (campaign) => async (dispatch) => {
 
 export const deleteCampaign = (campaign) => async (dispatch) => {
     const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
-        action: 'delete_Campaign',
+        action: 'delete_campaign',
         campaign
     }));
 
