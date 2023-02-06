@@ -7,20 +7,29 @@ import {changeCampaignViewState, createCampaign, deleteCampaign, updateCampaign}
 function Campaign(props) {
 
     return (
-        <div>
-            <CampaignAdd
-                createCampaign={props.createCampaign}
-                changeCampaignViewState={props.changeCampaignViewState}
-            />
-            <CampaignEdit
-                updateCampaign={props.updateCampaign}
-                changeCampaignViewState={props.changeCampaignViewState}
-            />
-            <CampaignList
-                deleteCampaign={props.deleteCampaign}
-                changeCampaignViewState={props.changeCampaignViewState}
-            />
-        </div>
+        <>
+            {
+                props.campaigns.viewState === 'add' ?
+                    <CampaignAdd
+                        createCampaign={props.createCampaign}
+                        changeCampaignViewState={props.changeCampaignViewState}
+                    /> : ''
+            }
+            {
+                props.campaigns.viewState === 'edit' ?
+                    <CampaignEdit
+                        updateCampaign={props.updateCampaign}
+                        changeCampaignViewState={props.changeCampaignViewState}
+                    /> : ''
+            }
+            {
+                props.campaigns.viewState === 'list' ?
+                    <CampaignList
+                        deleteCampaign={props.deleteCampaign}
+                        changeCampaignViewState={props.changeCampaignViewState}
+                    /> : ''
+            }
+        </>
     );
 }
 
