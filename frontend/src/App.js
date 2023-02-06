@@ -1,12 +1,12 @@
 import './App.css';
-import Dashboard from './components/Dashboard';
+import Campaign from './components/Campaign';
 import MDBPath from './components/MDBPath';
 
 function App() {
     return (
         <div className="App">
             <MDBPath/>
-            <Dashboard/>
+            <Campaign/>
         </div>
     );
 }
