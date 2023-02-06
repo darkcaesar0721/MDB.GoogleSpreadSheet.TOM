@@ -4,13 +4,17 @@ const initialState = {
     fullPath: ''
 };
 
-export default function(state = initialState, action) {
+function mdb(state = initialState, action) {
     switch (action.type) {
         case SET_MDB_PATH: {
-            return action.payload.fullPath;
+            return {
+                fullPath: action.fullPath
+            };
         }
         default: {
             return state;
         }
     }
-};
+}
+
+export default mdb;
