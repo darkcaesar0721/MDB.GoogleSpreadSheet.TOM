@@ -1,16 +1,30 @@
-import {Button, Col, DatePicker, Divider, Form, Input, InputNumber, Row, Spin, TimePicker} from "antd";
+import {Button, Col, DatePicker, Divider, Form, Input, InputNumber, message, Row, Spin, TimePicker} from "antd";
 import {useState} from "react";
+import axios from "axios";
+import {APP_API_URL} from "../../constants";
+import qs from "qs";
 
 function CampaignAdd(props) {
-    const [loading, setLoading] = useState(true);
+    const [messageApi, contextHolder] = message.useMessage();
+    const [loading, setLoading] = useState(false);
     const handleSubmit = function(form) {
         setLoading(true);
+        const query = form.query;
 
-        
+        axios.post(APP_API_URL + '/mdb.php', qs.stringify({
+            action: 'get_query_data',
+            query,
+        })).then(function(resp) {
+            setLoading(false);
+            if (resp.data.status === 'error') {
+                messageApi.error(resp.data.description);
+            } else {
+
+            }
+        })
     }
 
     const handleFormChange = function({query}) {
-        console.log(query);
     }
 
     const handleCancel = function() {
@@ -32,6 +46,7 @@ function CampaignAdd(props) {
 
     return (
         <Spin spinning={loading} tip="Checking Query..." delay={500}>
+            {contextHolder}
             <Row style={{marginTop: '2rem'}}>
                 <Col span={8} offset={8}>
                     <Divider>CAMPAIGN COMPOSE FORM</Divider>
