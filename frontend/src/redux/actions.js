@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "qs";
-import {CHANGE_CAMPAIGN_VIEW_STATE, INIT_CAMPAIGN_DATA, SET_MDB_PATH, SET_SELECTED_CAMPAIGN} from "./actionTypes";
+import {CHANGE_CAMPAIGN_VIEW_STATE, INIT_CAMPAIGN_DATA, SET_MDB_PATH, SET_SELECTED_CAMPAIGN_INDEX} from "./actionTypes";
 import { APP_API_URL } from "../constants";
 
 export const getMDBPath = () => async (dispatch) => {
@@ -76,9 +76,9 @@ export const changeCampaignViewState = (viewState) => (dispatch) => {
     });
 }
 
-export const setSelectedCampaign = (campaign) => (dispatch) => {
+export const setSelectedCampaignIndex = (index) => (dispatch) => {
     dispatch({
-        type: SET_SELECTED_CAMPAIGN,
-        campaign: campaign
+        type: SET_SELECTED_CAMPAIGN_INDEX,
+        selectedIndex: index
     });
 }

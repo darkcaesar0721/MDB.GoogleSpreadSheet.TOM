@@ -47,6 +47,28 @@ try {
         echo json_encode(array('status' => 'success', 'columnList' => $data));
         exit;
     }
+
+    if ($action === 'get_data') {
+        $campaigns = $_REQUEST['campaigns'];
+
+        foreach ($campaigns as $index => $campaign) {
+            $query = $campaign['query'];
+            $sth = $db->prepare("select * from [$query]");
+
+            $sth->execute();
+
+            $campaigns[$index]['rows'] = array();
+            while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+                if ($row['Phone'] === $campaign['last_phone']) break;
+
+                array_push($campaigns[$index]['rows'], $row);
+            }
+            $campaigns[$index]['status'] = 'get_mdb_data';
+        }
+
+        echo json_encode($campaigns);
+        exit;
+    }
 }
 catch(PDOException $e) {
     echo json_encode(array('status' => 'error', 'description' => 'Please check mdb path and query name!'));

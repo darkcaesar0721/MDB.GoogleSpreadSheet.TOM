@@ -1,13 +1,13 @@
 import {
     CHANGE_CAMPAIGN_VIEW_STATE,
     INIT_CAMPAIGN_DATA,
-    SET_SELECTED_CAMPAIGN
+    SET_SELECTED_CAMPAIGN_INDEX
 } from "../actionTypes";
 
 const initialState = {
     viewState: 'list', //enum(list, add, update, delete)
     data: [],
-    selectedCampaign: {}
+    selectedIndex: -1,
 };
 
 function campaigns(state = initialState, action) {
@@ -18,8 +18,8 @@ function campaigns(state = initialState, action) {
         case INIT_CAMPAIGN_DATA: {
             return Object.assign({...state}, {data: action.data});
         }
-        case SET_SELECTED_CAMPAIGN: {
-            return Object.assign({...state}, {selectedCampaign: action.campaign});
+        case SET_SELECTED_CAMPAIGN_INDEX: {
+            return Object.assign({...state}, {selectedIndex: action.selectedIndex});
         }
         default: {
             return state;

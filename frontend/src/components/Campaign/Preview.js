@@ -9,84 +9,90 @@ import {
     InputNumber,
     message,
     Modal,
-    Row,
-    Spin,
-    TimePicker
+    Row, Table,
 } from "antd";
 import {useEffect, useState} from "react";
-import axios from "axios";
-import {APP_API_URL} from "../../constants";
-import qs from "qs";
 
-function CampaignAdd(props) {
-    const [form] = Form.useForm();
+function CampaignPreview(props) {
+    const [mainForm] = Form.useForm();
+    const [columnForm] = Form.useForm();
     const [messageApi, contextHolder] = message.useMessage();
-    const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [columns, setColumns] = useState([]);
-    const [buttonState, setButtonState] = useState('column');
+    const [tableColumns, setTableColumns] = useState([]);
+    const [tableParams, setTableParams] = useState({
+        pagination: {
+            current: 1,
+            pageSize: 10,
+        },
+    });
+    const [selectedCampaigns, setSelectedCampaigns] = useState([]);
+    const [selectedCampaignKeys, setSelectedCampaignKeys] = useState([]);
 
     useEffect(function() {
+        const selectedCampaign = props.campaigns.data[props.campaigns.selectedIndex];
+        let _columns = selectedCampaign.columns;
+        _columns = _columns.map(c => {
+            return Object.assign({...c}, {display: c.display ==='true'})
+        })
+        setColumns(_columns);
+
         let data = {};
-        columns.forEach((c, i) =>{
+        selectedCampaign.columns.forEach((c, i) =>{
             data[c.name + '_order'] = c.order;
             data[c.name + '_name'] = c.field;
         });
-        form.setFieldsValue(data);
-    }, [columns]);
+        columnForm.setFieldsValue(data);
+
+        data = selectedCampaign;
+        mainForm.setFieldsValue(selectedCampaign);
+
+        let tbl_columns = [];
+        let no_column = {
+            title: 'no',
+            key: 'no',
+            render: (_, record) => {
+                let number = 0;
+                selectedCampaign.rows.forEach((c, i) => {
+                    if (c['Phone'] === record['Phone']) {
+                        number = i + 1;
+                        return;
+                    }
+                })
+                return (
+                    <>
+                        <span>{number}</span>
+                    </>
+                )
+            }
+        }
+        tbl_columns.push(no_column);
+        selectedCampaign.columns.forEach(c => {
+            if (c.display == 'true') {
+                tbl_columns.push({title: c.field, dataIndex: c.name, key: c.name});
+            }
+        });
+        setTableColumns(tbl_columns);
+    }, [props.campaigns]);
 
     const handleSubmit = function(form) {
-        if (buttonState === 'column') {
-            setLoading(true);
-            const query = form.query;
-
-            axios.post(APP_API_URL + '/mdb.php', qs.stringify({
-                action: 'get_query_data',
-                query,
-            })).then(function(resp) {
-                setLoading(false);
-                if (resp.data.status === 'error') {
-                    messageApi.error(resp.data.description);
-                } else {
-                    let _columns = [];
-                    let status = false;
-                    resp.data.columnList.forEach(c => {
-                        if (!status)
-                            _columns.push({name: c, field: c, display: true, order: ''});
-
-                        if (c === 'SystemCreateDate') {
-                            status = true;
-                        }
-                    });
-                    setColumns(_columns);
-                    setOpen(true);
-                    setButtonState('compaign');
-                }
-            })
-        } else {
-            if (columns.length === 0) {
-                messageApi.warning('Please custom column! Currently nothing columns.');
-                return;
-            }
-
-            let _columns = columns;
-            _columns = _columns.sort((a, b) => {
-                if (parseInt(a.order) < parseInt(b.order)) return -1;
-
-                return 0;
-            });
-
-            form.key = form.query;
-            form.columns = _columns;
-            props.createCampaign(form);
-            messageApi.success('create success');
-            setTimeout(function() {
-                props.changeCampaignViewState('list');
-            }, 1000);
+        if (columns.length === 0) {
+            messageApi.warning('Please custom column! Currently nothing columns.');
+            return;
         }
     }
 
-    const handleFormChange = function({query}) {
+    const handleModalOk = function() {
+        if (columns.length === 0) {
+            messageApi.warning('Please custom column! Currently nothing columns.');
+            return;
+        }
+
+        let campaign = {...props.campaigns.data[props.campaigns.selectedIndex]};
+        campaign.columns = columns;
+        props.updateCampaign(campaign);
+
+        setOpen(false);
     }
 
     const handleCancel = function() {
@@ -119,10 +125,6 @@ function CampaignAdd(props) {
             span: 11,
         },
     }
-
-    const validateMessages = {
-        required: '${label} is required!'
-    };
 
     const handleColumnCheck = function(e, column) {
         if (column.name === 'Phone') return;
@@ -161,18 +163,38 @@ function CampaignAdd(props) {
         setOpen(true);
     }
 
+    // rowSelection object indicates the need for row selection
+    const rowSelection = {
+        onChange: (selectedRowKeys, selectedRows) => {
+            setSelectedCampaignKeys(selectedRowKeys);
+            setSelectedCampaigns(selectedRows);
+        },
+        getCheckboxProps: (record) => ({
+            disabled: record.name === 'Disabled User',
+            // Column configuration not to be checked
+            name: record.name,
+        }),
+    };
+
+    const handleTableChange = (pagination, filters, sorter) => {
+        setTableParams({
+            pagination,
+            filters,
+            ...sorter,
+        });
+    };
+
     return (
-        <Spin spinning={loading} tip="Checking Query..." delay={500}>
+        <>
             {contextHolder}
             <Row style={{marginTop: '2rem'}}>
                 <Col span={20} offset={2}>
-                    <Divider>CAMPAIGN COMPOSE FORM</Divider>
+                    <Divider>CAMPAIGN PREVIEW FORM</Divider>
                     <Form
                         {...layout}
                         name="campaign_add_form"
                         onFinish={handleSubmit}
-                        onValuesChange={handleFormChange}
-                        validateMessages={validateMessages}
+                        form={mainForm}
                     >
                         <Row>
                             <Col span={12}>
@@ -185,15 +207,7 @@ function CampaignAdd(props) {
                                         },
                                     ]}
                                 >
-                                    <Input />
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item
-                                    name={['less_qty']}
-                                    label="Less Qty count"
-                                >
-                                    <InputNumber />
+                                    <Input readOnly={true}/>
                                 </Form.Item>
                             </Col>
                             <Col span={12}>
@@ -206,95 +220,26 @@ function CampaignAdd(props) {
                                         },
                                     ]}
                                 >
-                                    <Input />
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item
-                                    name={['last_qty']}
-                                    label="Last Qty count"
-                                >
-                                    <InputNumber />
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item
-                                    name={['schedule']}
-                                    label="Schedule Name"
-                                    rules={[
-                                        {
-                                            required: true,
-                                        },
-                                    ]}
-                                >
-                                    <Input />
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
-                                <Form.Item
-                                    {...date}
-                                    name={['date']}
-                                    label="SystemCreateDate"
-                                    style={{
-                                        display: 'inline-block',
-                                        width: 'calc(70% - 5px)',
-                                    }}
-                                >
-                                    <DatePicker />
-                                </Form.Item>
-                                <Form.Item
-                                    name={['time']}
-                                    style={{
-                                        display: 'inline-block',
-                                        width: 'calc(30% - 5px)',
-                                        margin: '0 5px',
-                                    }}
-                                >
-                                    <TimePicker use12Hours format="h:mm:ss A" />
-                                </Form.Item>
-                            </Col>
-
-                            <Col span={12} offset={6}>
-                                <Form.Item
-                                    name={['phone']}
-                                    label="Last Phone"
-                                >
-                                    <Input />
+                                    <Input readOnly={true}/>
                                 </Form.Item>
                             </Col>
                         </Row>
-
                         <Button type="dashed" danger onClick={handleViewColumnClick} style={{marginBottom: 10}}>
                             View Column List
                         </Button>
-                        <Form.Item
-                            wrapperCol={{
-                                ...layout.wrapperCol,
-                                offset: 3,
-                            }}
-                        >
-                            <Button type="primary" htmlType="submit">
-                                {
-                                    buttonState === 'column' ? 'Get Column List' : 'Add Campaign'
-                                }
-                            </Button>
-                            <Button style={{marginLeft: 10}} onClick={handleCancel}>
-                                Cancel
-                            </Button>
-                        </Form.Item>
                     </Form>
                     <Modal
                         title="CUSTOM COLUMN"
                         centered
                         open={open}
-                        onOk={() => setOpen(false)}
+                        onOk={handleModalOk}
                         onCancel={() => setOpen(false)}
                         width={500}
                     >
                         <Form
                             {...columnLayout}
                             name="campaign_add_form"
-                            form={form}
+                            form={columnForm}
                         >
                             {
                                 columns.map((c, i) => {
@@ -331,9 +276,24 @@ function CampaignAdd(props) {
                         </Form>
                     </Modal>
                 </Col>
+                <Divider>UPLOAD DATA PREVIEW</Divider>
+                <Col span={22} offset={1}>
+                    <Table
+                        size="small"
+                        rowSelection={{
+                            type: 'checkbox',
+                            selectedRowKeys: selectedCampaignKeys,
+                            ...rowSelection,
+                        }}
+                        columns={tableColumns}
+                        dataSource={props.campaigns.data[props.campaigns.selectedIndex].rows}
+                        pagination={tableParams.pagination}
+                        onChange={handleTableChange}
+                    />
+                </Col>
             </Row>
-        </Spin>
+        </>
     );
 }
 
-export default CampaignAdd;
+export default CampaignPreview;

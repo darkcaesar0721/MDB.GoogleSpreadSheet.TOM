@@ -22,22 +22,23 @@ function CampaignEdit(props) {
     const [columns, setColumns] = useState([]);
 
     useEffect(function() {
-        let _columns = props.campaigns.selectedCampaign.columns;
+        const selectedCampaign = props.campaigns.data[props.campaigns.selectedIndex];
+        let _columns = selectedCampaign.columns;
         _columns = _columns.map(c => {
             return Object.assign({...c}, {display: c.display ==='true'})
         })
         setColumns(_columns);
 
         let data = {};
-        props.campaigns.selectedCampaign.columns.forEach((c, i) =>{
+        selectedCampaign.columns.forEach((c, i) =>{
             data[c.name + '_order'] = c.order;
             data[c.name + '_name'] = c.field;
         });
         columnForm.setFieldsValue(data);
 
-        data = props.campaigns.selectedCampaign;
-        mainForm.setFieldsValue(props.campaigns.selectedCampaign);
-    }, [props.campaigns.selectedCampaign]);
+        data = selectedCampaign;
+        mainForm.setFieldsValue(selectedCampaign);
+    }, [props.campaigns]);
 
     const handleSubmit = function(form) {
         if (columns.length === 0) {
@@ -194,8 +195,8 @@ function CampaignEdit(props) {
                             </Col>
                             <Col span={12}>
                                 <Form.Item
-                                    name={['sheet']}
-                                    label="Sheet Name"
+                                    name={['schedule']}
+                                    label="Schedule Name"
                                     rules={[
                                         {
                                             required: true,
@@ -228,20 +229,7 @@ function CampaignEdit(props) {
                                     <TimePicker use12Hours format="h:mm:ss A" />
                                 </Form.Item>
                             </Col>
-                            <Col span={12}>
-                                <Form.Item
-                                    name={['schedule']}
-                                    label="Schedule Name"
-                                    rules={[
-                                        {
-                                            required: true,
-                                        },
-                                    ]}
-                                >
-                                    <Input />
-                                </Form.Item>
-                            </Col>
-                            <Col span={12}>
+                            <Col span={12} offset={6}>
                                 <Form.Item
                                     name={['phone']}
                                     label="Last Phone"
