@@ -1,27 +1,76 @@
-import {Button, Col, DatePicker, Divider, Form, Input, InputNumber, message, Row, Spin, TimePicker} from "antd";
-import {useState} from "react";
+import {
+    Button,
+    Checkbox,
+    Col,
+    DatePicker,
+    Divider,
+    Form,
+    Input,
+    InputNumber,
+    message,
+    Modal,
+    Row,
+    Spin,
+    TimePicker
+} from "antd";
+import {useEffect, useState} from "react";
 import axios from "axios";
 import {APP_API_URL} from "../../constants";
 import qs from "qs";
 
 function CampaignAdd(props) {
+    const [form] = Form.useForm();
     const [messageApi, contextHolder] = message.useMessage();
     const [loading, setLoading] = useState(false);
+    const [open, setOpen] = useState(false);
+    const [columns, setColumns] = useState([]);
+    const [buttonState, setButtonState] = useState('column');
+
+    useEffect(function() {
+        let data = {};
+        columns.forEach((c, i) =>{
+            data['order_' + i] = c.order;
+            data['field_' + i] = c.field;
+        });
+        form.setFieldsValue(data);
+    }, [columns]);
+
     const handleSubmit = function(form) {
-        setLoading(true);
-        const query = form.query;
+        if (buttonState === 'column') {
+            setLoading(true);
+            const query = form.query;
 
-        axios.post(APP_API_URL + '/mdb.php', qs.stringify({
-            action: 'get_query_data',
-            query,
-        })).then(function(resp) {
-            setLoading(false);
-            if (resp.data.status === 'error') {
-                messageApi.error(resp.data.description);
-            } else {
+            axios.post(APP_API_URL + '/mdb.php', qs.stringify({
+                action: 'get_query_data',
+                query,
+            })).then(function(resp) {
+                setLoading(false);
+                if (resp.data.status === 'error') {
+                    messageApi.error(resp.data.description);
+                } else {
+                    let _columns = [];
+                    let status = false;
+                    resp.data.columnList.forEach(c => {
+                        if (!status)
+                            _columns.push({name: c, field: c, display: true, order: 100});
 
-            }
-        })
+                        if (c === 'SystemCreateDate') {
+                            status = true;
+                        }
+                    });
+                    setColumns(_columns);
+                    setOpen(true);
+                    setButtonState('compaign');
+                }
+            })
+        } else {
+            form.columns = columns;
+            props.createCampaign(form);
+            messageApi.success('success');
+            setTimeout(function() {
+                props.changeCampaignViewState('list');
+            }, 1000);
+        }
     }
 
     const handleFormChange = function({query}) {
@@ -33,110 +82,242 @@ function CampaignAdd(props) {
 
     const layout = {
         labelCol: {
-            span: 7,
+            span: 6,
         },
         wrapperCol: {
-            span: 17,
+            span: 18,
         },
     };
+
+    const date = {
+        labelCol: {
+            span: 9,
+        },
+        wrapperCol: {
+            span: 15,
+        },
+    };
+
+    const columnLayout = {
+        labelCol: {
+            span: 12,
+        },
+        wrapperCol: {
+            span: 11,
+        },
+    }
 
     const validateMessages = {
         required: '${label} is required!'
     };
 
+    const handleColumnCheck = function(e, column) {
+        if (column.name === 'Phone') return;
+
+        let _columns = columns;
+        _columns = _columns.map((c, i) => c === column ? Object.assign({...c}, {display: e.target.checked}) : c);
+        setColumns(_columns);
+    }
+
+    const handleColumnOrderChange = function(e, column) {
+        let _columns = columns;
+        _columns = _columns.map((c, i) => c === column ? Object.assign({...c}, {order: e.target.value}) : c);
+        setColumns(_columns);
+    }
+
+    const handleColumnFieldChange = function(e, column) {
+        let _columns = columns;
+        _columns = _columns.map((c, i) => c === column ? Object.assign({...c}, {field: e.target.value}) : c);
+        setColumns(_columns);
+    }
+
+    const handleViewColumnClick = function() {
+        setOpen(true);
+    }
+
     return (
         <Spin spinning={loading} tip="Checking Query..." delay={500}>
             {contextHolder}
             <Row style={{marginTop: '2rem'}}>
-                <Col span={8} offset={8}>
+                <Col span={20} offset={2}>
                     <Divider>CAMPAIGN COMPOSE FORM</Divider>
                     <Form
                         {...layout}
                         name="campaign_add_form"
                         onFinish={handleSubmit}
                         onValuesChange={handleFormChange}
-                        style={{
-                            maxWidth: 600,
-                        }}
                         validateMessages={validateMessages}
                     >
-                        <Form.Item
-                            name={['query']}
-                            label="Query Name"
-                            rules={[
-                                {
-                                    required: true,
-                                },
-                            ]}
-                        >
-                            <Input />
-                        </Form.Item>
-                        <Form.Item
-                            name={['url']}
-                            label="Sheet URL"
-                            rules={[
-                                {
-                                    required: true,
-                                },
-                            ]}
-                        >
-                            <Input />
-                        </Form.Item>
-                        <Form.Item
-                            name={['sheet']}
-                            label="Sheet Name"
-                            rules={[
-                                {
-                                    required: true,
-                                },
-                            ]}
-                        >
-                            <Input />
-                        </Form.Item>
-                        <Form.Item
-                            name={['less_qty']}
-                            label="Less Qty count"
-                        >
-                            <InputNumber />
-                        </Form.Item>
-                        <Form.Item
-                            name={['last_qty']}
-                            label="Last Qty count"
-                        >
-                            <InputNumber />
-                        </Form.Item>
-                        <Form.Item
-                            name={['phone']}
-                            label="Last Phone"
-                        >
-                            <Input />
-                        </Form.Item>
-                        <Form.Item
-                            name={['date']}
-                            label="SystemCreateDate"
-                        >
-                            <DatePicker />
-                        </Form.Item>
-                        <Form.Item
-                            name={['time']}
-                            label="SystemCreateTime"
-                        >
-                            <TimePicker use12Hours format="h:mm:ss A" />
-                        </Form.Item>
+                        <Row>
+                            <Col span={12}>
+                                <Form.Item
+                                    name={['query']}
+                                    label="Query Name"
+                                    rules={[
+                                        {
+                                            required: true,
+                                        },
+                                    ]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item
+                                    name={['less_qty']}
+                                    label="Less Qty count"
+                                >
+                                    <InputNumber />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item
+                                    name={['url']}
+                                    label="Sheet URL"
+                                    rules={[
+                                        {
+                                            required: true,
+                                        },
+                                    ]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item
+                                    name={['last_qty']}
+                                    label="Last Qty count"
+                                >
+                                    <InputNumber />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item
+                                    name={['sheet']}
+                                    label="Sheet Name"
+                                    rules={[
+                                        {
+                                            required: true,
+                                        },
+                                    ]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item
+                                    {...date}
+                                    name={['date']}
+                                    label="SystemCreateDate"
+                                    style={{
+                                        display: 'inline-block',
+                                        width: 'calc(70% - 5px)',
+                                    }}
+                                >
+                                    <DatePicker />
+                                </Form.Item>
+                                <Form.Item
+                                    name={['time']}
+                                    style={{
+                                        display: 'inline-block',
+                                        width: 'calc(30% - 5px)',
+                                        margin: '0 5px',
+                                    }}
+                                >
+                                    <TimePicker use12Hours format="h:mm:ss A" />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item
+                                    name={['schedule']}
+                                    label="Schedule Name"
+                                    rules={[
+                                        {
+                                            required: true,
+                                        },
+                                    ]}
+                                >
+                                    <Input />
+                                </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                                <Form.Item
+                                    name={['phone']}
+                                    label="Last Phone"
+                                >
+                                    <Input />
+                                </Form.Item>
+                            </Col>
+                        </Row>
+
+                        <Button type="dashed" danger onClick={handleViewColumnClick} style={{marginBottom: 10}}>
+                            View Column List
+                        </Button>
                         <Form.Item
                             wrapperCol={{
                                 ...layout.wrapperCol,
-                                offset: 4,
+                                offset: 3,
                             }}
                         >
                             <Button type="primary" htmlType="submit">
-                                Add
+                                {
+                                    buttonState === 'column' ? 'Get Column List' : 'Add Campaign'
+                                }
                             </Button>
                             <Button style={{marginLeft: 10}} onClick={handleCancel}>
                                 Cancel
                             </Button>
                         </Form.Item>
                     </Form>
+                    <Modal
+                        title="COLUMN PROCESS"
+                        centered
+                        open={open}
+                        onOk={() => setOpen(false)}
+                        onCancel={() => setOpen(false)}
+                        width={500}
+                    >
+                        <Form
+                            {...columnLayout}
+                            name="campaign_add_form"
+                            form={form}
+                        >
+                            {
+                                columns.sort(function(a, b) {
+                                    if (a.order < b.order) return -1;
+
+                                    return 0;
+                                }).map((c, i) => {
+                                    return (
+                                        <div key={i}>
+                                            <br/>
+                                            <Checkbox style={{position: 'absolute', marginTop: '0.3rem'}} checked={c.display} onChange={(e) => {handleColumnCheck(e, c)}}/>
+                                            <Form.Item
+                                                name={['field_' + i]}
+                                                label={c.name}
+                                                style={{
+                                                    display: 'inline-block',
+                                                    width: 'calc(70% - 5px)',
+                                                }}
+                                            >
+                                                <Input disabled={!c.display} onChange={(e) => {handleColumnFieldChange(e, c)}} value={c.field}/>
+                                            </Form.Item>
+                                            <Form.Item
+                                                name={['order_' + i]}
+                                                style={{
+                                                    display: 'inline-block',
+                                                    width: 'calc(30% - 5px)',
+                                                    margin: '0 5px',
+                                                }}
+                                            >
+                                                <Input disabled={!c.display} onChange={(e) => {handleColumnOrderChange(e, c)}} value={c.order}/>
+                                            </Form.Item>
+                                        </div>
+                                    )
+                                })
+                            }
+                        </Form>
+                    </Modal>
                 </Col>
             </Row>
         </Spin>
