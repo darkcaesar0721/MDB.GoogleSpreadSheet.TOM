@@ -17,7 +17,7 @@ try {
         $query = $_REQUEST['query'];
 
         foreach($campaigns as $campaign) {
-            if ($campaign['query'] === $query) {
+            if ($campaign->query === $query) {
                 echo json_encode(array('status' => 'error', 'description' => 'This query already exists.'));
                 exit;
             }

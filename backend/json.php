@@ -37,13 +37,22 @@ if ($action === 'create_campaign') {
     }
 }
 
+if ($action === 'get_campaigns') {
+    if (file_exists($json_file_name))
+    {
+        $data = file_get_contents($json_file_name);
+        echo json_encode(json_decode($data)->campaigns);
+        exit;
+    }
+}
+
 if ($action === 'update_campaign') {
     if (file_exists($json_file_name))
     {
         $data = json_decode(file_get_contents($json_file_name));
 
         $data->campaigns = array_map(function($row) {
-            return $row->query === $_REQUEST['campaign']['query'] ? $_REQUEST : $row;
+            return $row->query === $_REQUEST['campaign']['query'] ? $_REQUEST['campaign'] : $row;
         }, $data->campaigns);
 
         file_put_contents($json_file_name, json_encode($data));

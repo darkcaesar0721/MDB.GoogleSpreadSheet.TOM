@@ -29,8 +29,8 @@ function CampaignAdd(props) {
     useEffect(function() {
         let data = {};
         columns.forEach((c, i) =>{
-            data['order_' + i] = c.order;
-            data['field_' + i] = c.field;
+            data[c.name + '_order'] = c.order;
+            data[c.name + '_name'] = c.field;
         });
         form.setFieldsValue(data);
     }, [columns]);
@@ -52,7 +52,7 @@ function CampaignAdd(props) {
                     let status = false;
                     resp.data.columnList.forEach(c => {
                         if (!status)
-                            _columns.push({name: c, field: c, display: true, order: 100});
+                            _columns.push({name: c, field: c, display: true, order: ''});
 
                         if (c === 'SystemCreateDate') {
                             status = true;
@@ -64,9 +64,21 @@ function CampaignAdd(props) {
                 }
             })
         } else {
-            form.columns = columns;
+            if (columns.length === 0) {
+                messageApi.warning('Please custom column! Currently nothing columns.');
+                return;
+            }
+
+            let _columns = columns;
+            _columns = _columns.sort((a, b) => {
+                if (parseInt(a.order) < parseInt(b.order)) return -1;
+
+                return 0;
+            });
+
+            form.columns = _columns;
             props.createCampaign(form);
-            messageApi.success('success');
+            messageApi.success('create success');
             setTimeout(function() {
                 props.changeCampaignViewState('list');
             }, 1000);
@@ -122,6 +134,11 @@ function CampaignAdd(props) {
     const handleColumnOrderChange = function(e, column) {
         let _columns = columns;
         _columns = _columns.map((c, i) => c === column ? Object.assign({...c}, {order: e.target.value}) : c);
+        _columns = _columns.sort((a, b) => {
+            if (parseInt(a.order) < parseInt(b.order)) return -1;
+
+            return 0;
+        });
         setColumns(_columns);
     }
 
@@ -132,6 +149,14 @@ function CampaignAdd(props) {
     }
 
     const handleViewColumnClick = function() {
+        let _columns = columns;
+        _columns = _columns.sort((a, b) => {
+            if (parseInt(a.order) < parseInt(b.order)) return -1;
+
+            return 0;
+        });
+        setColumns(_columns);
+
         setOpen(true);
     }
 
@@ -270,7 +295,7 @@ function CampaignAdd(props) {
                         </Form.Item>
                     </Form>
                     <Modal
-                        title="COLUMN PROCESS"
+                        title="CUSTOM COLUMN"
                         centered
                         open={open}
                         onOk={() => setOpen(false)}
@@ -283,27 +308,25 @@ function CampaignAdd(props) {
                             form={form}
                         >
                             {
-                                columns.sort(function(a, b) {
-                                    if (a.order < b.order) return -1;
-
-                                    return 0;
-                                }).map((c, i) => {
+                                columns.map((c, i) => {
                                     return (
                                         <div key={i}>
                                             <br/>
                                             <Checkbox style={{position: 'absolute', marginTop: '0.3rem'}} checked={c.display} onChange={(e) => {handleColumnCheck(e, c)}}/>
                                             <Form.Item
-                                                name={['field_' + i]}
+                                                name={[c.name + '_name']}
                                                 label={c.name}
                                                 style={{
                                                     display: 'inline-block',
                                                     width: 'calc(70% - 5px)',
                                                 }}
                                             >
-                                                <Input disabled={!c.display} onChange={(e) => {handleColumnFieldChange(e, c)}} value={c.field}/>
+                                                {
+                                                    c.name === 'Phone' ? c.name : <Input disabled={!c.display} onChange={(e) => {handleColumnFieldChange(e, c)}} value={c.field}/>
+                                                }
                                             </Form.Item>
                                             <Form.Item
-                                                name={['order_' + i]}
+                                                name={[c.name + '_order']}
                                                 style={{
                                                     display: 'inline-block',
                                                     width: 'calc(30% - 5px)',
