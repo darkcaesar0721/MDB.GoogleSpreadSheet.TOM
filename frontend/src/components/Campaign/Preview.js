@@ -13,7 +13,6 @@ import {
     Radio
 } from "antd";
 import {useEffect, useState} from "react";
-import {updateCampaign} from "../../redux/actions";
 
 function CampaignPreview(props) {
     const [mainForm] = Form.useForm();
@@ -37,6 +36,7 @@ function CampaignPreview(props) {
         changeRecordCountType(1);
 
         const selectedCampaign = props.campaigns.data[props.campaigns.selectedIndex];
+        console.log(selectedCampaign);
 
         let _columns = selectedCampaign.columns;
         _columns = _columns.map(c => {

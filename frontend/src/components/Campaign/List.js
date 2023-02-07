@@ -59,11 +59,6 @@ function CampaignList(props) {
                 width: 200,
             },
             {
-                title: 'Sheet Name',
-                dataIndex: 'sheet',
-                key: 'sheet',
-            },
-            {
                 title: 'Schedule Name',
                 dataIndex: 'schedule',
                 key: 'schedule',
@@ -80,13 +75,13 @@ function CampaignList(props) {
             },
             {
                 title: 'Last_Phone',
-                dataIndex: 'last_qty',
-                key: 'last_qty',
+                dataIndex: 'last_phone',
+                key: 'last_phone',
             },
             {
                 title: 'SystemCreateDate',
-                dataIndex: 'date',
-                key: 'date',
+                dataIndex: 'SystemCreateDate',
+                key: 'SystemCreateDate',
             },
             {
                 title: 'Action',
@@ -178,7 +173,7 @@ function CampaignList(props) {
             action: 'get_last_phone',
             selectedCampaigns,
         })).then(function(resp) {
-            setSpinStatus('GET MDB DATA BASED ON LAST PHONE NUBMER.....');
+            setSpinStatus('GET MDB DATA BASED ON LAST PHONE NUMBER.....');
             axios.post(APP_API_URL + '/mdb.php', qs.stringify({
                 action: 'get_data',
                 campaigns: resp.data,
@@ -194,7 +189,31 @@ function CampaignList(props) {
         })
     }
 
+    const handleUploadData = function() {
+        setSpinStatus('UPLOAD DATA.....');
+        setLoading(true);
 
+        axios.get(APP_API_URL + '/json.php?action=get_campaigns')
+            .then(function(resp) {
+
+                let rows = [];
+                selectedCampaignKeys.forEach(key => {
+                    resp.data.forEach(c => {
+                        if (key === c.query) {
+                            rows.push(c);
+                        }
+                    })
+                });
+                axios.post(APP_API_URL + '/sheet.php', qs.stringify({
+                    action: 'upload_data',
+                    selectedCampaigns: rows,
+                })).then(function(resp) {
+                    document.location.href = 'localhost:3000';
+                    setLoading(false);
+                })
+            })
+
+    }
 
     return (
         <Spin spinning={loading} tip={spinStatus} delay={500}>
@@ -204,6 +223,9 @@ function CampaignList(props) {
             </Button>
             <Button onClick={handleGetMDBData} type="primary" style={{ marginBottom: 5, marginLeft: 20 }}>
                 GET MDB DATA
+            </Button>
+            <Button onClick={handleUploadData} type="primary" style={{ marginBottom: 5, marginLeft: 20 }}>
+                UPLOAD DATA
             </Button>
             <Divider>MDB QUERY CAMPAIGN LIST</Divider>
             <Table

@@ -58,6 +58,8 @@ try {
             $sth->execute();
 
             $campaigns[$index]['rows'] = array();
+            $campaigns[$index]['uploadRows'] = array();
+
             while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
                 if ($row['Phone'] === $campaign['last_phone']) break;
 

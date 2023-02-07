@@ -51,7 +51,6 @@ export const updateCampaign = (campaign) => async (dispatch) => {
         action: 'update_campaign',
         campaign
     }));
-    console.log(json);
     dispatch({
         type: INIT_CAMPAIGN_DATA,
         data: json.data
