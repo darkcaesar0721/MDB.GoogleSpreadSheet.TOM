@@ -46,6 +46,7 @@ export const createCampaign = (campaign) => async (dispatch) => {
 }
 
 export const updateCampaign = (campaign) => async (dispatch) => {
+    console.log('ddd');
     const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
         action: 'update_campaign',
         campaign

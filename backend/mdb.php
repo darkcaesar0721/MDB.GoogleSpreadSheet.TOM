@@ -61,6 +61,7 @@ try {
             while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
                 if ($row['Phone'] === $campaign['last_phone']) break;
 
+                $row['key'] = $row['Phone'];
                 array_push($campaigns[$index]['rows'], $row);
             }
             $campaigns[$index]['status'] = 'get_mdb_data';

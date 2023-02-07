@@ -10,8 +10,10 @@ import {
     message,
     Modal,
     Row, Table,
+    Radio
 } from "antd";
 import {useEffect, useState} from "react";
+import {updateCampaign} from "../../redux/actions";
 
 function CampaignPreview(props) {
     const [mainForm] = Form.useForm();
@@ -26,11 +28,16 @@ function CampaignPreview(props) {
             pageSize: 10,
         },
     });
-    const [selectedCampaigns, setSelectedCampaigns] = useState([]);
-    const [selectedCampaignKeys, setSelectedCampaignKeys] = useState([]);
+    const [selectedRecords, setSelectedRecords] = useState([]);
+    const [selectedRecordKeys, setSelectedRecordKeys] = useState([]);
+    const [recordCountType, setRecordCountType] = useState(1);
+    const [staticCount, setStaticCount] = useState(1);
 
     useEffect(function() {
+        changeRecordCountType(1);
+
         const selectedCampaign = props.campaigns.data[props.campaigns.selectedIndex];
+
         let _columns = selectedCampaign.columns;
         _columns = _columns.map(c => {
             return Object.assign({...c}, {display: c.display ==='true'})
@@ -75,11 +82,18 @@ function CampaignPreview(props) {
         setTableColumns(tbl_columns);
     }, [props.campaigns]);
 
-    const handleSubmit = function(form) {
-        if (columns.length === 0) {
-            messageApi.warning('Please custom column! Currently nothing columns.');
+    const handleSubmit = function() {
+        if (selectedRecords.length === 0) {
+            messageApi.warning('Please select rows! Currently nothing rows.');
             return;
         }
+
+        let selectedCampaign = props.campaigns.data[props.campaigns.selectedIndex];
+        selectedCampaign.recordCountType = recordCountType;
+        selectedCampaign.staticCount = staticCount;
+        selectedCampaign.uploadRows = selectedRecords;
+        props.updateCampaign(selectedCampaign);
+        props.changeCampaignViewState('list');
     }
 
     const handleModalOk = function() {
@@ -166,8 +180,8 @@ function CampaignPreview(props) {
     // rowSelection object indicates the need for row selection
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
-            setSelectedCampaignKeys(selectedRowKeys);
-            setSelectedCampaigns(selectedRows);
+            setSelectedRecordKeys(selectedRowKeys);
+            setSelectedRecords(selectedRows);
         },
         getCheckboxProps: (record) => ({
             disabled: record.name === 'Disabled User',
@@ -183,6 +197,46 @@ function CampaignPreview(props) {
             ...sorter,
         });
     };
+
+    const handleRecordCountTypeChange = function(e) {
+        changeRecordCountType(e.target.value);
+        setRecordCountType(e.target.value);
+    }
+
+    const changeRecordCountType = function(value, static_count = -1) {
+        const selectedCampaign = props.campaigns.data[props.campaigns.selectedIndex];
+
+        if (value === 1) {
+            let keys = [];
+            let records = [];
+            selectedCampaign.rows.forEach(r => {
+                keys.push(r['Phone']);
+                records.push(r);
+            })
+            setSelectedRecordKeys(keys);
+            setSelectedRecords(records);
+
+        } else if (value === 2) {
+            if (static_count === -1) static_count = staticCount;
+
+            let keys = [];
+            let records = [];
+            for (let i = 0; i < static_count; i++) {
+                keys.push(selectedCampaign.rows[i]['Phone']);
+                records.push(selectedCampaign.rows[i]);
+            }
+            setSelectedRecordKeys(keys);
+            setSelectedRecords(records);
+        } else if (value === 3) {
+            setSelectedRecordKeys([]);
+            setSelectedRecords([]);
+        }
+    }
+
+    const handleStaticCountChange = function(e) {
+        setStaticCount(e.target.value);
+        changeRecordCountType(recordCountType, e.target.value);
+    }
 
     return (
         <>
@@ -277,12 +331,30 @@ function CampaignPreview(props) {
                     </Modal>
                 </Col>
                 <Divider>UPLOAD DATA PREVIEW</Divider>
+                <Col span={4} offset={1} style={{marginBottom: 5}}>
+                    total selected rows count : {selectedRecords.length}
+                </Col>
+                <Col span={12} style={{marginBottom: 5}}>
+                    <Radio.Group name="radiogroup" defaultValue={1} value={recordCountType} onChange={handleRecordCountTypeChange}>
+                        <Radio value={1}>All Select</Radio>
+                        <Radio value={2}>Static Select</Radio>
+                        <Radio value={3}>Random Select</Radio>
+                    </Radio.Group>
+                </Col>
+                <Col span={3} style={{marginBottom: 5}}>
+                    {
+                        recordCountType === 2 ? <Input placeholder="static count" defaultValue={1} value={staticCount} onChange={handleStaticCountChange}/> : ''
+                    }
+                </Col>
+                <Col span={3} style={{marginBottom: 5}}>
+                    <Button type="primary" onClick={handleSubmit}>OK</Button>
+                </Col>
                 <Col span={22} offset={1}>
                     <Table
                         size="small"
                         rowSelection={{
                             type: 'checkbox',
-                            selectedRowKeys: selectedCampaignKeys,
+                            selectedRowKeys: selectedRecordKeys,
                             ...rowSelection,
                         }}
                         columns={tableColumns}
