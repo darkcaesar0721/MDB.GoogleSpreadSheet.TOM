@@ -58,12 +58,11 @@ function CampaignAdd(props) {
                     let _columns = [];
                     let status = false;
                     resp.data.columnList.forEach((c, i) => {
+                        if (c === 'SystemCreateDate')
+                            status = true;
+
                         if (!status)
                             _columns.push({name: c, field: c, display: true, order: (i + 1)});
-
-                        if (c === 'SystemCreateDate') {
-                            status = true;
-                        }
                     });
                     setColumns(_columns);
                     setOpen(true);
