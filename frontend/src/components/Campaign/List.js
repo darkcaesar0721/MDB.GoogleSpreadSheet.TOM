@@ -49,34 +49,38 @@ function CampaignList(props) {
                 dataIndex: 'query',
                 key: 'query',
                 fixed: 'left',
-                width: 200,
+                width: 300,
             },
             {
                 title: 'Sheet URL',
                 dataIndex: 'url',
                 key: 'url',
                 fixed: 'left',
-                width: 200,
+                width: 500,
             },
             {
-                title: 'Schedule Name',
+                title: 'Schedule',
                 dataIndex: 'schedule',
                 key: 'schedule',
+                width: 80
             },
             {
                 title: 'Less Qty',
                 dataIndex: 'less_qty',
                 key: 'less_qty',
+                width: 80
             },
             {
                 title: 'Last Qty',
                 dataIndex: 'last_qty',
                 key: 'last_qty',
+                width: 80
             },
             {
-                title: 'Last_Phone',
+                title: 'Last Phone',
                 dataIndex: 'last_phone',
                 key: 'last_phone',
+                width: 100
             },
             {
                 title: 'SystemCreateDate',
@@ -87,7 +91,7 @@ function CampaignList(props) {
                 title: 'Action',
                 key: 'operation',
                 fixed: 'right',
-                width: 150,
+                width: 120,
                 render: (_, record) => {
                     let index = -1;
                     db_compains.forEach((c, i) => {
@@ -229,6 +233,7 @@ function CampaignList(props) {
             </Button>
             <Divider>MDB QUERY CAMPAIGN LIST</Divider>
             <Table
+                bordered={true}
                 size="small"
                 rowSelection={{
                     type: 'checkbox',

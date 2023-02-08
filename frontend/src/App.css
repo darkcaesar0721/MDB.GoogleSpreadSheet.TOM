@@ -36,3 +36,36 @@
     transform: rotate(360deg);
   }
 }
+
+.ant-table-tbody{
+  padding-left: 0.3rem !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  font-size: 0.7rem;
+  border-bottom: solid 2px #d1d1d1 !important;
+  border-right: solid 1px #d1d1d1 !important;
+}
+.ant-table-tbody > tr > td{
+  padding-left: 0.3rem !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  font-size: 0.7rem;
+  border-bottom: solid 1px #d1d1d1 !important;
+  border-right: solid 1px #d1d1d1 !important;
+}
+.ant-table-thead > tr > th{
+  padding-left: 0.3rem !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  font-size: 0.8rem;
+  border-bottom: solid 1px #d1d1d1 !important;
+  border-right: solid 1px #d1d1d1 !important;
+}
+.ant-table-tbody > tr > td button{
+  padding: 0.3rem !important;
+}
+
+.ant-modal-content .ant-form-item {
+  margin-bottom: 0 !important;
+  border-bottom: 0 !important;
+}
