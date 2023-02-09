@@ -142,3 +142,79 @@ if ($action === 'create_group') {
         exit;
     }
 }
+
+if ($action === 'init_temp_group') {
+    if (file_exists($json_file_name))
+    {
+        $data = json_decode(file_get_contents($json_file_name));
+
+        $data->tempGroup = array('selectedCampaignKeys' => []);
+        foreach($data->campaigns as $index => $campaign) {
+            $data->campaigns[$index]->group = array('columns' => $campaign->columns);
+        }
+
+        file_put_contents($json_file_name, json_encode($data));
+
+        echo json_encode($data->tempGroup);
+        exit;
+    }
+}
+
+if ($action === 'set_isupdated_group') {
+    if (file_exists($json_file_name))
+    {
+        $data = json_decode(file_get_contents($json_file_name));
+
+        $group = $data->groups[$_REQUEST['index']];
+        print_r($group);
+        $data->tempGroup->name = $group->name;
+        $data->tempGroup->selectedCampaignKeys = [];
+
+        foreach ($group->campaigns as $g_index => $g_campaign) {
+            foreach ($data->campaigns as $c_index => $c_campaign) {
+                if ($g_campaign->key === $c_campaign->key) {
+                    $data->campaigns[$c_index]->group = $g_campaign;
+                    array_push($data->tempGroup->selectedCampaignKeys, $c_campaign->key);
+                }
+            }
+        }
+
+        file_put_contents($json_file_name, json_encode($data));
+
+        echo json_encode($data->tempGroup);
+        exit;
+    }
+}
+
+if ($action === 'update_group') {
+    if (file_exists($json_file_name))
+    {
+        $data = json_decode(file_get_contents($json_file_name));
+
+        $group = array();
+        $group['key'] = $data->tempGroup->name;
+        $group['name'] = $data->tempGroup->name;
+        $group['campaigns'] = array();
+
+        $g_campaign = array();
+        foreach($data->tempGroup->selectedCampaignKeys as $key) {
+            foreach($data->campaigns as $index => $campaign) {
+                if ($key === $campaign->key) {
+                    $g_campaign = $campaign->group;
+                    $g_campaign->key = $key;
+                    array_push($group['campaigns'], $g_campaign);
+
+                    $data->campaigns[$index]->group = array('columns' => $campaign->columns);
+                }
+            }
+        }
+
+        $data->tempGroup = array('selectedCampaignKeys' => []);
+        $data->groups[$_REQUEST['index']] = $group;
+
+        file_put_contents($json_file_name, json_encode($data));
+
+        echo json_encode($data->groups);
+        exit;
+    }
+}

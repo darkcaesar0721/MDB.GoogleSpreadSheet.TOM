@@ -44,6 +44,31 @@ export const createGroup = () => async (dispatch) => {
     });
 }
 
+export const updateGroup = (index) => async (dispatch) => {
+    const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
+        action: 'update_group',
+        index
+    }));
+
+    dispatch({
+        type: INIT_GROUP_DATA,
+        data: json.data
+    });
+}
+
+export const setIsUpdatedGroup = (index) => async (dispatch) => {
+    await axios.post(APP_API_URL + '/json.php', qs.stringify({
+        action: 'set_isupdated_group',
+        index
+    }));
+}
+
+export const initTempGroup = (index) => async (dispatch) => {
+    await axios.post(APP_API_URL + '/json.php', qs.stringify({
+        action: 'init_temp_group'
+    }));
+}
+
 export const updateTempGroup = (temp) => async (dispatch) => {
     const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
         action: 'update_temp_group',

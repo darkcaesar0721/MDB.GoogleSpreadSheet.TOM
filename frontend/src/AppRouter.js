@@ -6,6 +6,8 @@ import CampaignAdd from "./components/CampaignAdd";
 import CampaignEdit from "./components/CampaignEdit";
 import GroupAdd from "./components/GroupAdd";
 import GroupAddSetting from "./components/GroupAddSetting";
+import GroupEdit from "./components/GroupEdit";
+import GroupEditSetting from "./components/GroupEditSetting";
 
 export const DASHBOARD = '/';
 
@@ -20,6 +22,8 @@ export const AppRouter = () => {
                     <Route index path="/campaigns/:index" element={<CampaignEdit />} />
                     <Route index path="/groups/add" element={<GroupAdd />} />
                     <Route index path="/groups/add/:index" element={<GroupAddSetting />} />
+                    <Route index path="/groups/edit/:index" element={<GroupEdit />} />
+                    <Route index path="/groups/edit/:groupIndex/:campaignIndex" element={<GroupEditSetting />} />
                 </Route>
             </Routes>
         </BrowserRouter>

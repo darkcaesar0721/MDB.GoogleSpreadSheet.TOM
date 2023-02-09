@@ -2,14 +2,13 @@ import {Breadcrumb, Button, Col, Divider, Input, message, Row, Table} from "antd
 import {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {
-    createGroup,
-    getCampaigns, getGroups, getTempGroup, updateTempGroup,
+    getCampaigns, getGroups, getTempGroup, updateGroup, updateTempGroup,
 } from "../redux/actions";
 import MDBPath from "./MDBPath";
 import { SettingOutlined } from '@ant-design/icons';
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 
-function GroupAdd(props) {
+function GroupEdit(props) {
     const [tableParams, setTableParams] = useState({
         pagination: {
             current: 1,
@@ -22,11 +21,13 @@ function GroupAdd(props) {
     const [messageApi, contextHolder] = message.useMessage();
 
     const navigate = useNavigate();
+    const {index} = useParams();
 
     useEffect(function() {
         props.getCampaigns();
         props.getTempGroup();
         props.getGroups();
+        // props.setIsUpdatedGroup(index);
     }, []);
 
     useEffect(function() {
@@ -111,14 +112,14 @@ function GroupAdd(props) {
                 fixed: 'right',
                 width: 60,
                 render: (_, record) => {
-                    let index = -1;
+                    let c_index = -1;
                     campaigns.forEach((c, i) => {
                         if (c.query === record.query) {
-                            index = i;
+                            c_index = i;
                         }
                     });
 
-                    const editUrl = "/groups/add/" + index;
+                    const editUrl = "/groups/edit/" + index + "/" + c_index;
                     return (
                         <>
                             <Button icon={<SettingOutlined /> } href={editUrl} style={{marginRight: 1}}/>
@@ -137,8 +138,8 @@ function GroupAdd(props) {
 
     const handleSubmit = function() {
         if (validation()) {
-            props.createGroup();
-            messageApi.success('create success');
+            props.updateGroup(index);
+            messageApi.success('update success');
             setTimeout(function() {
                 navigate('/groups');
             }, 1000);
@@ -155,7 +156,7 @@ function GroupAdd(props) {
             return false;
         }
 
-        if (props.groups.filter(g => g.key === props.temp.name).length > 0) {
+        if (props.groups.filter((g, i) => i != index && g.key === props.temp.name).length > 0) {
             messageApi.warning("Already exist group name. Please input other name");
             return false;
         }
@@ -199,10 +200,10 @@ function GroupAdd(props) {
                             <a href="">Upload Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a className="selected" href="/campaigns">Manage Campaign Page</a>
+                            <a href="/campaigns">Manage Campaign Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="">Manage Campaign Action Group Page</a>
+                            <a className="selected" href="">Manage Campaign Action Group Page</a>
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </Col>
@@ -237,7 +238,7 @@ function GroupAdd(props) {
             <Row>
                 <Col offset={20} span={4}>
                     <Button type="primary" onClick={handleSubmit} style={{marginBottom: 5, marginRight: 5}}>
-                        Create Group
+                        Update Group
                     </Button>
                     <Button type="dashed" href="/groups">
                         Cancel
@@ -254,5 +255,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, getTempGroup, updateTempGroup, createGroup, getGroups }
-)(GroupAdd);
+    { getCampaigns, getTempGroup, updateTempGroup, updateGroup, getGroups }
+)(GroupEdit);
