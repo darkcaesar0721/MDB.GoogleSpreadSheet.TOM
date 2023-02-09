@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "qs";
-import {CHANGE_CAMPAIGN_VIEW_STATE, INIT_CAMPAIGN_DATA, SET_MDB_PATH, SET_SELECTED_CAMPAIGN_INDEX} from "./actionTypes";
+import {INIT_CAMPAIGN_DATA, INIT_GROUP_DATA, INIT_TEMP_GROUP_DATA, SET_MDB_PATH} from "./actionTypes";
 import { APP_API_URL } from "../constants";
 
 export const getMDBPath = () => async (dispatch) => {
@@ -21,6 +21,35 @@ export const setMDBPath = (path) => async (dispatch) => {
     dispatch({
         type: SET_MDB_PATH,
         fullPath: path
+    });
+}
+
+export const getTempGroup = () => async (dispatch) => {
+    const json = await axios.get(APP_API_URL + '/json.php?action=get_temp_group');
+
+    dispatch({
+        type: INIT_TEMP_GROUP_DATA,
+        temp: json.data
+    });
+}
+
+export const updateTempGroup = (temp) => async (dispatch) => {
+    const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
+        action: 'update_temp_group',
+        temp
+    }));
+    dispatch({
+        type: INIT_TEMP_GROUP_DATA,
+        temp: json.data
+    });
+}
+
+export const getGroups = () => async (dispatch) => {
+    const json = await axios.get(APP_API_URL + '/json.php?action=get_groups');
+
+    dispatch({
+        type: INIT_GROUP_DATA,
+        data: json.data
     });
 }
 
@@ -46,7 +75,6 @@ export const createCampaign = (campaign) => async (dispatch) => {
 }
 
 export const updateCampaign = (campaign) => async (dispatch) => {
-    console.log('ddd');
     const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
         action: 'update_campaign',
         campaign
@@ -66,19 +94,5 @@ export const deleteCampaign = (campaign) => async (dispatch) => {
     dispatch({
         type: INIT_CAMPAIGN_DATA,
         data: json.data
-    });
-}
-
-export const changeCampaignViewState = (viewState) => (dispatch) => {
-    dispatch({
-        type: CHANGE_CAMPAIGN_VIEW_STATE,
-        viewState: viewState
-    });
-}
-
-export const setSelectedCampaignIndex = (index) => (dispatch) => {
-    dispatch({
-        type: SET_SELECTED_CAMPAIGN_INDEX,
-        selectedIndex: index
     });
 }

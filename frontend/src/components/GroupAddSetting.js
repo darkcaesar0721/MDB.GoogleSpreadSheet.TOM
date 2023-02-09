@@ -270,11 +270,14 @@ const GroupAddSetting = (props) => {
                                 <Form.Item
                                     wrapperCol={{
                                         ...layout.wrapperCol,
-                                        offset: 11,
+                                        offset: 10,
                                     }}
                                 >
-                                    <Button type="primary" htmlType="submit">
+                                    <Button type="primary" htmlType="submit" style={{marginRight: 5}}>
                                         Save Setting
+                                    </Button>
+                                    <Button type="dashed" href="/groups/add">
+                                        Cancel
                                     </Button>
                                 </Form.Item>
                             </Form> : ''

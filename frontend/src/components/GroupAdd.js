@@ -2,7 +2,7 @@ import {Breadcrumb, Button, Col, Divider, Form, Input, Row, Table} from "antd";
 import {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {
-    deleteCampaign, getCampaigns,
+    getCampaigns, getTempGroup, updateTempGroup,
 } from "../redux/actions";
 import MDBPath from "./MDBPath";
 import { SettingOutlined } from '@ant-design/icons';
@@ -21,6 +21,7 @@ function GroupAdd(props) {
 
     useEffect(function() {
         props.getCampaigns();
+        props.getTempGroup();
     }, []);
 
     useEffect(function() {
@@ -123,6 +124,10 @@ function GroupAdd(props) {
 
     }, [props.campaigns]);
 
+    useEffect(function() {
+        setName(props.temp.name);
+    }, [props.temp])
+
     const handleSubmit = function(form) {
         console.log(form);
     }
@@ -161,6 +166,15 @@ function GroupAdd(props) {
         });
     };
 
+    const handleNameChange = (e) => {
+        setName(e.target.value);
+        let temp = props.temp;
+        temp.name = e.target.value;
+        props.updateTempGroup(temp);
+    }
+
+    console.log(name);
+
     return (
         <>
             <Row>
@@ -180,26 +194,12 @@ function GroupAdd(props) {
             </Row>
             <MDBPath/>
             <Divider>CAMPAIGN ACTION GROUP ADD FORM</Divider>
-            <Row>
-                <Col span={8} offset={8}>
-                    <Form
-                        {...layout}
-                        name="add_group_form"
-                        onFinish={handleSubmit}
-                        validateMessages={validateMessages}
-                    >
-                        <Form.Item
-                            name={['group']}
-                            label="Group Name"
-                            rules={[
-                                {
-                                    required: true,
-                                },
-                            ]}
-                        >
-                            <Input placeholder="8AM ACTION" value={name} onChange={(e) => {setName(e.target.value)}}/>
-                        </Form.Item>
-                    </Form>
+            <Row style={{marginBottom: 5}}>
+                <Col span={2} offset={7}>
+                    <span style={{lineHeight: 2}}>Group Name:</span>
+                </Col>
+                <Col span={7}>
+                    <Input placeholder="8AM ACTION" value={name} onChange={handleNameChange}/>
                 </Col>
             </Row>
             <Table
@@ -231,10 +231,10 @@ function GroupAdd(props) {
 }
 
 const mapStateToProps = state => {
-    return { campaigns: state.campaigns };
+    return { campaigns: state.campaigns, temp: state.groups.temp };
 };
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, deleteCampaign }
+    { getCampaigns, getTempGroup, updateTempGroup }
 )(GroupAdd);

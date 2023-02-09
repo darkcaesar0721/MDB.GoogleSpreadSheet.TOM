@@ -37,6 +37,38 @@ if ($action === 'create_campaign') {
     }
 }
 
+if ($action === 'get_temp_group') {
+    if (file_exists($json_file_name))
+    {
+        $data = file_get_contents($json_file_name);
+        echo json_encode(json_decode($data)->tempGroup);
+        exit;
+    }
+}
+
+if ($action === 'update_temp_group') {
+    if (file_exists($json_file_name))
+    {
+        $data = json_decode(file_get_contents($json_file_name));
+
+        $data->tempGroup = $_REQUEST['temp'];
+
+        file_put_contents($json_file_name, json_encode($data));
+
+        echo json_encode($data->tempGroup);
+        exit;
+    }
+}
+
+if ($action === 'get_groups') {
+    if (file_exists($json_file_name))
+    {
+        $data = file_get_contents($json_file_name);
+        echo json_encode(json_decode($data)->groups);
+        exit;
+    }
+}
+
 if ($action === 'get_campaigns') {
     if (file_exists($json_file_name))
     {
