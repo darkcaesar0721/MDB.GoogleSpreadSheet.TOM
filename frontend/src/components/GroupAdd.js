@@ -237,9 +237,14 @@ function GroupAdd(props) {
                 onChange={handleTableChange}
             />
             <Row>
-                <Col span={1} offset={22}>
+                <Col span={2} offset={20}>
                     <Button type="primary" onClick={handleSubmit} style={{marginBottom: 5}}>
                         Add Group
+                    </Button>
+                </Col>
+                <Col span={1}>
+                    <Button type="dashed" href="/groups">
+                        Cancel
                     </Button>
                 </Col>
             </Row>
