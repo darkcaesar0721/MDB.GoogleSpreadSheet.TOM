@@ -1,11 +1,13 @@
-import {Breadcrumb, Button, Col, Divider, Form, Input, Row, Table} from "antd";
+import {Breadcrumb, Button, Col, Divider, Form, Input, message, Row, Table} from "antd";
 import {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {
-    getCampaigns, getTempGroup, updateTempGroup,
+    createGroup,
+    getCampaigns, getGroups, getTempGroup, updateTempGroup,
 } from "../redux/actions";
 import MDBPath from "./MDBPath";
 import { SettingOutlined } from '@ant-design/icons';
+import {useNavigate} from "react-router-dom";
 
 function GroupAdd(props) {
     const [tableParams, setTableParams] = useState({
@@ -18,10 +20,14 @@ function GroupAdd(props) {
     const [selectedCampaigns, setSelectedCampaigns] = useState([]);
     const [selectedCampaignKeys, setSelectedCampaignKeys] = useState([]);
     const [name, setName] = useState('');
+    const [messageApi, contextHolder] = message.useMessage();
+
+    const navigate = useNavigate();
 
     useEffect(function() {
         props.getCampaigns();
         props.getTempGroup();
+        props.getGroups();
     }, []);
 
     useEffect(function() {
@@ -38,6 +44,7 @@ function GroupAdd(props) {
         let no_column = {
             title: 'no',
             key: 'no',
+            fixed: 'left',
             width: 30,
             render: (_, record) => {
                 let number = 0;
@@ -126,36 +133,47 @@ function GroupAdd(props) {
 
     useEffect(function() {
         setName(props.temp.name);
+        setSelectedCampaignKeys(props.temp.selectedCampaignKeys);
     }, [props.temp])
 
-    const handleSubmit = function(form) {
-        console.log(form);
+    const handleSubmit = function() {
+        if (validation()) {
+            props.createGroup();
+            messageApi.success('create success');
+            setTimeout(function() {
+                navigate('/groups');
+            }, 300);
+        }
     }
 
-    const layout = {
-        labelCol: {
-            span: 6,
-        },
-        wrapperCol: {
-            span: 18,
-        },
-    };
+    const validation = function() {
+        if (!props.temp.name) {
+            messageApi.warning("Please input group name.");
+            return false;
+        }
+        if (!props.temp.selectedCampaignKeys || props.temp.selectedCampaignKeys.length === 0) {
+            messageApi.warning("Please select campaigns.");
+            return false;
+        }
 
-    const validateMessages = {
-        required: '${label} is required!'
-    };
+        if (props.groups.filter(g => g.key === props.temp.name).length > 0) {
+            messageApi.warning("Already exist group name. Please input other name");
+            return false;
+        }
+
+        return true;
+    }
 
     // rowSelection object indicates the need for row selection
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
+            let temp = props.temp;
+            temp.selectedCampaignKeys = selectedRowKeys;
+            props.updateTempGroup(temp);
+
             setSelectedCampaignKeys(selectedRowKeys);
             setSelectedCampaigns(selectedRows);
-        },
-        getCheckboxProps: (record) => ({
-            disabled: record.name === 'Disabled User',
-            // Column configuration not to be checked
-            name: record.name,
-        }),
+        }
     };
 
     const handleTableChange = (pagination, filters, sorter) => {
@@ -173,10 +191,9 @@ function GroupAdd(props) {
         props.updateTempGroup(temp);
     }
 
-    console.log(name);
-
     return (
         <>
+            {contextHolder}
             <Row>
                 <Col span={20} offset={1}>
                     <Breadcrumb>
@@ -231,10 +248,10 @@ function GroupAdd(props) {
 }
 
 const mapStateToProps = state => {
-    return { campaigns: state.campaigns, temp: state.groups.temp };
+    return { campaigns: state.campaigns, temp: state.groups.temp, groups: state.groups.data };
 };
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, getTempGroup, updateTempGroup }
+    { getCampaigns, getTempGroup, updateTempGroup, createGroup, getGroups }
 )(GroupAdd);

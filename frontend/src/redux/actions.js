@@ -33,6 +33,17 @@ export const getTempGroup = () => async (dispatch) => {
     });
 }
 
+export const createGroup = () => async (dispatch) => {
+    const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
+        action: 'create_group'
+    }));
+
+    dispatch({
+        type: INIT_GROUP_DATA,
+        data: json.data
+    });
+}
+
 export const updateTempGroup = (temp) => async (dispatch) => {
     const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
         action: 'update_temp_group',

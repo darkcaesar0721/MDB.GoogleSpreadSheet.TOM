@@ -109,3 +109,36 @@ if ($action === 'delete_campaign') {
         exit;
     }
 }
+
+if ($action === 'create_group') {
+    if (file_exists($json_file_name))
+    {
+        $data = json_decode(file_get_contents($json_file_name));
+
+        $group = array();
+        $group['key'] = $data->tempGroup->name;
+        $group['name'] = $data->tempGroup->name;
+        $group['campaigns'] = array();
+
+        $g_campaign = array();
+        foreach($data->tempGroup->selectedCampaignKeys as $key) {
+            foreach($data->campaigns as $index => $campaign) {
+                if ($key === $campaign->key) {
+                    $g_campaign = $campaign->group;
+                    $g_campaign->key = $key;
+                    array_push($group['campaigns'], $g_campaign);
+
+                    $data->campaigns[$index]->group = array('columns' => $campaign->columns);
+                }
+            }
+        }
+
+        $data->tempGroup = array('selectedCampaignKeys' => []);
+        array_push($data->groups, $group);
+
+        file_put_contents($json_file_name, json_encode($data));
+
+        echo json_encode($data->groups);
+        exit;
+    }
+}
