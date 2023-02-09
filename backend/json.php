@@ -199,7 +199,7 @@ if ($action === 'update_group') {
         $g_campaign = array();
         foreach($data->tempGroup->selectedCampaignKeys as $key) {
             foreach($data->campaigns as $index => $campaign) {
-                if ($key === $campaign->key) {
+                if ($key == $campaign->key) {
                     $g_campaign = $campaign->group;
                     $g_campaign->key = $key;
                     array_push($group['campaigns'], $g_campaign);

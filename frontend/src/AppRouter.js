@@ -9,6 +9,8 @@ import GroupAddSetting from "./components/GroupAddSetting";
 import GroupEdit from "./components/GroupEdit";
 import GroupEditSetting from "./components/GroupEditSetting";
 import Groups from "./components/Groups";
+import Upload from "./components/Upload";
+import UploadPreview from "./components/UploadPreview";
 
 export const DASHBOARD = '/';
 
@@ -17,6 +19,7 @@ export const AppRouter = () => {
         <BrowserRouter>
             <Routes>
                 <Route path={DASHBOARD}>
+                    <Route index path="/" element={<Upload />} />
                     <Route path="/mdb" element={<MDBPath />} />
                     <Route path="/campaigns" element={<Campaigns />} />
                     <Route path="/campaigns/add" element={<CampaignAdd />} />
@@ -26,6 +29,7 @@ export const AppRouter = () => {
                     <Route path="/groups/add/:index" element={<GroupAddSetting />} />
                     <Route path="/groups/:index" element={<GroupEdit />} />
                     <Route path="/groups/:groupIndex/:campaignIndex" element={<GroupEditSetting />} />
+                    <Route path="/preview/:groupIndex/:campaignIndex" element={<UploadPreview />} />
                 </Route>
             </Routes>
         </BrowserRouter>

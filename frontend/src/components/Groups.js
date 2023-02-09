@@ -131,7 +131,7 @@ function Groups(props) {
                 <Col span={20} offset={1}>
                     <Breadcrumb>
                         <Breadcrumb.Item>
-                            <a href="">Upload Page</a>
+                            <a href="/">Upload Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
                             <a href="/campaigns">Manage Campaign Page</a>

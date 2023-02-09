@@ -64,6 +64,7 @@ function CampaignEdit(props) {
             return 0;
         });
 
+        form.key = form.query;
         form.columns = _columns;
         form.group = {};
         form.group.columns = _columns;
@@ -140,7 +141,7 @@ function CampaignEdit(props) {
                 <Col span={20} offset={1}>
                     <Breadcrumb>
                         <Breadcrumb.Item>
-                            <a href="">Upload Page</a>
+                            <a href="/">Upload Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
                             <a className="selected" href="/campaigns">Manage Campaign Page</a>

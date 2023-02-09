@@ -5,7 +5,7 @@ import {
     deleteCampaign, getCampaigns,
 } from "../redux/actions";
 import MDBPath from "./MDBPath";
-import { PlusCircleOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import {PlusCircleOutlined, EditOutlined, DeleteOutlined, EyeOutlined} from '@ant-design/icons';
 
 function Campaigns(props) {
     const [tableParams, setTableParams] = useState({
@@ -110,9 +110,11 @@ function Campaigns(props) {
                     });
 
                     const editUrl = "/campaigns/" + index;
+                    const previewUrl = "/preview/" + index;
                     return (
                         <>
                             <Button icon={<EditOutlined /> } href={editUrl} style={{marginRight: 1}}/>
+                            {/*<Button icon={<EyeOutlined /> } href={previewUrl} style={{marginRight: 1}}/>*/}
                             {/*<Popconfirm*/}
                             {/*    title="Delete the campaign"*/}
                             {/*    description="Are you sure to delete this campaign?"*/}
@@ -148,7 +150,7 @@ function Campaigns(props) {
                 <Col span={20} offset={1}>
                     <Breadcrumb>
                         <Breadcrumb.Item>
-                            <a href="">Upload Page</a>
+                            <a href="/">Upload Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
                             <a class="selected" href="/campaigns">Manage Campaign Page</a>
