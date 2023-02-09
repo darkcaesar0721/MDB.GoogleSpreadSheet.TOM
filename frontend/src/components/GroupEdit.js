@@ -209,7 +209,7 @@ function GroupEdit(props) {
                 </Col>
             </Row>
             <MDBPath/>
-            <Divider>CAMPAIGN ACTION GROUP ADD FORM</Divider>
+            <Divider>CAMPAIGN ACTION GROUP EDIT FORM</Divider>
             <Row style={{marginBottom: 5}}>
                 <Col span={2} offset={7}>
                     <span style={{lineHeight: 2}}>Group Name:</span>
