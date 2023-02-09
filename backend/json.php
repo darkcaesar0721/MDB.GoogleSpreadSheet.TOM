@@ -218,3 +218,19 @@ if ($action === 'update_group') {
         exit;
     }
 }
+
+if ($action === 'delete_group') {
+    if (file_exists($json_file_name))
+    {
+        $data = json_decode(file_get_contents($json_file_name));
+
+        $data->groups = array_filter($data->groups, function($row) {
+            return $row->key !== $_REQUEST['group']['key'];
+        });
+
+        file_put_contents($json_file_name, json_encode($data));
+
+        echo json_encode($data->groups);
+        exit;
+    }
+}

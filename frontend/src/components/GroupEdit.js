@@ -119,7 +119,7 @@ function GroupEdit(props) {
                         }
                     });
 
-                    const editUrl = "/groups/edit/" + index + "/" + c_index;
+                    const editUrl = "/groups/" + index + "/" + c_index;
                     return (
                         <>
                             <Button icon={<SettingOutlined /> } href={editUrl} style={{marginRight: 1}}/>

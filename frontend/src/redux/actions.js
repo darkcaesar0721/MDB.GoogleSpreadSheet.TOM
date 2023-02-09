@@ -56,6 +56,18 @@ export const updateGroup = (index) => async (dispatch) => {
     });
 }
 
+export const deleteGroup = (group) => async (dispatch) => {
+    const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
+        action: 'delete_group',
+        group
+    }));
+
+    dispatch({
+        type: INIT_GROUP_DATA,
+        data: json.data
+    });
+}
+
 export const setIsUpdatedGroup = (index) => async (dispatch) => {
     await axios.post(APP_API_URL + '/json.php', qs.stringify({
         action: 'set_isupdated_group',
@@ -63,7 +75,7 @@ export const setIsUpdatedGroup = (index) => async (dispatch) => {
     }));
 }
 
-export const initTempGroup = (index) => async (dispatch) => {
+export const initTempGroup = () => async (dispatch) => {
     await axios.post(APP_API_URL + '/json.php', qs.stringify({
         action: 'init_temp_group'
     }));

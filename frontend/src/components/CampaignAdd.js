@@ -165,10 +165,10 @@ function CampaignAdd(props) {
                             <a href="">Upload Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="/campaigns">Manage Campaign Page</a>
+                            <a className="selected" href="/campaigns">Manage Campaign Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="">Manage Campaign Action Group Page</a>
+                            <a href="/groups">Manage Campaign Action Group Page</a>
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </Col>
@@ -226,13 +226,16 @@ function CampaignAdd(props) {
                         <Form.Item
                             wrapperCol={{
                                 ...layout.wrapperCol,
-                                offset: 19,
+                                offset: 15,
                             }}
                         >
                             <Button type="primary" htmlType="submit">
                                 {
                                     buttonState === 'column' ? 'Get Column List' : 'Add Campaign'
                                 }
+                            </Button>
+                            <Button type="dashed" href="/campaigns" style={{marginLeft: 5}}>
+                                Cancel
                             </Button>
                         </Form.Item>
                     </Form>

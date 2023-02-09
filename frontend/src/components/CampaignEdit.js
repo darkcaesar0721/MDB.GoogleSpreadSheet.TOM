@@ -65,6 +65,8 @@ function CampaignEdit(props) {
         });
 
         form.columns = _columns;
+        form.group = {};
+        form.group.columns = _columns;
         props.updateCampaign(form);
         messageApi.success('update success');
         setTimeout(function() {
@@ -141,10 +143,10 @@ function CampaignEdit(props) {
                             <a href="">Upload Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="/campaigns">Manage Campaign Page</a>
+                            <a className="selected" href="/campaigns">Manage Campaign Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="">Manage Campaign Action Group Page</a>
+                            <a href="/groups">Manage Campaign Action Group Page</a>
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </Col>
@@ -203,11 +205,14 @@ function CampaignEdit(props) {
                         <Form.Item
                             wrapperCol={{
                                 ...layout.wrapperCol,
-                                offset: 18,
+                                offset: 15,
                             }}
                         >
                             <Button type="primary" htmlType="submit">
                                 Update Campaign
+                            </Button>
+                            <Button type="dashed" href="/campaigns" style={{marginLeft: 5}}>
+                                Cancel
                             </Button>
                         </Form.Item>
                     </Form>

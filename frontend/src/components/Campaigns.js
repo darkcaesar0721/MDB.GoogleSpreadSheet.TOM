@@ -35,6 +35,7 @@ function Campaigns(props) {
             title: 'no',
             key: 'no',
             width: 30,
+            fixed: 'left',
             render: (_, record) => {
                 let number = 0;
                 campaigns.forEach((c, i) => {
@@ -153,7 +154,7 @@ function Campaigns(props) {
                             <a class="selected" href="/campaigns">Manage Campaign Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="">Manage Campaign Action Group Page</a>
+                            <a href="/groups">Manage Campaign Action Group Page</a>
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </Col>

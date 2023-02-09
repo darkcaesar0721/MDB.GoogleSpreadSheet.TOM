@@ -80,7 +80,7 @@ const GroupEditSetting = (props) => {
 
             messageApi.success('save success');
             setTimeout(function() {
-                navigate('/groups/edit/' + groupIndex);
+                navigate('/groups/' + groupIndex);
             }, 1000);
         }
     }
@@ -276,7 +276,7 @@ const GroupEditSetting = (props) => {
                                     <Button type="primary" htmlType="submit" style={{marginRight: 5}}>
                                         Save Setting
                                     </Button>
-                                    <Button type="dashed" href={"/groups/edit/" + groupIndex}>
+                                    <Button type="dashed" href={"/groups/" + groupIndex}>
                                         Cancel
                                     </Button>
                                 </Form.Item>
