@@ -73,3 +73,12 @@
 .ant-breadcrumb-link .selected {
   color: #1677ff;
 }
+
+.group-setting-form .ant-form-item {
+  margin-bottom: 1rem;
+}
+
+.ant-form-item-control-input-content span{
+  font-family: bold;
+  font-size: 1rem;
+}

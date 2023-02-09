@@ -84,6 +84,10 @@ function CampaignAdd(props) {
 
             form.key = form.query;
             form.columns = _columns;
+
+            form.group = {};
+            form.group.columns = _columns;
+
             props.createCampaign(form);
             messageApi.success('create success');
             setTimeout(function() {
