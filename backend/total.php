@@ -20,22 +20,22 @@ $response = $service->spreadsheets_values->get('16fiKZjpWZ3ZCY69JpRrTBAYLS4GnjqE
 
 $schedule_values = $response->getValues();
 
-//$cur_schedule = [];
-//$cur_schedule_index = -1;
-//foreach($schedule_values as $i => $v) {
-//    foreach($v as $j => $r) {
-//        if (strtotime(date('Y-m-d')) == strtotime(date($r))) {
-//            $cur_schedule_index = $i;
-//            $cur_schedule = $v;
-//        }
-//    }
-//}
+$cur_schedule = [];
+$cur_schedule_index = -1;
+foreach($schedule_values as $i => $v) {
+    foreach($v as $j => $r) {
+        if (strtotime(date('Y-m-d')) == strtotime(date($r))) {
+            $cur_schedule_index = $i;
+            $cur_schedule = $v;
+        }
+    }
+}
 
 //get data json info
 $json_file_name = 'campaign.json';
 $data = json_decode(file_get_contents($json_file_name));
 
-function write_sheet($service, $d, $g_i, $g_c_i, $c_i) {
+function write_sheet($service, $schedule_values, $d, $g_i, $g_c_i, $c_i) {
     $g = $d->groups[$g_i];
     $g_c = $d->groups[$g_i]->campaigns[$g_c_i];
     $c = $d->campaigns[$c_i];
@@ -178,33 +178,38 @@ function write_sheet($service, $d, $g_i, $g_c_i, $c_i) {
 
         $d->campaigns[$c_i]->last_qty = count($rows);
         $d->campaigns[$c_i]->less_qty = count($up_rows_with_key);
-        if (count($up_rows) > 1) {
+        if (count($up_rows_with_key) > 0) {
             $d->campaigns[$c_i]->last_phone = $up_rows_with_key[0]['Phone'];
             $d->campaigns[$c_i]->SystemCreateDate = $up_rows_with_key[0]['SystemCreateDate'];
+        } else {
+            $d->campaigns[$c_i]->last_phone = "";
+            $d->campaigns[$c_i]->SystemCreateDate = "";
         }
         $d->campaigns[$c_i]->upRows = $up_rows_with_key;
         $d->campaigns[$c_i]->lastGroupIndex = $g_i;
 
-        $body = new Google_Service_Sheets_ValueRange([
-            'values' => $up_rows
-        ]);
-        $params = [
-            'valueInputOption' => 'RAW'
-        ];
-        $update_range = $cur_sheet['properties']['title'] . '!' . 'A' . (count($values) + 2) . ':' . 'Z' . (count($values) + count($up_rows) + 10);
-        $update_sheet = $service->spreadsheets_values->update($spreadsheetId, $update_range, $body, $params);
+        if (count($up_rows_with_key) > 0) {
+            $body = new Google_Service_Sheets_ValueRange([
+                'values' => $up_rows
+            ]);
+            $params = [
+                'valueInputOption' => 'RAW'
+            ];
+            $update_range = $cur_sheet['properties']['title'] . '!' . 'A' . (count($values) + 2) . ':' . 'Z' . (count($values) + count($up_rows) + 10);
+            $update_sheet = $service->spreadsheets_values->update($spreadsheetId, $update_range, $body, $params);
+        }
+
+        $index = -1;
+        foreach($schedule_values as $i => $v) {
+            foreach($v as $j => $r) {
+                if ($r == $c->schedule) {
+                    $index = $j;
+                }
+            }
+        }
+        $d->campaigns[$c_i]->scheduleIndex = $index;
 
         return $d;
-
-//                        $column_index = -1;
-//                        foreach($schedule_values as $i => $v) {
-//                            foreach($v as $j => $r) {
-//                                if ($r == $c->schedule) {
-//                                    $column_index = $j;
-//                                }
-//                            }
-//                        }
-//                        $cur_schedule[$column_index] = count($up_rows_with_key);
     }
 }
 
@@ -213,23 +218,130 @@ if ($action == 'upload_all') {
     $g_i = $_REQUEST['groupIndex'];
 
     foreach ($data->groups[$g_i]->campaigns as $g_c_i => $g_c) {
-        $data = write_sheet($service, $data, $g_i, $g_c_i, $data->groups[$g_i]->campaigns[$g_c_i]->index);
+        $data = write_sheet($service, $schedule_values, $data, $g_i, $g_c_i, $data->groups[$g_i]->campaigns[$g_c_i]->index);
     }
 } else {
     $g_i = $_REQUEST['groupIndex'];
     $g_c_i = $_REQUEST['groupCampaignIndex'];
     $c_i = $_REQUEST['campaignIndex'];
-    $data = write_sheet($service, $data, $g_i, $g_c_i, $c_i);
+
+    $data = write_sheet($service, $schedule_values, $data, $g_i, $g_c_i, $c_i);
 }
 
-//$body = new Google_Service_Sheets_ValueRange([
-//    'values' => [$cur_schedule]
-//]);
-//$params = [
-//    'valueInputOption' => 'RAW'
-//];
-//$update_range = 'Sheet1!' . 'A' . ($cur_schedule_index + 1) . ':' . 'Z' . ($cur_schedule_index + 1);
-//$update_sheet = $service->spreadsheets_values->update('16fiKZjpWZ3ZCY69JpRrTBAYLS4GnjqEKp8tj2G65EAI', $update_range, $body, $params);
+if (date('w') == 4) {
+    $name = date('l') . ' ' . $data->groups[$g_i]->name;
+    $cur_schedule = [];
+    $cur_schedule_index = -1;
+    foreach($schedule_values as $i => $v) {
+        $cur_date_index = -1;
+        $cur_name_index = -1;
+        foreach($v as $j => $r) {
+            if (strtotime(date('Y-m-d')) == strtotime(date($r))) {
+                $cur_date_index = $i;
+            }
+            if ($name == $r) {
+                $cur_name_index = $i;
+            }
+        }
+
+        if ($cur_date_index != -1 && $cur_date_index == $cur_name_index) {
+            $cur_schedule = $v;
+            $cur_schedule_index = $i;
+        }
+    }
+
+    $row = ['', date('m/d/Y'), $name];
+
+    for ($i = 3; $i < (3 + count($data->campaigns)); $i++) {
+        $ext = false;
+        foreach($data->campaigns as $c_index => $c){
+            if ($i == $c->scheduleIndex) {
+                if ($action == 'upload_all' || ($action != 'upload_all' && $c_index == $c_i)) {
+                    if ($cur_schedule_index !== -1) {
+                        if ($cur_schedule[$i]) {
+                            array_push($row, $cur_schedule[$i] . ' ' . $c->less_qty);
+                        } else {
+                            array_push($row, $c->less_qty);
+                        }
+
+                    } else {
+                        array_push($row, $c->less_qty);
+                    }
+                } else {
+                    if ($cur_schedule_index !== -1) {
+                        if ($cur_schedule[$i]) {
+                            array_push($row, $cur_schedule[$i]);
+                        } else {
+                            array_push($row, ' ');
+                        }
+
+                    } else {
+                        array_push($row, ' ');
+                    }
+                }
+                $ext = true;
+            }
+        }
+
+        if (!$ext) {
+            if (!$cur_schedule[$i]) array_push($row, ' ');
+            else array_push($row, $cur_schedule[$i]);
+        }
+    }
+} else {
+    $row = ['', date('m/d/Y'), date('l')];
+    for ($i = 3; $i < (3 + count($data->campaigns)); $i++) {
+        $ext = false;
+        foreach($data->campaigns as $c_index => $c){
+            if ($i == $c->scheduleIndex) {
+                if ($action == 'upload_all' || ($action != 'upload_all' && $c_index == $c_i)) {
+                    if ($cur_schedule_index !== -1) {
+                        if ($cur_schedule[$i]) {
+                            array_push($row, $cur_schedule[$i] . ' ' . $c->less_qty);
+                        } else {
+                            array_push($row, $c->less_qty);
+                        }
+
+                    } else {
+                        array_push($row, $c->less_qty);
+                    }
+                } else {
+                    if ($cur_schedule_index !== -1) {
+                        if ($cur_schedule[$i]) {
+                            array_push($row, $cur_schedule[$i]);
+                        } else {
+                            array_push($row, ' ');
+                        }
+
+                    } else {
+                        array_push($row, ' ');
+                    }
+                }
+                $ext = true;
+            }
+        }
+
+        if (!$ext) {
+            if (!$cur_schedule[$i]) array_push($row, ' ');
+            else array_push($row, $cur_schedule[$i]);
+        }
+    }
+}
+
+$body = new Google_Service_Sheets_ValueRange([
+    'values' => [$row]
+]);
+$params = [
+    'valueInputOption' => 'RAW'
+];
+
+if ($cur_schedule_index == -1) {
+    $update_range = 'Sheet1!' . 'A' . (count($schedule_values) + 1) . ':' . 'Z' . (count($schedule_values) + 1);
+} else {
+    $update_range = 'Sheet1!' . 'A' . ($cur_schedule_index + 1) . ':' . 'Z' . ($cur_schedule_index + 1);
+}
+
+$update_sheet = $service->spreadsheets_values->update('16fiKZjpWZ3ZCY69JpRrTBAYLS4GnjqEKp8tj2G65EAI', $update_range, $body, $params);
 
 file_put_contents($json_file_name, json_encode($data));
 echo json_encode('success');

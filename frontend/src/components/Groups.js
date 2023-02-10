@@ -86,15 +86,15 @@ function Groups(props) {
                     return (
                         <>
                             <Button icon={<EditOutlined /> } onClick={(e) => {handleEditClick(index)}} style={{marginRight: 1}}/>
-                            <Popconfirm
-                                title="Delete the campaign"
-                                description="Are you sure to delete this campaign?"
-                                onConfirm={(e) => {handleRemoveClick(record)}}
-                                okText="Yes"
-                                cancelText="No"
-                            >
-                                <Button danger icon={<DeleteOutlined /> }/>
-                            </Popconfirm>
+                            {/*<Popconfirm*/}
+                            {/*    title="Delete the campaign"*/}
+                            {/*    description="Are you sure to delete this campaign?"*/}
+                            {/*    onConfirm={(e) => {handleRemoveClick(record)}}*/}
+                            {/*    okText="Yes"*/}
+                            {/*    cancelText="No"*/}
+                            {/*>*/}
+                            {/*    <Button danger icon={<DeleteOutlined /> }/>*/}
+                            {/*</Popconfirm>*/}
                         </>
                     )
                 }

@@ -146,7 +146,7 @@ const Upload = (props) => {
                     key: 'SystemCreateDate',
                 },
                 {
-                    title: 'Action',
+                    title: 'Preview',
                     key: 'operation',
                     fixed: 'right',
                     width: 60,
