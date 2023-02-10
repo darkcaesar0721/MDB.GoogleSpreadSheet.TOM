@@ -134,7 +134,7 @@ if ($action === 'create_group') {
             }
         }
 
-        $data->tempGroup = array('selectedCampaignKeys' => []);
+        $data->tempGroup = array('selectedCampaignKeys' => $data->tempGroup->selectedCampaignKeys, 'name' => '');
         array_push($data->groups, $group);
 
         file_put_contents($json_file_name, json_encode($data));
@@ -212,7 +212,7 @@ if ($action === 'update_group') {
             }
         }
 
-        $data->tempGroup = array('selectedCampaignKeys' => []);
+        $data->tempGroup = array('selectedCampaignKeys' => $data->tempGroup->selectedCampaignKeys, 'name' => '');
         $data->groups[$_REQUEST['index']] = $group;
 
         file_put_contents($json_file_name, json_encode($data));
