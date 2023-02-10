@@ -120,12 +120,13 @@ if ($action === 'create_group') {
         $group['name'] = $data->tempGroup->name;
         $group['campaigns'] = array();
 
-        $g_campaign = array();
         foreach($data->tempGroup->selectedCampaignKeys as $key) {
             foreach($data->campaigns as $index => $campaign) {
                 if ($key === $campaign->key) {
+                    $g_campaign = array();
                     $g_campaign = $campaign->group;
                     $g_campaign->key = $key;
+                    $g_campaign->index = $index;
                     array_push($group['campaigns'], $g_campaign);
 
                     $data->campaigns[$index]->group = array('columns' => $campaign->columns);
@@ -150,7 +151,7 @@ if ($action === 'init_temp_group') {
 
         $data->tempGroup = array('selectedCampaignKeys' => $data->tempGroup->selectedCampaignKeys, 'name' => '');
         foreach($data->campaigns as $index => $campaign) {
-            $data->campaigns[$index]->group = array('columns' => $campaign->columns);
+            $data->campaigns[$index]->group = array('columns' => $campaign->columns, 'way' => 'all');
         }
 
         file_put_contents($json_file_name, json_encode($data));
@@ -196,12 +197,14 @@ if ($action === 'update_group') {
         $group['name'] = $data->tempGroup->name;
         $group['campaigns'] = array();
 
-        $g_campaign = array();
+
         foreach($data->tempGroup->selectedCampaignKeys as $key) {
             foreach($data->campaigns as $index => $campaign) {
                 if ($key == $campaign->key) {
+                    $g_campaign = array();
                     $g_campaign = $campaign->group;
                     $g_campaign->key = $key;
+                    $g_campaign->index = $index;
                     array_push($group['campaigns'], $g_campaign);
 
                     $data->campaigns[$index]->group = array('columns' => $campaign->columns);
