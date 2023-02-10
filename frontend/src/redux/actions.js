@@ -1,6 +1,6 @@
 import axios from "axios";
 import qs from "qs";
-import {INIT_CAMPAIGN_DATA, INIT_GROUP_DATA, INIT_TEMP_GROUP_DATA, SET_MDB_PATH} from "./actionTypes";
+import {INIT_CAMPAIGN_DATA, INIT_GROUP_DATA, INIT_TEMP_GROUP_DATA, INIT_UPLOAD_DATA, SET_MDB_PATH} from "./actionTypes";
 import { APP_API_URL } from "../constants";
 
 export const getMDBPath = () => async (dispatch) => {
@@ -21,6 +21,27 @@ export const setMDBPath = (path) => async (dispatch) => {
     dispatch({
         type: SET_MDB_PATH,
         fullPath: path
+    });
+}
+
+export const getUpload = () => async (dispatch) => {
+    const json = await axios.get(APP_API_URL + '/json.php?action=get_upload');
+
+    dispatch({
+        type: INIT_UPLOAD_DATA,
+        data: json.data
+    });
+}
+
+export const updateUpload = (upload) => async (dispatch) => {
+    const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
+        action: 'update_upload',
+        upload
+    }));
+
+    dispatch({
+        type: INIT_UPLOAD_DATA,
+        data: json.data
     });
 }
 

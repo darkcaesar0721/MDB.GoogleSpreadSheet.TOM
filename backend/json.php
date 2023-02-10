@@ -237,3 +237,26 @@ if ($action === 'delete_group') {
         exit;
     }
 }
+
+if ($action === 'get_upload') {
+    if (file_exists($json_file_name))
+    {
+        $data = json_decode(file_get_contents($json_file_name));
+        echo json_encode($data->upload);
+        exit;
+    }
+}
+
+if ($action === 'update_upload') {
+    if (file_exists($json_file_name))
+    {
+        $data = json_decode(file_get_contents($json_file_name));
+        $data->upload = $_REQUEST['upload'];
+
+        file_put_contents($json_file_name, json_encode($data));
+
+        echo json_encode($data->upload);
+        exit;
+    }
+}
+
