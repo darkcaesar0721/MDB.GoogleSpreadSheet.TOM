@@ -62,43 +62,26 @@ function GroupAdd(props) {
         }
 
         setColumns([no_column,
-            {
-                title: 'Query',
-                dataIndex: 'query',
-                key: 'query',
-                fixed: 'left',
-                width: 300,
-            },
-            {
-                title: 'Sheet URL',
-                dataIndex: 'url',
-                key: 'url',
-                fixed: 'left',
-                width: 500,
-            },
+
             {
                 title: 'Schedule',
                 dataIndex: 'schedule',
-                key: 'schedule',
-                width: 80
+                key: 'schedule'
             },
             {
                 title: 'Less Qty',
                 dataIndex: 'less_qty',
-                key: 'less_qty',
-                width: 80
+                key: 'less_qty'
             },
             {
                 title: 'Last Qty',
                 dataIndex: 'last_qty',
-                key: 'last_qty',
-                width: 80
+                key: 'last_qty'
             },
             {
                 title: 'Last Phone',
                 dataIndex: 'last_phone',
-                key: 'last_phone',
-                width: 100
+                key: 'last_phone'
             },
             {
                 title: 'SystemCreateDate',
@@ -106,9 +89,8 @@ function GroupAdd(props) {
                 key: 'SystemCreateDate',
             },
             {
-                title: 'Action',
+                title: 'Setting',
                 key: 'operation',
-                fixed: 'right',
                 width: 60,
                 render: (_, record) => {
                     let index = -1;
@@ -118,17 +100,35 @@ function GroupAdd(props) {
                         }
                     });
 
-                    const editUrl = "/#/groups/add/" + index;
-                    return (
-                        <>
-                            <Button icon={<SettingOutlined /> } href={editUrl} style={{marginRight: 1}}/>
-                        </>
-                    )
+                    let selectedIndex = -1;
+                    if (selectedCampaignKeys) {
+                        selectedCampaignKeys.forEach((key, i) => {
+                            if (key === record.key) {
+                                selectedIndex = i;
+                            }
+                        })
+                    }
+
+                    const settingUrl = "/#/groups/add/" + index;
+                    if (selectedIndex === -1) {
+                        return (
+                            <>
+                                <Button icon={<SettingOutlined /> } disabled={true} href={settingUrl} style={{marginRight: 1}}/>
+                            </>
+                        )
+                    } else {
+                        return (
+                            <>
+                                <Button icon={<SettingOutlined /> } href={settingUrl} style={{marginRight: 1}}/>
+                            </>
+                        )
+                    }
+
                 }
             },
         ]);
 
-    }, [props.campaigns]);
+    }, [props.campaigns, selectedCampaignKeys]);
 
     useEffect(function() {
         setName(props.temp.name);
@@ -227,10 +227,6 @@ function GroupAdd(props) {
                 }}
                 columns={columns}
                 dataSource={props.campaigns.data}
-                scroll={{
-                    x: 1500,
-                    y: 300,
-                }}
                 pagination={tableParams.pagination}
                 onChange={handleTableChange}
             />
