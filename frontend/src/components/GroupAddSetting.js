@@ -276,7 +276,7 @@ const GroupAddSetting = (props) => {
                                     <Button type="primary" htmlType="submit" style={{marginRight: 5}}>
                                         Save Setting
                                     </Button>
-                                    <Button type="dashed" href="/groups/add">
+                                    <Button type="dashed" href="/#/groups/add">
                                         Cancel
                                     </Button>
                                 </Form.Item>

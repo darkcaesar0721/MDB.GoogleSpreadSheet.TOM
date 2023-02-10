@@ -148,7 +148,7 @@ if ($action === 'init_temp_group') {
     {
         $data = json_decode(file_get_contents($json_file_name));
 
-        $data->tempGroup = array('selectedCampaignKeys' => []);
+        $data->tempGroup = array('selectedCampaignKeys' => $data->tempGroup->selectedCampaignKeys, 'name' => '');
         foreach($data->campaigns as $index => $campaign) {
             $data->campaigns[$index]->group = array('columns' => $campaign->columns);
         }

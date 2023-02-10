@@ -57,6 +57,8 @@ function CampaignEdit(props) {
             return;
         }
 
+        const selectedCampaign = props.campaigns.data[index];
+
         let _columns = columns;
         _columns = _columns.sort((a, b) => {
             if (parseInt(a.order) < parseInt(b.order)) return -1;
@@ -64,14 +66,16 @@ function CampaignEdit(props) {
             return 0;
         });
 
-        form.key = form.query;
-        form.columns = _columns;
-        form.group = {};
-        form.group.columns = _columns;
-        props.updateCampaign(form);
+        selectedCampaign.columns = _columns;
+        selectedCampaign.group.columns = _columns;
+        selectedCampaign.query = form.query;
+        selectedCampaign.url = form.url;
+        selectedCampaign.schedule = form.schedule;
+        props.updateCampaign(selectedCampaign);
+
         messageApi.success('update success');
         setTimeout(function() {
-            navigate('/#/campaigns');
+            navigate('/campaigns');
         }, 1000);
     }
 

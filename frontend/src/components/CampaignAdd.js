@@ -86,12 +86,13 @@ function CampaignAdd(props) {
             form.columns = _columns;
 
             form.group = {};
+            form.group.way = "all";
             form.group.columns = _columns;
 
             props.createCampaign(form);
             messageApi.success('create success');
             setTimeout(function() {
-                navigate('/#/campaigns');
+                navigate('/campaigns');
             }, 1000);
         }
     }
