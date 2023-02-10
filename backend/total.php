@@ -1,4 +1,5 @@
 <?php
+
 require __DIR__ . '/vendor/autoload.php';
 
 $client = new \Google_Client();
@@ -15,6 +16,23 @@ $service = new Google_Service_Sheets($client);
 
 $group = $_REQUEST['group'];
 
+date_default_timezone_set('America/Los_Angeles');
+
+$response = $service->spreadsheets_values->get('16fiKZjpWZ3ZCY69JpRrTBAYLS4GnjqEKp8tj2G65EAI', 'Sheet1');
+
+$schedule_values = $response->getValues();
+
+//$cur_schedule = [];
+//$cur_schedule_index = -1;
+//foreach($schedule_values as $i => $v) {
+//    foreach($v as $j => $r) {
+//        if (strtotime(date('Y-m-d')) == strtotime(date($r))) {
+//            $cur_schedule_index = $i;
+//            $cur_schedule = $v;
+//        }
+//    }
+//}
+
 //get data json info
 $json_file_name = 'campaign.json';
 $data = json_decode(file_get_contents($json_file_name));
@@ -24,6 +42,7 @@ forEach ($data->groups as $g_i => $g) {
         foreach ($g->campaigns as $g_c_i => $g_c) {
             foreach ($data->campaigns as $c_i => $c) {
                 if ($g_c->key == $c->key) {
+
                     $url_array = parse_url($c->url);
                     $path_array = explode("/", $url_array["path"]);
 
@@ -180,12 +199,31 @@ forEach ($data->groups as $g_i => $g) {
                         ];
                         $update_range = $cur_sheet['properties']['title'] . '!' . 'A' . (count($values) + 2) . ':' . 'Z' . (count($values) + count($up_rows) + 10);
                         $update_sheet = $service->spreadsheets_values->update($spreadsheetId, $update_range, $body, $params);
+
+//                        $column_index = -1;
+//                        foreach($schedule_values as $i => $v) {
+//                            foreach($v as $j => $r) {
+//                                if ($r == $c->schedule) {
+//                                    $column_index = $j;
+//                                }
+//                            }
+//                        }
+//                        $cur_schedule[$column_index] = count($up_rows_with_key);
                     }
                 }
             }
         }
     }
 }
+
+//$body = new Google_Service_Sheets_ValueRange([
+//    'values' => [$cur_schedule]
+//]);
+//$params = [
+//    'valueInputOption' => 'RAW'
+//];
+//$update_range = 'Sheet1!' . 'A' . ($cur_schedule_index + 1) . ':' . 'Z' . ($cur_schedule_index + 1);
+//$update_sheet = $service->spreadsheets_values->update('16fiKZjpWZ3ZCY69JpRrTBAYLS4GnjqEKp8tj2G65EAI', $update_range, $body, $params);
 
 file_put_contents($json_file_name, json_encode($data));
 echo json_encode('success');

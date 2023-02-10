@@ -92,13 +92,13 @@ const UploadPreview = (props) => {
                 <Col span={20} offset={1}>
                     <Breadcrumb>
                         <Breadcrumb.Item>
-                            <a className="selected" href="/">Upload Page</a>
+                            <a className="selected" href="/#/">Upload Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="/campaigns">Manage Campaign Page</a>
+                            <a href="/#/campaigns">Manage Campaign Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="/groups">Manage Campaign Action Group Page</a>
+                            <a href="/#/groups">Manage Campaign Action Group Page</a>
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </Col>

@@ -161,13 +161,13 @@ const GroupEditSetting = (props) => {
                 <Col span={20} offset={1}>
                     <Breadcrumb>
                         <Breadcrumb.Item>
-                            <a href="/">Upload Page</a>
+                            <a href="/#/">Upload Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="/campaigns">Manage Campaign Page</a>
+                            <a href="/#/campaigns">Manage Campaign Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="/groups" className="selected">Manage Campaign Action Group Page</a>
+                            <a href="/#/groups" className="selected">Manage Campaign Action Group Page</a>
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </Col>
@@ -276,7 +276,7 @@ const GroupEditSetting = (props) => {
                                     <Button type="primary" htmlType="submit" style={{marginRight: 5}}>
                                         Save Setting
                                     </Button>
-                                    <Button type="dashed" href={"/groups/" + groupIndex}>
+                                    <Button type="dashed" href={"/#/groups/" + groupIndex}>
                                         Cancel
                                     </Button>
                                 </Form.Item>

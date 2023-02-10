@@ -109,8 +109,8 @@ function Campaigns(props) {
                         }
                     });
 
-                    const editUrl = "/campaigns/" + index;
-                    const previewUrl = "/preview/" + index;
+                    const editUrl = "/#/campaigns/" + index;
+                    const previewUrl = "/#/preview/" + index;
                     return (
                         <>
                             <Button icon={<EditOutlined /> } href={editUrl} style={{marginRight: 1}}/>
@@ -150,13 +150,13 @@ function Campaigns(props) {
                 <Col span={20} offset={1}>
                     <Breadcrumb>
                         <Breadcrumb.Item>
-                            <a href="/">Upload Page</a>
+                            <a href="/#/">Upload Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a class="selected" href="/campaigns">Manage Campaign Page</a>
+                            <a className="selected" href="/#/campaigns">Manage Campaign Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="/groups">Manage Campaign Action Group Page</a>
+                            <a href="/#/groups">Manage Campaign Action Group Page</a>
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </Col>
@@ -165,7 +165,7 @@ function Campaigns(props) {
             <Divider>MDB QUERY CAMPAIGN LIST</Divider>
             <Row>
                 <Col span={2} offset={21}>
-                    <Button type="primary" icon={<PlusCircleOutlined />} href="/campaigns/add" style={{marginBottom: 5}}>
+                    <Button type="primary" icon={<PlusCircleOutlined />} href="/#/campaigns/add" style={{marginBottom: 5}}>
                         Add Campaign
                     </Button>
                 </Col>

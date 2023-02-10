@@ -91,7 +91,7 @@ function CampaignAdd(props) {
             props.createCampaign(form);
             messageApi.success('create success');
             setTimeout(function() {
-                navigate('/campaigns');
+                navigate('/#/campaigns');
             }, 1000);
         }
     }
@@ -162,13 +162,13 @@ function CampaignAdd(props) {
                 <Col span={20} offset={1}>
                     <Breadcrumb>
                         <Breadcrumb.Item>
-                            <a href="/">Upload Page</a>
+                            <a href="/#/">Upload Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a className="selected" href="/campaigns">Manage Campaign Page</a>
+                            <a className="selected" href="/#/campaigns">Manage Campaign Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="/groups">Manage Campaign Action Group Page</a>
+                            <a href="/#/groups">Manage Campaign Action Group Page</a>
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </Col>
@@ -234,7 +234,7 @@ function CampaignAdd(props) {
                                     buttonState === 'column' ? 'Get Column List' : 'Add Campaign'
                                 }
                             </Button>
-                            <Button type="dashed" href="/campaigns" style={{marginLeft: 5}}>
+                            <Button type="dashed" href="/#/campaigns" style={{marginLeft: 5}}>
                                 Cancel
                             </Button>
                         </Form.Item>

@@ -119,7 +119,7 @@ function GroupEdit(props) {
                         }
                     });
 
-                    const editUrl = "/groups/" + index + "/" + c_index;
+                    const editUrl = "/#/groups/" + index + "/" + c_index;
                     return (
                         <>
                             <Button icon={<SettingOutlined /> } href={editUrl} style={{marginRight: 1}}/>
@@ -197,13 +197,13 @@ function GroupEdit(props) {
                 <Col span={20} offset={1}>
                     <Breadcrumb>
                         <Breadcrumb.Item>
-                            <a href="/">Upload Page</a>
+                            <a href="/#/">Upload Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="/campaigns">Manage Campaign Page</a>
+                            <a href="/#/campaigns">Manage Campaign Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a className="selected" href="/groups">Manage Campaign Action Group Page</a>
+                            <a className="selected" href="/#/groups">Manage Campaign Action Group Page</a>
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </Col>
@@ -240,7 +240,7 @@ function GroupEdit(props) {
                     <Button type="primary" onClick={handleSubmit} style={{marginBottom: 5, marginRight: 5}}>
                         Update Group
                     </Button>
-                    <Button type="dashed" href="/groups">
+                    <Button type="dashed" href="/#/groups">
                         Cancel
                     </Button>
                 </Col>

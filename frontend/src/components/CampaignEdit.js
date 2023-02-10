@@ -71,7 +71,7 @@ function CampaignEdit(props) {
         props.updateCampaign(form);
         messageApi.success('update success');
         setTimeout(function() {
-            navigate('/campaigns');
+            navigate('/#/campaigns');
         }, 1000);
     }
 
@@ -141,13 +141,13 @@ function CampaignEdit(props) {
                 <Col span={20} offset={1}>
                     <Breadcrumb>
                         <Breadcrumb.Item>
-                            <a href="/">Upload Page</a>
+                            <a href="/#/">Upload Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a className="selected" href="/campaigns">Manage Campaign Page</a>
+                            <a className="selected" href="/#/campaigns">Manage Campaign Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="/groups">Manage Campaign Action Group Page</a>
+                            <a href="/#/groups">Manage Campaign Action Group Page</a>
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </Col>
@@ -212,7 +212,7 @@ function CampaignEdit(props) {
                             <Button type="primary" htmlType="submit">
                                 Update Campaign
                             </Button>
-                            <Button type="dashed" href="/campaigns" style={{marginLeft: 5}}>
+                            <Button type="dashed" href="/#/campaigns" style={{marginLeft: 5}}>
                                 Cancel
                             </Button>
                         </Form.Item>
