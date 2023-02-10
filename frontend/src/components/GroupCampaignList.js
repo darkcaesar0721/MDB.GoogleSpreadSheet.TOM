@@ -79,15 +79,10 @@ const GroupCampaignList = (props) => {
                     key: 'operation',
                     width: 60,
                     render: (_, record) => {
-                        let campaignIndex = -1;
-                        props.campaigns.forEach((c, i) => {
-                            if (c.key == record.key) campaignIndex = i;
-                        });
-
-                        const previewUrl = "/#/preview/" + props.groupIndex + '/' + campaignIndex;
+                        const uploadUrl = "/#/upload/" + props.groupIndex + '/' + record.groupCampaignIndex + '/' + record.campaignIndex;
                         return (
                             <>
-                                <Button icon={<UploadOutlined /> } href={previewUrl} style={{marginRight: 1}}/>
+                                <Button icon={<UploadOutlined /> } href={uploadUrl} style={{marginRight: 1}}/>
                             </>
                         )
                     }

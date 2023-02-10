@@ -1,9 +1,12 @@
-import {Breadcrumb, Button, Col, Form, InputNumber, Radio, Row, Table} from "antd";
+import {Breadcrumb, Button, Col, Form, InputNumber, message, Radio, Row, Spin, Table} from "antd";
 import MDBPath from "./MDBPath";
 import {connect} from "react-redux";
 import {getCampaigns, getGroups} from "../redux/actions";
 import React, {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
+import axios from "axios";
+import {APP_API_URL} from "../constants";
+import qs from "qs";
 
 const layout = {
     labelCol: {
@@ -24,17 +27,13 @@ const randomLayout = {
 };
 
 const UploadPreview = (props) => {
-    const [way, setWay] = useState('all'); //all,static,random
-    const [mainForm] = Form.useForm();
+    const [form] = Form.useForm();
     const [staticCount, setStaticCount] = useState(1);
-    const [tableColumns, setTableColumns] = useState([]);
-    const [tableParams, setTableParams] = useState({
-        pagination: {
-            current: 1,
-            pageSize: 10,
-        },
-    });
-    const {campaignIndex, groupIndex} = useParams();
+    const [messageApi, contextHolder] = message.useMessage();
+    const [loading, setLoading] = useState(false);
+    const [tip, setTip] = useState('');
+    const {groupIndex, groupCampaignIndex, campaignIndex} = useParams();
+
     const navigate = useNavigate();
 
     useEffect(function() {
@@ -44,50 +43,34 @@ const UploadPreview = (props) => {
 
     useEffect(function() {
         if (props.groups.data.length > 0 && props.campaigns.data.length > 0) {
-            const selectedCampaign = props.groups.data[groupIndex].campaigns[campaignIndex];
-            setWay(selectedCampaign.way);
-            setStaticCount(selectedCampaign.staticCount);
-            mainForm.setFieldsValue(selectedCampaign);
-
-            let tbl_columns = [];
-            let no_column = {
-                title: 'no',
-                key: 'no',
-                render: (_, record) => {
-                    let number = 0;
-                    selectedCampaign.upRows.forEach((c, i) => {
-                        if (c['Phone'] === record['Phone']) {
-                            number = i + 1;
-                            return;
-                        }
-                    })
-                    return (
-                        <>
-                            <span>{number}</span>
-                        </>
-                    )
-                }
-            }
-            tbl_columns.push(no_column);
-            selectedCampaign.columns.forEach(c => {
-                if (c.display == 'true') {
-                    tbl_columns.push({title: c.field, dataIndex: c.name, key: c.name});
-                }
-            });
-            setTableColumns(tbl_columns);
+            let selectedCampaign = {};
+            form.setFieldsValue(props.groups.data[groupIndex].campaigns[groupCampaignIndex]);
+            setStaticCount(props.groups.data[groupIndex].campaigns[groupCampaignIndex].staticCount);
         }
-    }, [props.groups.data]);
+    }, [props.groups.data, props.campaigns.data]);
 
-    const handleTableChange = (pagination, filters, sorter) => {
-        setTableParams({
-            pagination,
-            filters,
-            ...sorter,
-        });
-    };
+    const handleUpload = function() {
+        setLoading(true);
+        setTip("Wait for uploading....");
+        axios.post(APP_API_URL + '/total.php', qs.stringify({
+            action: 'upload_one',
+            groupIndex: groupIndex,
+            groupCampaignIndex: groupCampaignIndex,
+            campaignIndex: campaignIndex,
+        })).then(function(resp) {
+            setLoading(false);
+            props.getCampaigns();
+            props.getGroups();
+            messageApi.success('upload success');
+            setTimeout(function() {
+                navigate('/preview/' + groupIndex + '/' + groupCampaignIndex + '/' + campaignIndex);
+            }, [700]);
+        })
+    }
 
     return (
-        <>
+        <Spin spinning={loading} tip={tip} delay={500}>
+            {contextHolder}
             <Row>
                 <Col span={20} offset={1}>
                     <Breadcrumb>
@@ -107,31 +90,37 @@ const UploadPreview = (props) => {
             <Row>
                 <Col span={20} offset={2} style={{marginTop: 20}}>
                     {
-                        props.groups.data.length  > 0 ?
+                        props.groups.data.length > 0 && props.campaigns.data.length > 0 ?
                             <Form
                                 {...layout}
                                 name="add_group_form"
                                 className="group-setting-form"
-                                form={mainForm}
+                                form={form}
                             >
+                                <Form.Item
+                                    name={['group']}
+                                    label="Group Name"
+                                >
+                                    <span>{props.groups.data[groupIndex].name}</span>
+                                </Form.Item>
                                 <Form.Item
                                     name={['query']}
                                     label="Query"
                                 >
-                                    <span>{props.groups.data[groupIndex].campaigns[campaignIndex].key}</span>
+                                    <span>{props.campaigns.data[campaignIndex].query}</span>
                                 </Form.Item>
                                 <Form.Item
                                     name={['way']}
                                     label="Select Way"
                                 >
-                                    <Radio.Group disabled={true} defaultValue={way} value={way}>
+                                    <Radio.Group disabled={true} defaultValue="all">
                                         <Radio value="all">All Select</Radio>
                                         <Radio value="static">Static Select</Radio>
                                         <Radio value="random">Random Select</Radio>
                                     </Radio.Group>
                                 </Form.Item>
                                 {
-                                    way === 'static' ?
+                                    props.groups.data[groupIndex].campaigns[groupCampaignIndex].way === 'static' ?
                                         <Form.Item
                                             name={['staticCount']}
                                             label="Static Count"
@@ -142,7 +131,7 @@ const UploadPreview = (props) => {
                                         </Form.Item> : ''
                                 }
                                 {
-                                    way === 'random' ?
+                                    props.groups.data[groupIndex].campaigns[groupCampaignIndex].way === 'random' ?
                                         <Col span={24}>
                                             <Form.Item
                                                 {...randomLayout}
@@ -180,32 +169,18 @@ const UploadPreview = (props) => {
                             </Form> : ''
                     }
                 </Col>
-                {
-                    props.groups.data.length  > 0 ?
-                        <Col span={3} offset={3} style={{marginBottom: 5}}>
-                            Total Rows : {props.groups.data[groupIndex].campaigns[campaignIndex].last_qty}
-                        </Col> : ''
-                }
-                {
-                    props.groups.data.length  > 0 ?
-                        <Col span={4} style={{marginBottom: 5}}>
-                            Upload Rows : {props.groups.data[groupIndex].campaigns[campaignIndex].less_qty}
-                        </Col> : ''
-                }
-                {
-                    props.groups.data.length  > 0 ?
-                        <Col span={22} offset={1}>
-                            <Table
-                                size="small"
-                                columns={tableColumns}
-                                dataSource={props.groups.data[groupIndex].campaigns[campaignIndex].upRows}
-                                pagination={tableParams.pagination}
-                                onChange={handleTableChange}
-                            />
-                        </Col> : ''
-                }
             </Row>
-        </>
+            <Row>
+                <Col span={4} offset={10} style={{paddingLeft: '1.5rem'}}>
+                    <Button type="primary" onClick={handleUpload} style={{marginRight: '0.5rem'}}>
+                        Upload
+                    </Button>
+                    <Button type="dashed" href="/#/">
+                        Cancel
+                    </Button>
+                </Col>
+            </Row>
+        </Spin>
     )
 }
 

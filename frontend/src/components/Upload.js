@@ -50,126 +50,137 @@ const Upload = (props) => {
     useEffect(function() {
         let _campaigns = [];
         if (props.groups.data.length > 0 && props.campaigns.data.length > 0) {
-            props.groups.data[group].campaigns.forEach(c => {
-                _campaigns.push(props.campaigns.data[c.index]);
+            props.groups.data[group].campaigns.forEach((c, i) => {
+                let campaign = props.campaigns.data[c.index];
+                campaign.groupCampaignIndex = i;
+                campaign.campaignIndex = c.index;
+                _campaigns.push(campaign);
             });
         }
         setCampaigns(_campaigns);
     }, [props.groups.data, props.campaigns.data, group]);
 
-    // useEffect(function() {
-    //     if (props.groups.data.length > 0) {
-    //         let _options = [];
-    //         props.groups.data.forEach((g, i) => {
-    //             _options.push({
-    //                 value: i,
-    //                 label: g.name,
-    //             })
-    //         });
-    //         setOptions(_options);
-    //
-    //         setTableParams({
-    //             ...tableParams,
-    //             pagination: {
-    //                 ...tableParams.pagination,
-    //                 total: campaigns.length,
-    //             },
-    //         });
-    //
-    //         let no_column = {
-    //             title: 'no',
-    //             key: 'no',
-    //             width: 30,
-    //             fixed: 'left',
-    //             render: (_, record) => {
-    //
-    //                 let number = 0;
-    //                 campaigns.forEach((c, i) => {
-    //                     if (c.key === record.query) {
-    //                         number = i + 1;
-    //                         return;
-    //                     }
-    //                 })
-    //
-    //                 return (
-    //                     <>
-    //                         <span>{number}</span>
-    //                     </>
-    //                 )
-    //             }
-    //         }
-    //         let _columns = [no_column,
-    //             {
-    //                 title: 'Query',
-    //                 dataIndex: 'query',
-    //                 key: 'query',
-    //                 fixed: 'left',
-    //                 width: 300,
-    //             },
-    //             {
-    //                 title: 'Sheet URL',
-    //                 dataIndex: 'url',
-    //                 key: 'url',
-    //                 fixed: 'left',
-    //                 width: 500,
-    //             },
-    //             {
-    //                 title: 'Schedule',
-    //                 dataIndex: 'schedule',
-    //                 key: 'schedule',
-    //                 width: 80
-    //             },
-    //             {
-    //                 title: 'Less Qty',
-    //                 dataIndex: 'less_qty',
-    //                 key: 'less_qty',
-    //                 width: 80
-    //             },
-    //             {
-    //                 title: 'Last Qty',
-    //                 dataIndex: 'last_qty',
-    //                 key: 'last_qty',
-    //                 width: 80
-    //             },
-    //             {
-    //                 title: 'Last Phone',
-    //                 dataIndex: 'last_phone',
-    //                 key: 'last_phone',
-    //                 width: 100
-    //             },
-    //             {
-    //                 title: 'SystemCreateDate',
-    //                 dataIndex: 'SystemCreateDate',
-    //                 key: 'SystemCreateDate',
-    //             },
-    //             {
-    //                 title: 'Action',
-    //                 key: 'operation',
-    //                 fixed: 'right',
-    //                 width: 60,
-    //                 render: (_, record) => {
-    //                     let groupIndex = -1;
-    //                     props.groups.data.forEach((g, i) => {
-    //                         if (g.name == group) groupIndex = i;
-    //                     });
-    //                     let campaignIndex = -1;
-    //                     props.groups.data[groupIndex].campaigns.forEach((c, i) => {
-    //                         if (c.key == record.query) campaignIndex = i;
-    //                     });
-    //
-    //                     const previewUrl = "/#/preview/" + groupIndex + '/' + campaignIndex;
-    //                     return (
-    //                         <>
-    //                             <Button icon={<EyeOutlined /> } href={previewUrl} style={{marginRight: 1}}/>
-    //                         </>
-    //                     )
-    //                 }
-    //             }
-    //         ]
-    //
-    //         setColumns(_columns);
-    //     }
-    // }, [props.groups, campaigns]);
+    useEffect(function() {
+        if (props.groups.data.length > 0) {
+            let _options = [];
+            props.groups.data.forEach((g, i) => {
+                _options.push({
+                    value: i,
+                    label: g.name,
+                })
+            });
+            setOptions(_options);
+
+            setTableParams({
+                ...tableParams,
+                pagination: {
+                    ...tableParams.pagination,
+                    total: campaigns.length,
+                },
+            });
+
+            let no_column = {
+                title: 'no',
+                key: 'no',
+                width: 30,
+                fixed: 'left',
+                render: (_, record) => {
+
+                    let number = 0;
+                    props.campaigns.data.forEach((c, i) => {
+                        if (c.key === record.key) {
+                            number = i + 1;
+                            return;
+                        }
+                    })
+
+                    return (
+                        <>
+                            <span>{number}</span>
+                        </>
+                    )
+                }
+            }
+            let _columns = [no_column,
+                {
+                    title: 'Query',
+                    dataIndex: 'query',
+                    key: 'query',
+                    fixed: 'left',
+                    width: 300,
+                },
+                {
+                    title: 'Sheet URL',
+                    dataIndex: 'url',
+                    key: 'url',
+                    fixed: 'left',
+                    width: 500,
+                },
+                {
+                    title: 'Schedule',
+                    dataIndex: 'schedule',
+                    key: 'schedule',
+                    width: 80
+                },
+                {
+                    title: 'Less Qty',
+                    dataIndex: 'less_qty',
+                    key: 'less_qty',
+                    width: 80
+                },
+                {
+                    title: 'Last Qty',
+                    dataIndex: 'last_qty',
+                    key: 'last_qty',
+                    width: 80
+                },
+                {
+                    title: 'Last Phone',
+                    dataIndex: 'last_phone',
+                    key: 'last_phone',
+                    width: 100
+                },
+                {
+                    title: 'SystemCreateDate',
+                    dataIndex: 'SystemCreateDate',
+                    key: 'SystemCreateDate',
+                },
+                {
+                    title: 'Action',
+                    key: 'operation',
+                    fixed: 'right',
+                    width: 60,
+                    render: (_, record) => {
+                        if (props.groups.data[record.lastGroupIndex]) {
+                            let campaignIndex = -1;
+                            let groupCampaignIndex = -1;
+
+                            props.groups.data[record.lastGroupIndex].campaigns.forEach((c, i) => {
+                                if (c.key == record.key) {
+                                    groupCampaignIndex = i;
+                                    campaignIndex = c.index;
+                                }
+                            });
+                            const previewUrl = "/#/preview/" + record.lastGroupIndex + '/' + groupCampaignIndex + '/' + campaignIndex;
+                            return (
+                                <>
+                                    <Button icon={<EyeOutlined /> } href={previewUrl} style={{marginRight: 1}}/>
+                                </>
+                            )
+                        } else {
+                            return (
+                                <>
+                                    <Button disabled={true} icon={<EyeOutlined /> } style={{marginRight: 1}}/>
+                                </>
+                            )
+                        }
+                    }
+                }
+            ]
+
+            setColumns(_columns);
+        }
+    }, [props.groups, campaigns]);
 
     const handleGroupChange = function(value) {
         setGroup(value);
@@ -190,23 +201,23 @@ const Upload = (props) => {
     };
 
     const handleUpload = function() {
-        if (validation()) {
-            setLoading(true);
-            setTip("Wait for uploading....");
-            axios.post(APP_API_URL + '/total.php', qs.stringify({
-                action: 'upload_data',
-                group: group,
-            })).then(function(resp) {
-                setLoading(false);
-                props.getCampaigns();
-                props.getGroups();
-                messageApi.success('upload success');
-            })
-        }
+        // if (validation()) {
+        setLoading(true);
+        setTip("Wait for uploading....");
+        axios.post(APP_API_URL + '/total.php', qs.stringify({
+            action: 'upload_all',
+            groupIndex: group,
+        })).then(function(resp) {
+            setLoading(false);
+            props.getCampaigns();
+            props.getGroups();
+            messageApi.success('upload success');
+        })
+        // }
     }
 
     const validation = function() {
-        if (!group) {
+        if (group) {
             messageApi.warning('Please select group.');
             return false;
         }
@@ -275,13 +286,13 @@ const Upload = (props) => {
                         groupIndex={group}
                     /> : ''
             }
-            <Divider>LAST CAMPAIGN INFO</Divider>
+            <Divider>LAST CAMPAIGNS INFO</Divider>
             <Row style={{marginTop: 10}}>
                 <Table
                     bordered={true}
                     size="small"
                     columns={columns}
-                    dataSource={campaigns}
+                    dataSource={props.campaigns.data}
                     scroll={{
                         x: 1500,
                         y: 300,
