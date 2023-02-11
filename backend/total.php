@@ -129,7 +129,7 @@ function write_sheet($service, $schedule_values, $d, $g_i, $g_c_i, $c_i) {
             }
 
             foreach($rows as $row) {
-                if ((count($up_rows) - 1) == $count) break;
+                if (count($up_rows_with_key) == $count) break;
 
                 $up_row = array();
                 foreach($g_c->columns as $column) {
