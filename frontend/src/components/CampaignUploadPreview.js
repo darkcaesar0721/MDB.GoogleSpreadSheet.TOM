@@ -106,7 +106,7 @@ const CampaignUploadPreview = (props) => {
             <Row>
                 <Col span={20} offset={2} style={{marginTop: 20}}>
                     {
-                        props.groups.data.length  > 0 ?
+                        props.groups.data.length  > 0 && props.campaigns.data.length > 0 ?
                             <Form
                                 {...layout}
                                 name="add_group_form"

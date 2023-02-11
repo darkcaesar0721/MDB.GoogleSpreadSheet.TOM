@@ -55,6 +55,36 @@ const GroupCampaignList = (props) => {
                     key: 'schedule',
                 },
                 {
+                    title: 'Way',
+                    dataIndex: 'way',
+                    key: 'way',
+                },
+                {
+                    title: 'Count',
+                    key: 'count',
+                    render: (_, record) => {
+                        let count = 'all';
+
+                        switch (record.way) {
+                            case 'all':
+                                count = 'all';
+                                break;
+                            case 'static':
+                                count = record.staticCount;
+                                break;
+                            case 'random':
+                                count = record.randomStart + ' ~ ' + record.randomEnd;
+                                break;
+                        }
+
+                        return (
+                            <>
+                                <span>{count}</span>
+                            </>
+                        )
+                    }
+                },
+                {
                     title: 'Less Qty',
                     dataIndex: 'less_qty',
                     key: 'less_qty'

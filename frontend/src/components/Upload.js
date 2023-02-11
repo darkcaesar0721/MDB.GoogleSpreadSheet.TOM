@@ -54,6 +54,10 @@ const Upload = (props) => {
                 let campaign = props.campaigns.data[c.index];
                 campaign.groupCampaignIndex = i;
                 campaign.campaignIndex = c.index;
+                campaign.way = c.way;
+                campaign.randomStart = c.randomStart;
+                campaign.randomEnd = c.randomEnd;
+                campaign.staticCount = c.staticCount;
                 _campaigns.push(campaign);
             });
         }
