@@ -52,7 +52,7 @@ const UploadPreview = (props) => {
     const handleUpload = function() {
         setLoading(true);
         setTip("Wait for uploading....");
-        axios.post(APP_API_URL + '/total.php', qs.stringify({
+        axios.post(APP_API_URL + 'total.php', qs.stringify({
             action: 'upload_one',
             groupIndex: groupIndex,
             groupCampaignIndex: groupCampaignIndex,
@@ -75,13 +75,13 @@ const UploadPreview = (props) => {
                 <Col span={20} offset={1}>
                     <Breadcrumb>
                         <Breadcrumb.Item>
-                            <a className="selected" href="/#/">Upload Page</a>
+                            <a className="selected" href="#/">Upload Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="/#/campaigns">Manage Campaign Page</a>
+                            <a href="#/campaigns">Manage Campaign Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="/#/groups">Manage Campaign Action Group Page</a>
+                            <a href="#/groups">Manage Campaign Action Group Page</a>
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </Col>
@@ -175,7 +175,7 @@ const UploadPreview = (props) => {
                     <Button type="primary" onClick={handleUpload} style={{marginRight: '0.5rem'}}>
                         Upload
                     </Button>
-                    <Button type="dashed" href="/#/">
+                    <Button type="dashed" href="#/">
                         Cancel
                     </Button>
                 </Col>

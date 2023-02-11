@@ -91,13 +91,13 @@ const CampaignUploadPreview = (props) => {
                 <Col span={20} offset={1}>
                     <Breadcrumb>
                         <Breadcrumb.Item>
-                            <a className="selected" href="/#/">Upload Page</a>
+                            <a className="selected" href="#/">Upload Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="/#/campaigns">Manage Campaign Page</a>
+                            <a href="#/campaigns">Manage Campaign Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="/#/groups">Manage Campaign Action Group Page</a>
+                            <a href="#/groups">Manage Campaign Action Group Page</a>
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </Col>
@@ -212,7 +212,7 @@ const CampaignUploadPreview = (props) => {
             </Row>
             <Row style={{marginTop: '1rem'}}>
                 <Col offset={20} span={3}>
-                    <Button type="dashed" href="/#/">
+                    <Button type="dashed" href="#/">
                         Go to Upload Page
                     </Button>
                 </Col>

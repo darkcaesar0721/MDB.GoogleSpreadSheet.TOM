@@ -47,7 +47,7 @@ function CampaignAdd(props) {
             setLoading(true);
             const query = form.query;
 
-            axios.post(APP_API_URL + '/mdb.php', qs.stringify({
+            axios.post(APP_API_URL + 'mdb.php', qs.stringify({
                 action: 'get_query_data',
                 query,
             })).then(function(resp) {
@@ -163,13 +163,13 @@ function CampaignAdd(props) {
                 <Col span={20} offset={1}>
                     <Breadcrumb>
                         <Breadcrumb.Item>
-                            <a href="/#/">Upload Page</a>
+                            <a href="#/">Upload Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a className="selected" href="/#/campaigns">Manage Campaign Page</a>
+                            <a className="selected" href="#/campaigns">Manage Campaign Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="/#/groups">Manage Campaign Action Group Page</a>
+                            <a href="#/groups">Manage Campaign Action Group Page</a>
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </Col>
@@ -235,7 +235,7 @@ function CampaignAdd(props) {
                                     buttonState === 'column' ? 'Get Column List' : 'Add Campaign'
                                 }
                             </Button>
-                            <Button type="dashed" href="/#/campaigns" style={{marginLeft: 5}}>
+                            <Button type="dashed" href="#/campaigns" style={{marginLeft: 5}}>
                                 Cancel
                             </Button>
                         </Form.Item>

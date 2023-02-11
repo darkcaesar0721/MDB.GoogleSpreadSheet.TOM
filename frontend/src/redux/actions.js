@@ -4,7 +4,7 @@ import {INIT_CAMPAIGN_DATA, INIT_GROUP_DATA, INIT_TEMP_GROUP_DATA, INIT_UPLOAD_D
 import { APP_API_URL } from "../constants";
 
 export const getMDBPath = () => async (dispatch) => {
-    const json = await axios.get(APP_API_URL + '/json.php?action=read_mdb_path');
+    const json = await axios.get(APP_API_URL + 'json.php?action=read_mdb_path');
 
     dispatch({
         type: SET_MDB_PATH,
@@ -13,7 +13,7 @@ export const getMDBPath = () => async (dispatch) => {
 }
 
 export const setMDBPath = (path) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
+    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
         action: 'write_mdb_path',
         path
     }));
@@ -25,7 +25,7 @@ export const setMDBPath = (path) => async (dispatch) => {
 }
 
 export const getUpload = () => async (dispatch) => {
-    const json = await axios.get(APP_API_URL + '/json.php?action=get_upload');
+    const json = await axios.get(APP_API_URL + 'json.php?action=get_upload');
 
     dispatch({
         type: INIT_UPLOAD_DATA,
@@ -34,7 +34,7 @@ export const getUpload = () => async (dispatch) => {
 }
 
 export const updateUpload = (upload) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
+    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
         action: 'update_upload',
         upload
     }));
@@ -46,7 +46,7 @@ export const updateUpload = (upload) => async (dispatch) => {
 }
 
 export const getTempGroup = () => async (dispatch) => {
-    const json = await axios.get(APP_API_URL + '/json.php?action=get_temp_group');
+    const json = await axios.get(APP_API_URL + 'json.php?action=get_temp_group');
 
     dispatch({
         type: INIT_TEMP_GROUP_DATA,
@@ -55,7 +55,7 @@ export const getTempGroup = () => async (dispatch) => {
 }
 
 export const createGroup = () => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
+    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
         action: 'create_group'
     }));
 
@@ -66,7 +66,7 @@ export const createGroup = () => async (dispatch) => {
 }
 
 export const updateGroup = (index) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
+    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
         action: 'update_group',
         index
     }));
@@ -78,7 +78,7 @@ export const updateGroup = (index) => async (dispatch) => {
 }
 
 export const deleteGroup = (group) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
+    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
         action: 'delete_group',
         group
     }));
@@ -90,20 +90,20 @@ export const deleteGroup = (group) => async (dispatch) => {
 }
 
 export const setIsUpdatedGroup = (index) => async (dispatch) => {
-    await axios.post(APP_API_URL + '/json.php', qs.stringify({
+    await axios.post(APP_API_URL + 'json.php', qs.stringify({
         action: 'set_isupdated_group',
         index
     }));
 }
 
 export const initTempGroup = () => async (dispatch) => {
-    await axios.post(APP_API_URL + '/json.php', qs.stringify({
+    await axios.post(APP_API_URL + 'json.php', qs.stringify({
         action: 'init_temp_group'
     }));
 }
 
 export const updateTempGroup = (temp) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
+    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
         action: 'update_temp_group',
         temp
     }));
@@ -114,7 +114,7 @@ export const updateTempGroup = (temp) => async (dispatch) => {
 }
 
 export const getGroups = () => async (dispatch) => {
-    const json = await axios.get(APP_API_URL + '/json.php?action=get_groups');
+    const json = await axios.get(APP_API_URL + 'json.php?action=get_groups');
 
     dispatch({
         type: INIT_GROUP_DATA,
@@ -123,7 +123,7 @@ export const getGroups = () => async (dispatch) => {
 }
 
 export const getCampaigns = () => async (dispatch) => {
-    const json = await axios.get(APP_API_URL + '/json.php?action=get_campaigns');
+    const json = await axios.get(APP_API_URL + 'json.php?action=get_campaigns');
 
     dispatch({
         type: INIT_CAMPAIGN_DATA,
@@ -132,7 +132,7 @@ export const getCampaigns = () => async (dispatch) => {
 }
 
 export const createCampaign = (campaign) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
+    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
         action: 'create_campaign',
         campaign
     }));
@@ -144,7 +144,7 @@ export const createCampaign = (campaign) => async (dispatch) => {
 }
 
 export const updateCampaign = (campaign) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
+    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
         action: 'update_campaign',
         campaign
     }));
@@ -155,7 +155,7 @@ export const updateCampaign = (campaign) => async (dispatch) => {
 }
 
 export const deleteCampaign = (campaign) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + '/json.php', qs.stringify({
+    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
         action: 'delete_campaign',
         campaign
     }));

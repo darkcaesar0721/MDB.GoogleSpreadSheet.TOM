@@ -161,7 +161,7 @@ const Upload = (props) => {
                                     campaignIndex = c.index;
                                 }
                             });
-                            const previewUrl = "/#/preview/" + record.lastGroupIndex + '/' + groupCampaignIndex + '/' + campaignIndex;
+                            const previewUrl = "#/preview/" + record.lastGroupIndex + '/' + groupCampaignIndex + '/' + campaignIndex;
                             return (
                                 <>
                                     <Button icon={<EyeOutlined /> } href={previewUrl} style={{marginRight: 1}}/>
@@ -204,7 +204,7 @@ const Upload = (props) => {
         // if (validation()) {
         setLoading(true);
         setTip("Wait for uploading....");
-        axios.post(APP_API_URL + '/total.php', qs.stringify({
+        axios.post(APP_API_URL + 'total.php', qs.stringify({
             action: 'upload_all',
             groupIndex: group,
         })).then(function(resp) {
@@ -232,13 +232,13 @@ const Upload = (props) => {
                 <Col span={20} offset={1}>
                     <Breadcrumb>
                         <Breadcrumb.Item>
-                            <a className="selected" href="/#/">Upload Page</a>
+                            <a className="selected" href="#/">Upload Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="/#/campaigns">Manage Campaign Page</a>
+                            <a href="#/campaigns">Manage Campaign Page</a>
                         </Breadcrumb.Item>
                         <Breadcrumb.Item>
-                            <a href="/#/groups">Manage Campaign Action Group Page</a>
+                            <a href="#/groups">Manage Campaign Action Group Page</a>
                         </Breadcrumb.Item>
                     </Breadcrumb>
                 </Col>
