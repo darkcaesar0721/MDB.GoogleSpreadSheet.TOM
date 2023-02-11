@@ -67,17 +67,23 @@ function write_sheet($service, $schedule_values, $d, $g_i, $g_c_i, $c_i) {
 
         $is_last_phone = false;
         $last_phone = '';
-        for($i = count($values) - 1; $i >=0; $i--) {
-            if ($is_last_phone) break;
 
-            for($j = 0; $j < count($values[$i]); $j++) {
-                if ($values[$i][$j] === 'Phone') {
-                    $last_phone = $values[$i + 1][$j];
-                    $is_last_phone = true;
-                    break;
+        if ($_REQUEST['phoneEdit'] == 'true') {
+            $last_phone = $_REQUEST['lastPhone'];
+        } else {
+            for($i = count($values) - 1; $i >=0; $i--) {
+                if ($is_last_phone) break;
+
+                for($j = 0; $j < count($values[$i]); $j++) {
+                    if ($values[$i][$j] === 'Phone') {
+                        $last_phone = $values[$i + 1][$j];
+                        $is_last_phone = true;
+                        break;
+                    }
                 }
             }
         }
+
 
         $mdb_path = $d->mdb_path;
 

@@ -1,4 +1,4 @@
-import {Breadcrumb, Button, Col, Form, InputNumber, message, Radio, Row, Spin, Table} from "antd";
+import {Breadcrumb, Button, Col, Form, InputNumber, message, Radio, Row, Spin, Checkbox, Input} from "antd";
 import MDBPath from "./MDBPath";
 import {connect} from "react-redux";
 import {getCampaigns, getGroups} from "../redux/actions";
@@ -33,6 +33,8 @@ const UploadPreview = (props) => {
     const [loading, setLoading] = useState(false);
     const [tip, setTip] = useState('');
     const {groupIndex, groupCampaignIndex, campaignIndex} = useParams();
+    const [phoneEdit, setPhoneEdit] = useState(false);
+    const [lastPhone, setLastPhone] = useState('');
 
     const navigate = useNavigate();
 
@@ -50,22 +52,43 @@ const UploadPreview = (props) => {
     }, [props.groups.data, props.campaigns.data]);
 
     const handleUpload = function() {
-        setLoading(true);
-        setTip("Wait for uploading....");
-        axios.post(APP_API_URL + 'total.php', qs.stringify({
-            action: 'upload_one',
-            groupIndex: groupIndex,
-            groupCampaignIndex: groupCampaignIndex,
-            campaignIndex: campaignIndex,
-        })).then(function(resp) {
-            setLoading(false);
-            props.getCampaigns();
-            props.getGroups();
-            messageApi.success('upload success');
-            setTimeout(function() {
-                navigate('/preview/' + groupIndex + '/' + groupCampaignIndex + '/' + campaignIndex);
-            }, [700]);
-        })
+        if (validation()) {
+            setLoading(true);
+            setTip("Wait for uploading....");
+            axios.post(APP_API_URL + 'total.php', qs.stringify({
+                action: 'upload_one',
+                groupIndex: groupIndex,
+                groupCampaignIndex: groupCampaignIndex,
+                campaignIndex: campaignIndex,
+                phoneEdit: phoneEdit,
+                lastPhone: lastPhone,
+            })).then(function(resp) {
+                setLoading(false);
+                props.getCampaigns();
+                props.getGroups();
+                messageApi.success('upload success');
+                setTimeout(function() {
+                    navigate('/preview/' + groupIndex + '/' + groupCampaignIndex + '/' + campaignIndex);
+                }, [700]);
+            })
+        }
+    }
+
+    const validation = function() {
+        if (phoneEdit && !lastPhone) {
+            messageApi.warning('Please input Last Phone Number or uncheck.');
+            return false;
+        }
+
+        return true;
+    }
+
+    const handleLastPhoneChange = function(e) {
+        setLastPhone(e.target.value);
+    }
+
+    const handlePhoneEditCheck = function(e) {
+        setPhoneEdit(e.target.checked);
     }
 
     return (
@@ -166,6 +189,16 @@ const UploadPreview = (props) => {
                                             </Form.Item>
                                         </Col> : ''
                                 }
+                                <Form.Item label="Last Phone" name={['phone']} valuePropName="checked">
+                                    <Row>
+                                        <Col span={1}>
+                                            <Checkbox checked={phoneEdit} onChange={handlePhoneEditCheck} style={{paddingTop: '0.3rem'}}></Checkbox>
+                                        </Col>
+                                        <Col span={4}>
+                                            <Input disabled={!phoneEdit} value={lastPhone} onChange={handleLastPhoneChange}></Input>
+                                        </Col>
+                                    </Row>
+                                </Form.Item>
                             </Form> : ''
                     }
                 </Col>
