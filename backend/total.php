@@ -97,7 +97,7 @@ function write_sheet($service, $schedule_values, $d, $g_i, $g_c_i, $c_i) {
         }
 
         $up_rows = array();
-
+        array_push($up_rows, ['','','','','','','','','','','','']);
         $up_row = array();
         foreach($g_c->columns as $column) {
             if ($column->display == 'true') array_push($up_row, $column->field);
@@ -189,14 +189,11 @@ function write_sheet($service, $schedule_values, $d, $g_i, $g_c_i, $c_i) {
         $d->campaigns[$c_i]->lastGroupIndex = $g_i;
 
         if (count($up_rows_with_key) > 0) {
-            $body = new Google_Service_Sheets_ValueRange([
-                'values' => $up_rows
-            ]);
-            $params = [
-                'valueInputOption' => 'RAW'
-            ];
-            $update_range = $cur_sheet['properties']['title'] . '!' . 'A' . (count($values) + 2) . ':' . 'Z' . (count($values) + count($up_rows) + 10);
-            $update_sheet = $service->spreadsheets_values->update($spreadsheetId, $update_range, $body, $params);
+            $valueRange = new \Google_Service_Sheets_ValueRange();
+            $valueRange->setValues($up_rows);
+            $range = $cur_sheet['properties']['title']; // the service will detect the last row of this sheet
+            $options = ['valueInputOption' => 'USER_ENTERED'];
+            $service->spreadsheets_values->append($spreadsheetId, $range, $valueRange, $options);
         }
 
         $index = -1;
