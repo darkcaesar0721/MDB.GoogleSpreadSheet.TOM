@@ -11,7 +11,7 @@ import {
     Row,
     Spin,
 } from "antd";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {APP_API_URL} from "../constants";
 import qs from "qs";
@@ -22,6 +22,7 @@ import { useNavigate } from 'react-router-dom';
 import {
     createCampaign
 } from "../redux/actions";
+import MenuList from "./MenuList";
 
 function CampaignAdd(props) {
     const [form] = Form.useForm();
@@ -159,21 +160,9 @@ function CampaignAdd(props) {
     return (
         <Spin spinning={loading} tip="CHECKING QUERY AND GET COLUMN LIST BASED ON QUERY ..." delay={300}>
             {contextHolder}
-            <Row>
-                <Col span={20} offset={1}>
-                    <Breadcrumb>
-                        <Breadcrumb.Item>
-                            <a href="#/">Upload Page</a>
-                        </Breadcrumb.Item>
-                        <Breadcrumb.Item>
-                            <a className="selected" href="#/campaigns">Manage Campaign Page</a>
-                        </Breadcrumb.Item>
-                        <Breadcrumb.Item>
-                            <a href="#/groups">Manage Campaign Action Group Page</a>
-                        </Breadcrumb.Item>
-                    </Breadcrumb>
-                </Col>
-            </Row>
+            <MenuList
+                currentPage="campaign"
+            />
             <MDBPath/>
             <Row style={{marginTop: '1rem'}}>
                 <Col span={12} offset={6}>

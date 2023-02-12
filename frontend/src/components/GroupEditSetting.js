@@ -4,6 +4,7 @@ import {connect} from "react-redux";
 import {getCampaigns, updateCampaign} from "../redux/actions";
 import React, {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
+import MenuList from "./MenuList";
 
 const layout = {
     labelCol: {
@@ -157,21 +158,9 @@ const GroupEditSetting = (props) => {
     return (
         <>
             {contextHolder}
-            <Row>
-                <Col span={20} offset={1}>
-                    <Breadcrumb>
-                        <Breadcrumb.Item>
-                            <a href="#/">Upload Page</a>
-                        </Breadcrumb.Item>
-                        <Breadcrumb.Item>
-                            <a href="#/campaigns">Manage Campaign Page</a>
-                        </Breadcrumb.Item>
-                        <Breadcrumb.Item>
-                            <a href="#/groups" className="selected">Manage Campaign Action Group Page</a>
-                        </Breadcrumb.Item>
-                    </Breadcrumb>
-                </Col>
-            </Row>
+            <MenuList
+                currentPage="group"
+            />
             <MDBPath/>
             <Row>
                 <Col span={20} offset={2} style={{marginTop: 20}}>

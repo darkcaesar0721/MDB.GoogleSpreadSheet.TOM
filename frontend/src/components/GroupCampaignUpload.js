@@ -7,6 +7,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import axios from "axios";
 import {APP_API_URL} from "../constants";
 import qs from "qs";
+import MenuList from "./MenuList";
 
 const layout = {
     labelCol: {
@@ -94,21 +95,9 @@ const UploadPreview = (props) => {
     return (
         <Spin spinning={loading} tip={tip} delay={500}>
             {contextHolder}
-            <Row>
-                <Col span={20} offset={1}>
-                    <Breadcrumb>
-                        <Breadcrumb.Item>
-                            <a className="selected" href="#/">Upload Page</a>
-                        </Breadcrumb.Item>
-                        <Breadcrumb.Item>
-                            <a href="#/campaigns">Manage Campaign Page</a>
-                        </Breadcrumb.Item>
-                        <Breadcrumb.Item>
-                            <a href="#/groups">Manage Campaign Action Group Page</a>
-                        </Breadcrumb.Item>
-                    </Breadcrumb>
-                </Col>
-            </Row>
+            <MenuList
+                currentPage="upload"
+            />
             <MDBPath/>
             <Row>
                 <Col span={20} offset={2} style={{marginTop: 20}}>

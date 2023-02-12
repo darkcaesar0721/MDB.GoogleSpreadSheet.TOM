@@ -1,5 +1,5 @@
 import {Breadcrumb, Button, Col, Divider, Input, message, Row, Table} from "antd";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {
     createGroup,
@@ -8,6 +8,7 @@ import {
 import MDBPath from "./MDBPath";
 import { SettingOutlined } from '@ant-design/icons';
 import {useNavigate} from "react-router-dom";
+import MenuList from "./MenuList";
 
 function GroupAdd(props) {
     const [tableParams, setTableParams] = useState({
@@ -192,21 +193,9 @@ function GroupAdd(props) {
     return (
         <>
             {contextHolder}
-            <Row>
-                <Col span={20} offset={1}>
-                    <Breadcrumb>
-                        <Breadcrumb.Item>
-                            <a href="#/">Upload Page</a>
-                        </Breadcrumb.Item>
-                        <Breadcrumb.Item>
-                            <a href="#/campaigns">Manage Campaign Page</a>
-                        </Breadcrumb.Item>
-                        <Breadcrumb.Item>
-                            <a className="selected" href="#/groups">Manage Campaign Action Group Page</a>
-                        </Breadcrumb.Item>
-                    </Breadcrumb>
-                </Col>
-            </Row>
+            <MenuList
+                currentPage="group"
+            />
             <MDBPath/>
             <Divider>CAMPAIGN ACTION GROUP ADD FORM</Divider>
             <Row style={{marginBottom: 5}}>

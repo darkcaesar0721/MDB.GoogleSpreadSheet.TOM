@@ -1,11 +1,12 @@
 import {Breadcrumb, Button, Col, Divider, Popconfirm, Row, Table} from "antd";
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {
     deleteCampaign, getCampaigns,
 } from "../redux/actions";
 import MDBPath from "./MDBPath";
 import {PlusCircleOutlined, EditOutlined, DeleteOutlined, EyeOutlined} from '@ant-design/icons';
+import MenuList from "./MenuList";
 
 function Campaigns(props) {
     const [tableParams, setTableParams] = useState({
@@ -146,21 +147,9 @@ function Campaigns(props) {
 
     return (
         <>
-            <Row>
-                <Col span={20} offset={1}>
-                    <Breadcrumb>
-                        <Breadcrumb.Item>
-                            <a href="#/">Upload Page</a>
-                        </Breadcrumb.Item>
-                        <Breadcrumb.Item>
-                            <a className="selected" href="#/campaigns">Manage Campaign Page</a>
-                        </Breadcrumb.Item>
-                        <Breadcrumb.Item>
-                            <a href="#/groups">Manage Campaign Action Group Page</a>
-                        </Breadcrumb.Item>
-                    </Breadcrumb>
-                </Col>
-            </Row>
+            <MenuList
+                currentPage="campaign"
+            />
             <MDBPath/>
             <Divider>MDB QUERY CAMPAIGN LIST</Divider>
             <Row>
