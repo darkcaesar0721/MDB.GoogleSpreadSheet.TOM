@@ -279,20 +279,22 @@ const Upload = (props) => {
                         groupIndex={group}
                     /> : ''
             }
-            <Divider>LAST CAMPAIGNS INFO</Divider>
             <Row style={{marginTop: 10}}>
-                <Table
-                    bordered={true}
-                    size="small"
-                    columns={columns}
-                    dataSource={props.campaigns.data}
-                    scroll={{
-                        x: 1500,
-                        y: 300,
-                    }}
-                    pagination={tableParams.pagination}
-                    onChange={handleTableChange}
-                />
+                <Col span={22} offset={1}>
+                    <Divider style={{fontSize: '0.7rem'}}>LAST CAMPAIGNS INFO</Divider>
+                    <Table
+                        bordered={true}
+                        size="small"
+                        columns={columns}
+                        dataSource={props.campaigns.data}
+                        scroll={{
+                            x: 1500,
+                            y: 300,
+                        }}
+                        pagination={tableParams.pagination}
+                        onChange={handleTableChange}
+                    />
+                </Col>
             </Row>
         </Spin>
     )

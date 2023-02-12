@@ -132,9 +132,10 @@ const GroupCampaignList = (props) => {
 
     return (
         <>
-            <Divider>GROUP CAMPAIGN LIST</Divider>
+
             <Row style={{marginTop: 10}}>
                 <Col span={22} offset={1}>
+                    <Divider style={{fontSize: '0.7rem'}}>GROUP CAMPAIGN LIST</Divider>
                     <Table
                         bordered={true}
                         size="small"
