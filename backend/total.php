@@ -195,6 +195,8 @@ function write_sheet($service, $schedule_values, $d, $g_i, $g_c_i, $c_i) {
         $d->campaigns[$c_i]->lastGroupIndex = $g_i;
 
         if (count($up_rows_with_key) > 0) {
+            array_push($up_rows, ['','','','','','','','','','','','']);
+
             $valueRange = new \Google_Service_Sheets_ValueRange();
             $valueRange->setValues($up_rows);
             $range = $cur_sheet['properties']['title']; // the service will detect the last row of this sheet
@@ -335,7 +337,7 @@ $body = new Google_Service_Sheets_ValueRange([
     'values' => [$row]
 ]);
 $params = [
-    'valueInputOption' => 'RAW'
+    'valueInputOption' => 'USER_ENTERED'
 ];
 
 if ($cur_schedule_index == -1) {
