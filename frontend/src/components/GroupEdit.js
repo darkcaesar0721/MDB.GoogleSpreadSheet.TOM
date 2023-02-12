@@ -1,8 +1,8 @@
-import {Breadcrumb, Button, Col, Divider, Input, message, Row, Table} from "antd";
+import {Button, Col, Divider, Input, message, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {
-    getCampaigns, getGroups, getTempGroup, updateGroup, updateTempGroup,
+    getCampaigns, getGroups, getTempGroup, updateCampaign, updateGroup, updateTempGroup,
 } from "../redux/actions";
 import MDBPath from "./MDBPath";
 import { SettingOutlined } from '@ant-design/icons';
@@ -17,6 +17,7 @@ function GroupEdit(props) {
         },
     });
     const [columns, setColumns] = useState([]);
+    const [campaigns, setCampaigns] = useState([]);
     const [selectedCampaignKeys, setSelectedCampaignKeys] = useState([]);
     const [name, setName] = useState('');
     const [messageApi, contextHolder] = message.useMessage();
@@ -28,19 +29,61 @@ function GroupEdit(props) {
         props.getCampaigns();
         props.getTempGroup();
         props.getGroups();
-        // props.setIsUpdatedGroup(index);
     }, []);
 
     useEffect(function() {
-        let campaigns = props.campaigns.data;
+        let _campaigns = props.campaigns.data;
+        _campaigns = _campaigns.sort((a, b) => {
+            if (parseInt(a.group.order) < parseInt(b.group.order)) return -1;
+
+            return 0;
+        });
+        setCampaigns(_campaigns);
 
         setTableParams({
             ...tableParams,
             pagination: {
                 ...tableParams.pagination,
-                total: campaigns.length,
+                total: _campaigns.length,
             },
         });
+
+        const order_column = {
+            title: 'order',
+            key: 'order',
+            fixed: 'left',
+            width: 60,
+            render: (_, record) => {
+                let number = -1;
+                _campaigns.forEach((c, i) => {
+                    if (c['query'] === record['query']) {
+                        number = i + 1;
+                        return;
+                    }
+                });
+
+                let order = 0;
+                if (record.group.order) {
+                    order = record.group.order;
+                } else {
+                    order = number;
+                }
+
+                let selectedIndex = -1;
+                if (selectedCampaignKeys) {
+                    selectedCampaignKeys.forEach((key, i) => {
+                        if (key === record.key) {
+                            selectedIndex = i;
+                            return;
+                        }
+                    })
+                }
+
+                return (
+                    <Input disabled={selectedIndex === -1 ? true: false} value={order} onChange={(e) => {handleOrderChange(e, record)}}/>
+                )
+            }
+        }
 
         let no_column = {
             title: 'no',
@@ -63,7 +106,7 @@ function GroupEdit(props) {
             }
         }
 
-        setColumns([no_column,
+        setColumns([order_column, no_column,
             {
                 title: 'Schedule',
                 dataIndex: 'schedule',
@@ -133,7 +176,33 @@ function GroupEdit(props) {
     useEffect(function() {
         setName(props.temp.name);
         setSelectedCampaignKeys(props.temp.selectedCampaignKeys);
-    }, [props.temp])
+    }, [props.temp]);
+
+    const handleOrderChange = function(e, r) {
+        r.group.order = e.target.value;
+
+        let _campaigns = campaigns;
+        _campaigns = _campaigns.map(c => (c.key === r.key ? r : c));
+        _campaigns = _campaigns.sort((a, b) => {
+            if (parseInt(a.group.order) < parseInt(b.group.order)) return -1;
+
+            return 0;
+        });
+
+        let _selectedCampaignKeys = [];
+        _campaigns.forEach(c => {
+            selectedCampaignKeys.forEach(k => {
+                if (c.key === k) _selectedCampaignKeys.push(k);
+            });
+        });
+        setSelectedCampaignKeys(_selectedCampaignKeys);
+
+        let temp = props.temp;
+        temp.selectedCampaignKeys = _selectedCampaignKeys;
+        props.updateTempGroup(temp);
+
+        props.updateCampaign(r);
+    }
 
     const handleSubmit = function() {
         if (validation()) {
@@ -166,11 +235,17 @@ function GroupEdit(props) {
     // rowSelection object indicates the need for row selection
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
-            let temp = props.temp;
-            temp.selectedCampaignKeys = selectedRowKeys;
-            props.updateTempGroup(temp);
+            let _selectedCampaignKeys = [];
+            campaigns.forEach(c => {
+                selectedRowKeys.forEach(k => {
+                    if (c.key === k) _selectedCampaignKeys.push(k);
+                });
+            });
+            setSelectedCampaignKeys(_selectedCampaignKeys);
 
-            setSelectedCampaignKeys(selectedRowKeys);
+            let temp = props.temp;
+            temp.selectedCampaignKeys = _selectedCampaignKeys;
+            props.updateTempGroup(temp);
         }
     };
 
@@ -214,7 +289,7 @@ function GroupEdit(props) {
                     ...rowSelection,
                 }}
                 columns={columns}
-                dataSource={props.campaigns.data}
+                dataSource={campaigns}
                 pagination={tableParams.pagination}
                 onChange={handleTableChange}
             />
@@ -238,5 +313,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, getTempGroup, updateTempGroup, updateGroup, getGroups }
+    { getCampaigns, updateCampaign, getTempGroup, updateTempGroup, updateGroup, getGroups }
 )(GroupEdit);

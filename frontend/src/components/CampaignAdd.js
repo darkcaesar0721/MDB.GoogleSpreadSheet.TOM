@@ -20,7 +20,7 @@ import {connect} from "react-redux";
 import { useNavigate } from 'react-router-dom';
 
 import {
-    createCampaign
+    createCampaign, getCampaigns
 } from "../redux/actions";
 import MenuList from "./MenuList";
 
@@ -84,11 +84,13 @@ function CampaignAdd(props) {
             });
 
             form.key = form.query;
+            form.index = props.campaigns.data.length;
             form.columns = _columns;
 
             form.group = {};
             form.group.way = "all";
             form.group.columns = _columns;
+            form.group.order = form.index + 1;
 
             props.createCampaign(form);
             messageApi.success('create success');
@@ -282,7 +284,11 @@ function CampaignAdd(props) {
     );
 }
 
+const mapStateToProps = state => {
+    return { campaigns: state.campaigns };
+};
+
 export default connect(
-    "",
-    { createCampaign }
+    mapStateToProps,
+    { getCampaigns, createCampaign }
 )(CampaignAdd);
