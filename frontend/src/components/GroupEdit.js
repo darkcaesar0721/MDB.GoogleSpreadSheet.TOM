@@ -137,13 +137,6 @@ function GroupEdit(props) {
                 key: 'operation',
                 width: 60,
                 render: (_, record) => {
-                    let c_index = -1;
-                    campaigns.forEach((c, i) => {
-                        if (c.query === record.query) {
-                            c_index = i;
-                        }
-                    });
-
                     let selectedIndex = -1;
                     if (selectedCampaignKeys) {
                         selectedCampaignKeys.forEach((key, i) => {
@@ -153,20 +146,12 @@ function GroupEdit(props) {
                         })
                     }
 
-                    const settingUrl = "#/groups/" + index + "/" + c_index;
-                    if (selectedIndex === -1) {
-                        return (
-                            <>
-                                <Button icon={<SettingOutlined /> } disabled={true} href={settingUrl} style={{marginRight: 1}}/>
-                            </>
-                        )
-                    } else {
-                        return (
-                            <>
-                                <Button icon={<SettingOutlined /> } href={settingUrl} style={{marginRight: 1}}/>
-                            </>
-                        )
-                    }
+                    const settingUrl = "#/groups/" + index + '/' + record.index;
+                    return (
+                        <>
+                            <Button disabled={selectedIndex === -1 ? true: false} icon={<SettingOutlined /> } href={settingUrl} style={{marginRight: 1}}/>
+                        </>
+                    )
                 }
             },
         ]);

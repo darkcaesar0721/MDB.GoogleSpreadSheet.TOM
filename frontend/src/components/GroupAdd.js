@@ -137,13 +137,6 @@ function GroupAdd(props) {
                 key: 'operation',
                 width: 60,
                 render: (_, record) => {
-                    let index = -1;
-                    _campaigns.forEach((c, i) => {
-                        if (c.query === record.query) {
-                            index = i;
-                        }
-                    });
-
                     let selectedIndex = -1;
                     if (selectedCampaignKeys) {
                         selectedCampaignKeys.forEach((key, i) => {
@@ -153,21 +146,12 @@ function GroupAdd(props) {
                         })
                     }
 
-                    const settingUrl = "#/groups/add/" + index;
-                    if (selectedIndex === -1) {
-                        return (
-                            <>
-                                <Button icon={<SettingOutlined /> } disabled={true} href={settingUrl} style={{marginRight: 1}}/>
-                            </>
-                        )
-                    } else {
-                        return (
-                            <>
-                                <Button icon={<SettingOutlined /> } href={settingUrl} style={{marginRight: 1}}/>
-                            </>
-                        )
-                    }
-
+                    const settingUrl = "#/groups/add/" + record.index;
+                    return (
+                        <>
+                            <Button disabled={selectedIndex === -1 ? true: false} icon={<SettingOutlined /> } href={settingUrl} style={{marginRight: 1}}/>
+                        </>
+                    )
                 }
             },
         ]);

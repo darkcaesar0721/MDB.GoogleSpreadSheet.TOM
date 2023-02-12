@@ -143,6 +143,7 @@ const GroupCampaignList = (props) => {
                         dataSource={props.campaigns}
                         pagination={tableParams.pagination}
                         onChange={handleTableChange}
+                        rowClassName={(record, index) => (record.isLast ? "campaign_active" : "") }
                     />
                 </Col>
             </Row>

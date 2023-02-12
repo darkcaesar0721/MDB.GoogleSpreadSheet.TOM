@@ -231,6 +231,14 @@ if ($action == 'upload_all') {
     $c_i = $_REQUEST['campaignIndex'];
 
     $data = write_sheet($service, $schedule_values, $data, $g_i, $g_c_i, $c_i);
+
+    foreach($data->groups[$g_i]->campaigns as $i => $c) {
+        if ($g_c_i == $i) {
+            $data->groups[$g_i]->campaigns[$i]->isLast = true;
+        } else {
+            $data->groups[$g_i]->campaigns[$i]->isLast = false;
+        }
+    }
 }
 
 if (date('w') == 4) {

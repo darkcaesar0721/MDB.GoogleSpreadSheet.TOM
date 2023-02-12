@@ -146,7 +146,6 @@ function CampaignEdit(props) {
                 currentPage="campaign"
             />
             <MDBPath/>
-            <MDBPath/>
             <Row style={{marginTop: '2rem'}}>
                 <Col span={12} offset={6}>
                     <Divider>CAMPAIGN EDIT FORM</Divider>

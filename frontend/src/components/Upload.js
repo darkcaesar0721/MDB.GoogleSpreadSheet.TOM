@@ -59,6 +59,7 @@ const Upload = (props) => {
                 campaign.randomStart = c.randomStart;
                 campaign.randomEnd = c.randomEnd;
                 campaign.staticCount = c.staticCount;
+                campaign.isLast = c.isLast;
                 _campaigns.push(campaign);
             });
         }

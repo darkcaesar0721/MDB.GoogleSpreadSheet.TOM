@@ -1,4 +1,4 @@
-import {Breadcrumb, Button, Col, Form, InputNumber, message, Radio, Row, Spin, Checkbox, Input} from "antd";
+import {Button, Col, Form, InputNumber, message, Radio, Row, Spin, Checkbox, Input} from "antd";
 import MDBPath from "./MDBPath";
 import {connect} from "react-redux";
 import {getCampaigns, getGroups} from "../redux/actions";
@@ -69,7 +69,8 @@ const UploadPreview = (props) => {
                 props.getGroups();
                 messageApi.success('upload success');
                 setTimeout(function() {
-                    navigate('/preview/' + groupIndex + '/' + groupCampaignIndex + '/' + campaignIndex);
+                    // navigate('/preview/' + groupIndex + '/' + groupCampaignIndex + '/' + campaignIndex);
+                    navigate('/');
                 }, [700]);
             })
         }

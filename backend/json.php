@@ -204,7 +204,6 @@ if ($action === 'set_isupdated_group') {
         $data = json_decode(file_get_contents($json_file_name));
 
         $group = $data->groups[$_REQUEST['index']];
-        print_r($group);
         $data->tempGroup->name = $group->name;
         $data->tempGroup->selectedCampaignKeys = [];
 

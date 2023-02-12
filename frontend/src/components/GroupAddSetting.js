@@ -76,7 +76,9 @@ const GroupAddSetting = (props) => {
 
         if (validation(form)) {
             let campaign = props.campaigns.data[index];
+            const group = campaign.group;
             campaign.group = form;
+            campaign.group.order = group.order;
             props.updateCampaign(campaign);
 
             messageApi.success('save success');
