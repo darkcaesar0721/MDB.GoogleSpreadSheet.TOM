@@ -68,8 +68,8 @@ function write_sheet($service, $schedule_values, $d, $g_i, $g_c_i, $c_i) {
         $is_last_phone = false;
         $last_phone = '';
 
-        if ($_REQUEST['phoneEdit'] == 'true') {
-            $last_phone = $_REQUEST['lastPhone'];
+        if ($g_c->isEditPhone == 'true') {
+            $last_phone = $c->last_phone;
         } else {
             for($i = count($values) - 1; $i >=0; $i--) {
                 if ($is_last_phone) break;

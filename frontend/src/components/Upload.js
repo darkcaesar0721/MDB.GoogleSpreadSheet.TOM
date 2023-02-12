@@ -2,7 +2,15 @@ import {Breadcrumb, Button, Col, Divider, message, Radio, Row, Select, Spin, Tab
 import MDBPath from "./MDBPath";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {getCampaigns, getGroups, getUpload, updateUpload} from "../redux/actions";
+import {
+    getCampaigns,
+    getGroups,
+    getUpload,
+    updateCampaign,
+    updateGroup,
+    updateGroupCampaign,
+    updateUpload
+} from "../redux/actions";
 import axios from "axios";
 import {APP_API_URL} from "../constants";
 import qs from "qs";
@@ -60,6 +68,7 @@ const Upload = (props) => {
                 campaign.randomEnd = c.randomEnd;
                 campaign.staticCount = c.staticCount;
                 campaign.isLast = c.isLast;
+                campaign.isEditPhone = c.isEditPhone;
                 _campaigns.push(campaign);
             });
         }
@@ -222,6 +231,17 @@ const Upload = (props) => {
         // }
     }
 
+    const handleUploadOneByOne = (data) => {
+        setLoading(true);
+        setTip("Wait for uploading....");
+        axios.post(APP_API_URL + 'total.php', qs.stringify(data)).then(function(resp) {
+            setLoading(false);
+            props.getCampaigns();
+            props.getGroups();
+            messageApi.success('upload success');
+        })
+    }
+
     const validation = function() {
         if (group) {
             messageApi.warning('Please select group.');
@@ -274,10 +294,15 @@ const Upload = (props) => {
                 }
             </Row>
             {
-                way === 'one' ?
+                props.groups.data.length > 0 && props.campaigns.data.length > 0 && way === 'one' ?
                     <GroupCampaignList
                         campaigns={campaigns}
                         groupIndex={group}
+                        gobalCampaigns={props.campaigns.data}
+                        group={props.groups.data[group]}
+                        updateGroupCampaign={props.updateGroupCampaign}
+                        updateCampaign={props.updateCampaign}
+                        upload={handleUploadOneByOne}
                     /> : ''
             }
             <Row style={{marginTop: 10}}>
@@ -307,5 +332,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, getGroups, getUpload, updateUpload }
+    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign }
 )(Upload);

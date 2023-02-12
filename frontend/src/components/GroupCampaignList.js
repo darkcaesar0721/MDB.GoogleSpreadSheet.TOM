@@ -1,7 +1,11 @@
-import {Button, Col, Divider, Row, Table} from "antd";
+import {Button, Checkbox, Col, Divider, Popconfirm, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {UploadOutlined} from "@ant-design/icons";
 import {Link} from "react-router-dom";
+import {Input} from "antd/lib";
+import axios from "axios";
+import {APP_API_URL} from "../constants";
+import qs from "qs";
 
 const GroupCampaignList = (props) => {
     const [tableParams, setTableParams] = useState({
@@ -100,12 +104,27 @@ const GroupCampaignList = (props) => {
                 {
                     title: 'Last Qty',
                     dataIndex: 'last_qty',
-                    key: 'last_qty'
+                    key: 'last_qty',
+                },
+                {
+                    title: 'Edit Phone',
+                    key: 'edit_phone',
+                    width: 100,
+                    render: (_, r) => {
+                        return (
+                            <Checkbox checked={r.isEditPhone == "true" ? true: false} onChange={(e) => {handlePhoneEditCheck(e, r)}}/>
+                        )
+                    }
                 },
                 {
                     title: 'Last Phone',
-                    dataIndex: 'last_phone',
-                    key: 'last_phone'
+                    key: 'last_phone',
+                    width: 130,
+                    render: (_, r) => {
+                        return (
+                            <Input style={{color: '#000000'}} disabled={!(r.isEditPhone == "true")} value={r.last_phone} onChange={(e) => {handlePhoneChange(e, r)}}/>
+                        )
+                    }
                 },
                 {
                     title: 'SystemCreateDate',
@@ -117,10 +136,17 @@ const GroupCampaignList = (props) => {
                     key: 'operation',
                     width: 60,
                     render: (_, record) => {
-                        const uploadUrl = "#/upload/" + props.groupIndex + '/' + record.groupCampaignIndex + '/' + record.campaignIndex;
                         return (
                             <>
-                                <Button icon={<UploadOutlined /> } href={uploadUrl} style={{marginRight: 1}}/>
+                                <Popconfirm
+                                    title="Upload data"
+                                    description="Are you sure to upload the rows of this campaign?"
+                                    onConfirm={(e) => {handleUpload(record)}}
+                                    okText="Yes"
+                                    cancelText="No"
+                                >
+                                    <Button icon={<UploadOutlined /> } style={{marginRight: 1}}/>
+                                </Popconfirm>
                             </>
                         )
                     }
@@ -130,6 +156,18 @@ const GroupCampaignList = (props) => {
         }
     }, [props.campaigns]);
 
+    const handlePhoneChange = (e, r) => {
+        let campaign = props.gobalCampaigns[r.index];
+        campaign.last_phone = e.target.value;
+        props.updateCampaign(campaign);
+    };
+
+    const handlePhoneEditCheck = (e, r) => {
+        let groupCampaign = props.group.campaigns[r.groupCampaignIndex];
+        groupCampaign.isEditPhone = e.target.checked;
+        props.updateGroupCampaign(props.groupIndex, r.groupCampaignIndex, groupCampaign);
+    }
+
     const handleTableChange = (pagination, filters, sorter) => {
         setTableParams({
             pagination,
@@ -137,6 +175,15 @@ const GroupCampaignList = (props) => {
             ...sorter,
         });
     };
+
+    const handleUpload = (r) => {
+        props.upload({
+            action: 'upload_one',
+            groupIndex: props.groupIndex,
+            groupCampaignIndex: r.groupCampaignIndex,
+            campaignIndex: r.campaignIndex
+        });
+    }
 
     return (
         <>
