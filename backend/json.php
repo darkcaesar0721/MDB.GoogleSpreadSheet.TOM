@@ -181,6 +181,22 @@ if ($action === 'update_group') {
     }
 }
 
+if ($action === 'update_group_campaign') {
+    if (file_exists($json_file_name))
+    {
+        $data = json_decode(file_get_contents($json_file_name));
+
+        $groupIndex = $_REQUEST['groupIndex'];
+        $campaignIndex = $_REQUEST['groupCampaignIndex'];
+        $data->groups[$groupIndex]->campaigns[$campaignIndex] = $_REQUEST['groupCampaign'];
+
+        file_put_contents($json_file_name, json_encode($data));
+
+        echo json_encode($data->groups);
+        exit;
+    }
+}
+
 if ($action === 'init_temp_group') {
     if (file_exists($json_file_name))
     {
@@ -260,4 +276,3 @@ if ($action === 'update_upload') {
         exit;
     }
 }
-

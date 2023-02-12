@@ -1,7 +1,7 @@
 import {Button, Checkbox, Col, Form, Input, InputNumber, message, Modal, Radio, Row} from "antd";
 import MDBPath from "./MDBPath";
 import {connect} from "react-redux";
-import {getCampaigns, getGroups, updateCampaign} from "../redux/actions";
+import {getCampaigns, getGroups, updateCampaign, updateGroupCampaign} from "../redux/actions";
 import React, {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import MenuList from "./MenuList";
@@ -33,7 +33,7 @@ const randomLayout = {
     },
 };
 
-const GroupEditSetting = (props) => {
+const GroupCampaignSetting = (props) => {
     const [way, setWay] = useState('all'); //all,static,random
     const [columnForm] = Form.useForm();
     const [mainForm] = Form.useForm();
@@ -42,7 +42,7 @@ const GroupEditSetting = (props) => {
     const [columns, setColumns] = useState([]);
     const [staticCount, setStaticCount] = useState(1);
 
-    const {campaignIndex, groupIndex} = useParams();
+    const {groupIndex, groupCampaignIndex, campaignIndex} = useParams();
     const navigate = useNavigate();
 
     useEffect(function() {
@@ -51,40 +51,40 @@ const GroupEditSetting = (props) => {
     }, []);
 
     useEffect(function() {
-        if (props.campaigns.data.length > 0) {
-            const selectedCampaign = props.campaigns.data[campaignIndex];
-            let _columns = selectedCampaign.group.columns;
+        if (props.campaigns.data.length > 0 && props.groups.data.length > 0) {
+            const selectedGroup = props.groups.data[groupIndex];
+            const selectedGroupCampaign = props.groups.data[groupIndex].campaigns[groupCampaignIndex];
+
+            let _columns = selectedGroupCampaign.columns;
             _columns = _columns.map(c => {
                 return Object.assign({...c}, {display: c.display ==='true'})
             })
             setColumns(_columns);
 
             let data = {};
-            selectedCampaign.group.columns.forEach((c, i) =>{
+            selectedGroupCampaign.columns.forEach((c, i) =>{
                 data[c.name + '_order'] = c.order;
                 data[c.name + '_name'] = c.field;
             });
             columnForm.setFieldsValue(data);
 
-            setWay(selectedCampaign.group.way);
-            setStaticCount(selectedCampaign.group.staticCount);
-            mainForm.setFieldsValue(selectedCampaign.group);
+            setWay(selectedGroupCampaign.way);
+            setStaticCount(selectedGroupCampaign.staticCount);
+            mainForm.setFieldsValue(selectedGroupCampaign);
         }
-    }, [props.campaigns.data]);
+    }, [props.campaigns.data, props.groups.data]);
 
     const handleSubmit = (form) => {
         form.columns = columns;
 
         if (validation(form)) {
-            let campaign = props.campaigns.data[campaignIndex];
-            const group = campaign.group;
-            campaign.group = form;
-            campaign.group.order = group.order;
-            props.updateCampaign(campaign);
+            let groupCampaign = props.groups.data[groupIndex].campaigns[groupCampaignIndex];
+
+            props.updateGroupCampaign(groupIndex, groupCampaignIndex, Object.assign({...groupCampaign}, {...form}));
 
             messageApi.success('save success');
             setTimeout(function() {
-                navigate('/groups/' + groupIndex);
+                navigate('/');
             }, 1000);
         }
     }
@@ -268,14 +268,14 @@ const GroupEditSetting = (props) => {
                                 <Form.Item
                                     wrapperCol={{
                                         ...layout.wrapperCol,
-                                        offset: 10,
+                                        offset: 9,
                                     }}
                                 >
                                     <Button type="primary" htmlType="submit" style={{marginRight: 5}}>
                                         Save Setting
                                     </Button>
-                                    <Button type="dashed" href={"#/groups/" + groupIndex}>
-                                        Cancel
+                                    <Button type="dashed" href={"#"}>
+                                        Go To Upload Page
                                     </Button>
                                 </Form.Item>
                             </Form> : ''
@@ -339,5 +339,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, updateCampaign, getGroups }
-)(GroupEditSetting);
+    { getCampaigns, updateCampaign, getGroups, updateGroupCampaign }
+)(GroupCampaignSetting);

@@ -1,6 +1,7 @@
 import {Button, Col, Divider, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {UploadOutlined} from "@ant-design/icons";
+import {Link} from "react-router-dom";
 
 const GroupCampaignList = (props) => {
     const [tableParams, setTableParams] = useState({
@@ -46,8 +47,15 @@ const GroupCampaignList = (props) => {
             let _columns = [no_column,
                 {
                     title: 'Query',
-                    dataIndex: 'query',
                     key: 'query',
+                    render: (_, record) => {
+                        const link = '/groups/' + props.groupIndex + '/' + record.groupCampaignIndex + '/' + record.campaignIndex;
+                        return (
+                            <>
+                                <Link to={link}>{record.query}</Link>
+                            </>
+                        )
+                    }
                 },
                 {
                     title: 'Schedule',

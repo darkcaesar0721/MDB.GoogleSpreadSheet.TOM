@@ -12,6 +12,7 @@ import Groups from "./components/Groups";
 import Upload from "./components/Upload";
 import UploadPreview from "./components/CampaignUploadPreview";
 import GroupCampaignUpload from "./components/GroupCampaignUpload";
+import GroupCampaignSetting from "./components/GroupCampaignSetting";
 
 export const DASHBOARD = '/';
 
@@ -32,6 +33,7 @@ export const AppRouter = () => {
                             <Route path="/groups/add/:index" element={<GroupAddSetting />} />
                             <Route path="/groups/:index" element={<GroupEdit />} />
                             <Route path="/groups/:groupIndex/:campaignIndex" element={<GroupEditSetting />} />
+                            <Route path="/groups/:groupIndex/:groupCampaignIndex/:campaignIndex" element={<GroupCampaignSetting />} />
                             <Route path="/upload/:groupIndex/:groupCampaignIndex/:campaignIndex" element={<GroupCampaignUpload />} />
                             <Route path="/preview/:groupIndex/:groupCampaignIndex/:campaignIndex" element={<UploadPreview />} />
                         </Route>
