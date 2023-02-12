@@ -74,6 +74,7 @@ const CampaignUploadPreview = (props) => {
                     tbl_columns.push({title: c.field, dataIndex: c.name, key: c.name});
                 }
             });
+            tbl_columns.push({title: 'SystemCreateDate', dataIndex: 'SystemCreateDate', key: 'SystemCreateDate'});
             setTableColumns(tbl_columns);
         }
     }, [props.groups.data, props.campaigns.data]);
