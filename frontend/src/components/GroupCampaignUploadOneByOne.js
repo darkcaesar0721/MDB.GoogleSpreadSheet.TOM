@@ -47,7 +47,7 @@ const GroupCampaignUploadOneByOne = (props) => {
             }
             let _columns = [no_column,
                 {
-                    title: 'Query',
+                    title: 'Query Name',
                     key: 'query',
                     render: (_, record) => {
                         const link = '/groups/' + props.groupIndex + '/' + record.groupCampaignIndex + '/' + record.campaignIndex;
@@ -59,17 +59,17 @@ const GroupCampaignUploadOneByOne = (props) => {
                     }
                 },
                 {
-                    title: 'Schedule',
+                    title: 'Sheet Name',
                     dataIndex: 'schedule',
                     key: 'schedule',
                 },
                 {
-                    title: 'Way',
+                    title: 'Send Type',
                     dataIndex: 'way',
                     key: 'way',
                 },
                 {
-                    title: 'Count',
+                    title: 'Send Amount',
                     key: 'count',
                     render: (_, record) => {
                         let count = 'all';
@@ -94,14 +94,14 @@ const GroupCampaignUploadOneByOne = (props) => {
                     }
                 },
                 {
-                    title: 'Less Qty',
-                    dataIndex: 'less_qty',
-                    key: 'less_qty'
+                    title: 'Qty Available',
+                    dataIndex: 'last_qty',
+                    key: 'last_qty'
                 },
                 {
-                    title: 'Last Qty',
-                    dataIndex: 'last_qty',
-                    key: 'last_qty',
+                    title: 'Qty Uploaded',
+                    dataIndex: 'less_qty',
+                    key: 'less_qty'
                 },
                 {
                     title: 'Edit Phone',
@@ -187,7 +187,7 @@ const GroupCampaignUploadOneByOne = (props) => {
 
             <Row style={{marginTop: 10}}>
                 <Col span={22} offset={1}>
-                    <Divider style={{fontSize: '0.7rem'}}>GROUP CAMPAIGN LIST</Divider>
+                    <Divider style={{fontSize: '0.8rem'}}>GROUP CAMPAIGN LIST</Divider>
                     <Table
                         bordered={true}
                         size="small"

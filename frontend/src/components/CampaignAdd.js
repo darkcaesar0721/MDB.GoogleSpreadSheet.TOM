@@ -1,5 +1,4 @@
 import {
-    Breadcrumb,
     Button,
     Checkbox,
     Col,
@@ -11,6 +10,7 @@ import {
     Row,
     Spin,
 } from "antd";
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {APP_API_URL} from "../constants";
@@ -18,14 +18,64 @@ import qs from "qs";
 import MDBPath from "./MDBPath";
 import {connect} from "react-redux";
 import { useNavigate } from 'react-router-dom';
-
 import {
     createCampaign, getCampaigns
 } from "../redux/actions";
 import MenuList from "./MenuList";
 
+const layout = {
+    labelCol: {
+        span: 6,
+    },
+    wrapperCol: {
+        span: 18,
+    },
+};
+
+const columnLayout = {
+    labelCol: {
+        span: 12,
+    },
+    wrapperCol: {
+        span: 11,
+    },
+}
+
+const formItemLayout = {
+    labelCol: {
+        xs: {
+            span: 6,
+        },
+        sm: {
+            span: 6,
+        },
+    },
+    wrapperCol: {
+        xs: {
+            span: 18,
+        },
+        sm: {
+            span: 18,
+        },
+    },
+};
+
+const formItemLayoutWithOutLabel = {
+    wrapperCol: {
+        xs: {
+            span: 18,
+            offset: 6,
+        },
+        sm: {
+            span: 18,
+            offset: 6,
+        },
+    },
+};
+
 function CampaignAdd(props) {
-    const [form] = Form.useForm();
+    const [columnForm] = Form.useForm();
+    const [mainForm] = Form.useForm();
     const [messageApi, contextHolder] = message.useMessage();
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
@@ -36,11 +86,17 @@ function CampaignAdd(props) {
 
     useEffect(function() {
         let data = {};
+        data['urls'] = [''];
+        mainForm.setFieldsValue(data);
+    }, []);
+
+    useEffect(function() {
+        let data = {};
         columns.forEach((c, i) =>{
             data[c.name + '_order'] = c.order;
             data[c.name + '_name'] = c.field;
         });
-        form.setFieldsValue(data);
+        columnForm.setFieldsValue(data);
     }, [columns]);
 
     const handleSubmit = function(form) {
@@ -100,24 +156,6 @@ function CampaignAdd(props) {
         }
     }
 
-    const layout = {
-        labelCol: {
-            span: 6,
-        },
-        wrapperCol: {
-            span: 18,
-        },
-    };
-
-    const columnLayout = {
-        labelCol: {
-            span: 12,
-        },
-        wrapperCol: {
-            span: 11,
-        },
-    }
-
     const validateMessages = {
         required: '${label} is required!'
     };
@@ -174,6 +212,7 @@ function CampaignAdd(props) {
                         name="campaign_add_form"
                         onFinish={handleSubmit}
                         validateMessages={validateMessages}
+                        form={mainForm}
                     >
                         <Form.Item
                             name={['query']}
@@ -183,20 +222,75 @@ function CampaignAdd(props) {
                                     required: true,
                                 },
                             ]}
+                            form={mainForm}
                         >
                             <Input />
                         </Form.Item>
-                        <Form.Item
-                            name={['url']}
-                            label="Sheet URL"
+                        <Form.List
+                            name="urls"
                             rules={[
                                 {
-                                    required: true,
+                                    validator: async (_, names) => {
+                                        if (!names || names.length < 1) {
+                                            return Promise.reject(new Error('At least 1 sheets'));
+                                        }
+                                    },
                                 },
                             ]}
                         >
-                            <Input />
-                        </Form.Item>
+                            {(fields, { add, remove }, { errors }) => (
+                                <>
+                                    {fields.map((field, index) => (
+                                        <Form.Item
+                                            {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
+                                            label={index === 0 ? 'Sheet URLS' : ''}
+                                            required={false}
+                                            key={field.key}
+                                        >
+                                            <Form.Item
+                                                {...field}
+                                                validateTrigger={['onChange', 'onBlur']}
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        whitespace: true,
+                                                        message: "Please input sheet url or delete this field.",
+                                                    },
+                                                ]}
+                                                noStyle
+                                            >
+                                                <Input
+                                                    placeholder="Sheet URL"
+                                                    style={{
+                                                        width: '95%',
+                                                    }}
+                                                />
+                                            </Form.Item>
+                                            {fields.length > 1 ? (
+                                                <MinusCircleOutlined
+                                                    className="dynamic-delete-button"
+                                                    onClick={() => remove(field.name)}
+                                                />
+                                            ) : null}
+                                        </Form.Item>
+                                    ))}
+                                    <Form.Item>
+                                        <Button
+                                            type="dashed"
+                                            onClick={() => add()}
+                                            style={{
+                                                width: '40%',
+                                                marginLeft: '33%'
+                                            }}
+                                            icon={<PlusOutlined />}
+                                        >
+                                            Add Sheet URL
+                                        </Button>
+                                        <Form.ErrorList errors={errors} />
+                                    </Form.Item>
+                                </>
+                            )}
+                        </Form.List>
                         <Form.Item
                             name={['schedule']}
                             label="Schedule Name"
@@ -242,7 +336,7 @@ function CampaignAdd(props) {
                         <Form
                             {...columnLayout}
                             name="campaign_add_form"
-                            form={form}
+                            form={columnForm}
                         >
                             {
                                 columns.map((c, i) => {

@@ -67,17 +67,17 @@ const GroupCampaignUploadAll = (props) => {
                 }
             },
             {
-                title: 'Schedule',
+                title: 'Sheet Name',
                 dataIndex: 'schedule',
                 key: 'schedule',
             },
             {
-                title: 'Way',
+                title: 'Send Type',
                 dataIndex: 'way',
                 key: 'way',
             },
             {
-                title: 'Count',
+                title: 'Send Amount',
                 key: 'count',
                 render: (_, record) => {
                     let count = 'all';
@@ -102,14 +102,14 @@ const GroupCampaignUploadAll = (props) => {
                 }
             },
             {
-                title: 'Less Qty',
-                dataIndex: 'less_qty',
-                key: 'less_qty'
+                title: 'Qty Available',
+                dataIndex: 'last_qty',
+                key: 'last_qty'
             },
             {
-                title: 'Last Qty',
-                dataIndex: 'last_qty',
-                key: 'last_qty',
+                title: 'Qty Uploaded',
+                dataIndex: 'less_qty',
+                key: 'less_qty'
             },
             {
                 title: 'Edit Phone',
@@ -198,7 +198,7 @@ const GroupCampaignUploadAll = (props) => {
         <>
             <Row style={{marginTop: 10}}>
                 <Col span={22} offset={1}>
-                    <Divider style={{fontSize: '0.7rem'}}>GROUP CAMPAIGN LIST</Divider>
+                    <Divider style={{fontSize: '0.8rem'}}>GROUP CAMPAIGN LIST</Divider>
                     <Row style={{marginBottom: '0.5rem'}}>
                         <Col span={1} offset={11} style={{paddingLeft: '1rem'}}>
                             <Button type="primary" onClick={props.upload}>

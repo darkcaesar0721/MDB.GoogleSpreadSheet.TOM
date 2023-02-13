@@ -40,136 +40,115 @@ function write_sheet($service, $schedule_values, $d, $g_i, $g_c_i, $c_i) {
     $g_c = $d->groups[$g_i]->campaigns[$g_c_i];
     $c = $d->campaigns[$c_i];
 
-    $url_array = parse_url($c->url);
-    $path_array = explode("/", $url_array["path"]);
+    $rows = array();
+    $up_rows = array();
+    $up_rows_with_key = array();
 
-    $spreadsheetId = $path_array[3];
+    foreach($c->urls as $u_i => $url) {
+        $url_array = parse_url($url);
+        $path_array = explode("/", $url_array["path"]);
 
-    $spreadSheet = $service->spreadsheets->get($spreadsheetId);
-    $sheets = $spreadSheet->getSheets();
+        $spreadsheetId = $path_array[3];
 
-    $cur_sheet = [];
-    foreach($sheets as $sheet) {
-        $sheetId = $sheet['properties']['sheetId'];
+        $spreadSheet = $service->spreadsheets->get($spreadsheetId);
+        $sheets = $spreadSheet->getSheets();
 
-        $pos = strpos($c->url, "gid=" . $sheetId);
+        $cur_sheet = [];
+        foreach($sheets as $sheet) {
+            $sheetId = $sheet['properties']['sheetId'];
 
-        if($pos) {
-            $cur_sheet = $sheet;
-            break;
-        }
-    }
+            $pos = strpos($url, "gid=" . $sheetId);
 
-    if ($cur_sheet) {
-        $response = $service->spreadsheets_values->get($spreadsheetId, $cur_sheet['properties']['title']);
-
-        $values = $response->getValues();
-
-        $is_last_phone = false;
-        $last_phone = '';
-
-        if ($g_c->isEditPhone == 'true') {
-            $last_phone = $c->last_phone;
-        } else {
-            for($i = count($values) - 1; $i >=0; $i--) {
-                if ($is_last_phone) break;
-
-                for($j = 0; $j < count($values[$i]); $j++) {
-                    if ($values[$i][$j] === 'Phone') {
-                        $last_phone = $values[$i + 1][$j];
-                        $is_last_phone = true;
-                        break;
-                    }
-                }
+            if($pos) {
+                $cur_sheet = $sheet;
+                break;
             }
         }
 
+        if ($cur_sheet) {
+            $response = $service->spreadsheets_values->get($spreadsheetId, $cur_sheet['properties']['title']);
 
-        $mdb_path = $d->mdb_path;
+            $values = $response->getValues();
 
-        $db = new PDO("odbc:Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBq=$mdb_path;Uid=;Pwd=;");
-        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            if ($u_i === 0) {
+                $is_last_phone = false;
+                $last_phone = '';
 
-        $query = $c->query;
-        $sth = $db->prepare("select * from [$query]");
-        $sth->execute();
+                if ($g_c->isEditPhone == 'true') {
+                    $last_phone = $c->last_phone;
+                } else {
+                    for ($i = count($values) - 1; $i >= 0; $i--) {
+                        if ($is_last_phone) break;
 
-        $rows = array();
-        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
-            if ($row['Phone'] === $last_phone) break;
-
-            $row['key'] = $row['Phone'];
-            array_push($rows, $row);
-        }
-
-        $up_rows = array();
-        array_push($up_rows, ['','','','','','','','','','','','']);
-        $up_row = array();
-        foreach($g_c->columns as $column) {
-            if ($column->display == 'true') array_push($up_row, $column->field);
-        }
-        array_push($up_rows, $up_row);
-
-        $up_rows_with_key = array();
-        if ($g_c->way === 'all') {
-            foreach($rows as $row) {
-                $up_row = array();
-                foreach($g_c->columns as $column) {
-                    if ($column->display == 'true') {
-                        array_push($up_row, $row[$column->name]);
-                    }
-                }
-                array_push($up_rows_with_key, $row);
-                array_push($up_rows, $up_row);
-            }
-        } else if ($g_c->way === 'static') {
-            $count = $g_c->staticCount;
-            if ($g_c->staticCount > count($rows)) {
-                $count = count($rows);
-            }
-
-            foreach($rows as $row) {
-                if (count($up_rows_with_key) == $count) break;
-
-                $up_row = array();
-                foreach($g_c->columns as $column) {
-                    if ($column->display == 'true') {
-                        array_push($up_row, $row[$column->name]);
-                    }
-                }
-                array_push($up_rows_with_key, $row);
-                array_push($up_rows, $up_row);
-            }
-        } else {
-            $count = rand($g_c->randomStart, $g_c->randomEnd);
-            if ($count >= count($rows)) {
-                foreach($rows as $row) {
-                    $up_row = array();
-                    foreach($g_c->columns as $column) {
-                        if ($column->display == 'true') {
-                            array_push($up_row, $row[$column->name]);
+                        for ($j = 0; $j < count($values[$i]); $j++) {
+                            if ($values[$i][$j] === 'Phone') {
+                                $last_phone = $values[$i + 1][$j];
+                                $is_last_phone = true;
+                                break;
+                            }
                         }
                     }
-                    array_push($up_rows_with_key, $row);
-                    array_push($up_rows, $up_row);
-                }
-            } else {
-                function randomGen($min, $max, $quantity) {
-                    $numbers = range($min, $max);
-                    shuffle($numbers);
-                    return array_slice($numbers, 0, $quantity);
                 }
 
-                $first = 0;
-                $arrs = randomGen(1, count($rows) - 1, $count);
-                array_push($arrs, $first);
-                sort($arrs);
 
-                foreach($rows as $index => $row) {
-                    foreach($arrs as $arr) {
-                        if ($index == $arr) {
+                $mdb_path = $d->mdb_path;
+
+                $db = new PDO("odbc:Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBq=$mdb_path;Uid=;Pwd=;");
+                $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                $query = $c->query;
+                $sth = $db->prepare("select * from [$query]");
+                $sth->execute();
+
+                while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+                    if ($row['Phone'] === $last_phone) break;
+
+                    $row['key'] = $row['Phone'];
+                    array_push($rows, $row);
+                }
+
+                array_push($up_rows, ['', '', '', '', '', '', '', '', '', '', '', '']);
+                $up_row = array();
+                foreach ($g_c->columns as $column) {
+                    if ($column->display == 'true') array_push($up_row, $column->field);
+                }
+                array_push($up_rows, $up_row);
+
+                if ($g_c->way === 'all') {
+                    foreach ($rows as $row) {
+                        $up_row = array();
+                        foreach ($g_c->columns as $column) {
+                            if ($column->display == 'true') {
+                                array_push($up_row, $row[$column->name]);
+                            }
+                        }
+                        array_push($up_rows_with_key, $row);
+                        array_push($up_rows, $up_row);
+                    }
+                } else if ($g_c->way === 'static') {
+                    $count = $g_c->staticCount;
+                    if ($g_c->staticCount > count($rows)) {
+                        $count = count($rows);
+                    }
+
+                    foreach ($rows as $row) {
+                        if (count($up_rows_with_key) == $count) break;
+
+                        $up_row = array();
+                        foreach ($g_c->columns as $column) {
+                            if ($column->display == 'true') {
+                                array_push($up_row, $row[$column->name]);
+                            }
+                        }
+                        array_push($up_rows_with_key, $row);
+                        array_push($up_rows, $up_row);
+                    }
+                } else {
+                    $count = rand($g_c->randomStart, $g_c->randomEnd);
+                    if ($count >= count($rows)) {
+                        foreach ($rows as $row) {
                             $up_row = array();
-                            foreach($g_c->columns as $column) {
+                            foreach ($g_c->columns as $column) {
                                 if ($column->display == 'true') {
                                     array_push($up_row, $row[$column->name]);
                                 }
@@ -177,45 +156,72 @@ function write_sheet($service, $schedule_values, $d, $g_i, $g_c_i, $c_i) {
                             array_push($up_rows_with_key, $row);
                             array_push($up_rows, $up_row);
                         }
+                    } else {
+                        function randomGen($min, $max, $quantity)
+                        {
+                            $numbers = range($min, $max);
+                            shuffle($numbers);
+                            return array_slice($numbers, 0, $quantity);
+                        }
+
+                        $first = 0;
+                        $arrs = randomGen(1, count($rows) - 1, $count);
+                        array_push($arrs, $first);
+                        sort($arrs);
+
+                        foreach ($rows as $index => $row) {
+                            foreach ($arrs as $arr) {
+                                if ($index == $arr) {
+                                    $up_row = array();
+                                    foreach ($g_c->columns as $column) {
+                                        if ($column->display == 'true') {
+                                            array_push($up_row, $row[$column->name]);
+                                        }
+                                    }
+                                    array_push($up_rows_with_key, $row);
+                                    array_push($up_rows, $up_row);
+                                }
+                            }
+                        }
                     }
                 }
-            }
-        }
 
-        $d->campaigns[$c_i]->last_qty = count($rows);
-        $d->campaigns[$c_i]->less_qty = count($up_rows_with_key);
-        if (count($up_rows_with_key) > 0) {
-            $d->campaigns[$c_i]->last_phone = $up_rows_with_key[0]['Phone'];
-            $d->campaigns[$c_i]->SystemCreateDate = $up_rows_with_key[0]['SystemCreateDate'];
-        } else {
-            $d->campaigns[$c_i]->last_phone = "";
-            $d->campaigns[$c_i]->SystemCreateDate = "";
-        }
-        $d->campaigns[$c_i]->upRows = $up_rows_with_key;
-        $d->campaigns[$c_i]->lastGroupIndex = $g_i;
-
-        if (count($up_rows_with_key) > 0) {
-            array_push($up_rows, ['','','','','','','','','','','','']);
-
-            $valueRange = new \Google_Service_Sheets_ValueRange();
-            $valueRange->setValues($up_rows);
-            $range = $cur_sheet['properties']['title']; // the service will detect the last row of this sheet
-            $options = ['valueInputOption' => 'USER_ENTERED'];
-            $service->spreadsheets_values->append($spreadsheetId, $range, $valueRange, $options);
-        }
-
-        $index = -1;
-        foreach($schedule_values as $i => $v) {
-            foreach($v as $j => $r) {
-                if ($r == $c->schedule) {
-                    $index = $j;
+                $d->campaigns[$c_i]->last_qty = count($rows);
+                $d->campaigns[$c_i]->less_qty = count($up_rows_with_key);
+                if (count($up_rows_with_key) > 0) {
+                    $d->campaigns[$c_i]->last_phone = $up_rows_with_key[0]['Phone'];
+                    $d->campaigns[$c_i]->SystemCreateDate = $up_rows_with_key[0]['SystemCreateDate'];
+                } else {
+                    $d->campaigns[$c_i]->last_phone = "";
+                    $d->campaigns[$c_i]->SystemCreateDate = "";
                 }
+                $d->campaigns[$c_i]->upRows = $up_rows_with_key;
+                $d->campaigns[$c_i]->lastGroupIndex = $g_i;
+            }
+
+            if (count($up_rows_with_key) > 0) {
+                array_push($up_rows, ['', '', '', '', '', '', '', '', '', '', '', '']);
+
+                $valueRange = new \Google_Service_Sheets_ValueRange();
+                $valueRange->setValues($up_rows);
+                $range = $cur_sheet['properties']['title']; // the service will detect the last row of this sheet
+                $options = ['valueInputOption' => 'USER_ENTERED'];
+                $service->spreadsheets_values->append($spreadsheetId, $range, $valueRange, $options);
             }
         }
-        $d->campaigns[$c_i]->scheduleIndex = $index;
-
-        return $d;
     }
+
+    $index = -1;
+    foreach($schedule_values as $i => $v) {
+        foreach($v as $j => $r) {
+            if ($r == $c->schedule) {
+                $index = $j;
+            }
+        }
+    }
+    $d->campaigns[$c_i]->scheduleIndex = $index;
+
+    return $d;
 }
 
 $action = $_REQUEST['action'];

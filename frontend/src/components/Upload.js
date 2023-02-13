@@ -119,42 +119,42 @@ const Upload = (props) => {
             }
             let _columns = [no_column,
                 {
-                    title: 'Query',
+                    title: 'Query Name',
                     dataIndex: 'query',
                     key: 'query',
-                    fixed: 'left',
-                    width: 300,
+                    width: 350,
                 },
                 {
-                    title: 'Sheet URL',
-                    dataIndex: 'url',
-                    key: 'url',
-                    fixed: 'left',
-                    width: 500,
-                },
-                {
-                    title: 'Schedule',
+                    title: 'Sheet Name',
                     dataIndex: 'schedule',
                     key: 'schedule',
-                    width: 80
+                    width: 200
                 },
                 {
-                    title: 'Less Qty',
-                    dataIndex: 'less_qty',
-                    key: 'less_qty',
-                    width: 80
+                    title: 'Sheet URL Count',
+                    key: 'url_count',
+                    render: (_, r) => {
+                        return (
+                            <span>{r.urls.length}</span>
+                        )
+                    },
+                    width: 120,
                 },
                 {
-                    title: 'Last Qty',
+                    title: 'Qty Available',
                     dataIndex: 'last_qty',
-                    key: 'last_qty',
-                    width: 80
+                    key: 'last_qty'
+                },
+                {
+                    title: 'Qty Uploaded',
+                    dataIndex: 'less_qty',
+                    key: 'less_qty'
                 },
                 {
                     title: 'Last Phone',
                     dataIndex: 'last_phone',
                     key: 'last_phone',
-                    width: 100
+                    width: 130
                 },
                 {
                     title: 'SystemCreateDate',
@@ -197,17 +197,14 @@ const Upload = (props) => {
             setColumns(_columns);
         }
     }, [props.groups, campaigns]);
-
     const handleGroupChange = function(value) {
         setGroup(value);
         props.updateUpload({group: value, way: way});
     }
-
     const handleWayChange = function(e) {
         setWay(e.target.value);
         props.updateUpload({group: group, way: e.target.value});
     }
-
     const handleTableChange = (pagination, filters, sorter) => {
         setTableParams({
             pagination,
@@ -215,7 +212,6 @@ const Upload = (props) => {
             ...sorter,
         });
     };
-
     const handleUploadAll = function() {
         if (props.upload.selectedCampaignKeys === undefined || props.upload.selectedCampaignKeys.length === 0) {
             messageApi.warning('Please select campaign list.');
@@ -234,7 +230,6 @@ const Upload = (props) => {
             messageApi.success('upload success');
         })
     }
-
     const handleUploadOneByOne = (data) => {
         setLoading(true);
         setTip("Wait for uploading....");
@@ -244,15 +239,6 @@ const Upload = (props) => {
             props.getGroups();
             messageApi.success('upload success');
         })
-    }
-
-    const validation = function() {
-        if (group) {
-            messageApi.warning('Please select group.');
-            return false;
-        }
-
-        return true;
     }
 
     return (
@@ -278,7 +264,7 @@ const Upload = (props) => {
                     />
                 </Col>
                 <Col span={3} style={{textAlign: 'right', lineHeight: '2rem', marginRight: '1rem'}}>
-                    <span>Select Way:</span>
+                    <span>Send Type:</span>
                 </Col>
                 <Col span={4}>
                     <Radio.Group onChange={handleWayChange} defaultValue="all" value={way}>
@@ -315,16 +301,12 @@ const Upload = (props) => {
             }
             <Row style={{marginTop: 10}}>
                 <Col span={22} offset={1}>
-                    <Divider style={{fontSize: '0.7rem'}}>LAST CAMPAIGNS INFO</Divider>
+                    <Divider style={{fontSize: '0.8rem'}}>LAST CAMPAIGNS INFO</Divider>
                     <Table
                         bordered={true}
                         size="small"
                         columns={columns}
                         dataSource={props.campaigns.data}
-                        scroll={{
-                            x: 1500,
-                            y: 300,
-                        }}
                         pagination={tableParams.pagination}
                         onChange={handleTableChange}
                     />

@@ -106,26 +106,43 @@ function GroupAdd(props) {
         }
 
         setColumns([order_column, no_column,
-
             {
-                title: 'Schedule',
+                title: 'Query Name',
+                dataIndex: 'query',
+                key: 'query',
+                width: 350,
+            },
+            {
+                title: 'Sheet Name',
                 dataIndex: 'schedule',
-                key: 'schedule'
+                key: 'schedule',
+                width: 150
             },
             {
-                title: 'Less Qty',
-                dataIndex: 'less_qty',
-                key: 'less_qty'
+                title: 'Sheet URL Count',
+                key: 'url_count',
+                width: 120,
+                render: (_, r) => {
+                    return (
+                        <span>{r.urls.length}</span>
+                    )
+                }
             },
             {
-                title: 'Last Qty',
+                title: 'Qty Available',
                 dataIndex: 'last_qty',
                 key: 'last_qty'
             },
             {
+                title: 'Qty Uploaded',
+                dataIndex: 'less_qty',
+                key: 'less_qty'
+            },
+            {
                 title: 'Last Phone',
                 dataIndex: 'last_phone',
-                key: 'last_phone'
+                key: 'last_phone',
+                width: 130
             },
             {
                 title: 'SystemCreateDate',

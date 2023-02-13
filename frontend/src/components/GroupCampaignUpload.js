@@ -118,7 +118,7 @@ const UploadPreview = (props) => {
                                 </Form.Item>
                                 <Form.Item
                                     name={['query']}
-                                    label="Query"
+                                    label="Query Name"
                                 >
                                     <span>{props.campaigns.data[campaignIndex].query}</span>
                                 </Form.Item>

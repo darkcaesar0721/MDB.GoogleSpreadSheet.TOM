@@ -1,4 +1,4 @@
-import {Breadcrumb, Button, Col, Form, InputNumber, Radio, Row, Table} from "antd";
+import {Button, Col, Form, InputNumber, Radio, Row, Table} from "antd";
 import MDBPath from "./MDBPath";
 import {connect} from "react-redux";
 import {getCampaigns, getGroups} from "../redux/actions";
@@ -111,13 +111,33 @@ const CampaignUploadPreview = (props) => {
                                 </Form.Item>
                                 <Form.Item
                                     name={['query']}
-                                    label="Query"
+                                    label="Query Name"
                                 >
                                     <span>{props.campaigns.data[campaignIndex].query}</span>
                                 </Form.Item>
                                 <Form.Item
+                                    name={['urls']}
+                                    label="Sheet URLS"
+                                >
+                                    {
+                                        props.campaigns.data[campaignIndex].urls.map(url => {
+                                            return (
+                                                <div key={url}>
+                                                    <span>{url}</span>
+                                                </div>
+                                            )
+                                        })
+                                    }
+                                </Form.Item>
+                                <Form.Item
+                                    name={['schedule']}
+                                    label="Sheet Name"
+                                >
+                                    <span>{props.campaigns.data[campaignIndex].schedule}</span>
+                                </Form.Item>
+                                <Form.Item
                                     name={['way']}
-                                    label="Select Way"
+                                    label="Send Type"
                                 >
                                     <Radio.Group disabled={true} defaultValue={way} value={way}>
                                         <Radio value="all">All Select</Radio>
@@ -177,14 +197,14 @@ const CampaignUploadPreview = (props) => {
                 </Col>
                 {
                     props.campaigns.data.length  > 0 ?
-                        <Col span={3} offset={3} style={{marginBottom: 5}}>
-                            Total Rows : {props.campaigns.data[campaignIndex].last_qty}
+                        <Col span={3} offset={1} style={{marginBottom: 5}}>
+                            Qty Available : <span style={{color: 'red', fontSize: '1.2rem'}}>{props.campaigns.data[campaignIndex].last_qty}</span>
                         </Col> : ''
                 }
                 {
                     props.campaigns.data.length  > 0 ?
                         <Col span={4} style={{marginBottom: 5}}>
-                            Upload Rows : {props.campaigns.data[campaignIndex].less_qty}
+                            Qty Uploaded : <span style={{color: 'red', fontSize: '1.2rem'}}>{props.campaigns.data[campaignIndex].less_qty}</span>
                         </Col> : ''
                 }
                 {

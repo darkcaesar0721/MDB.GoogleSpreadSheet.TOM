@@ -1,5 +1,4 @@
 import {
-    Breadcrumb,
     Button,
     Checkbox,
     Col,
@@ -16,6 +15,57 @@ import {getCampaigns, updateCampaign} from "../redux/actions";
 import {useNavigate, useParams} from 'react-router-dom';
 import MDBPath from "./MDBPath";
 import MenuList from "./MenuList";
+import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
+
+const layout = {
+    labelCol: {
+        span: 6,
+    },
+    wrapperCol: {
+        span: 18,
+    },
+};
+
+const columnLayout = {
+    labelCol: {
+        span: 12,
+    },
+    wrapperCol: {
+        span: 11,
+    },
+}
+
+const formItemLayout = {
+    labelCol: {
+        xs: {
+            span: 6,
+        },
+        sm: {
+            span: 6,
+        },
+    },
+    wrapperCol: {
+        xs: {
+            span: 18,
+        },
+        sm: {
+            span: 18,
+        },
+    },
+};
+
+const formItemLayoutWithOutLabel = {
+    wrapperCol: {
+        xs: {
+            span: 18,
+            offset: 6,
+        },
+        sm: {
+            span: 18,
+            offset: 6,
+        },
+    },
+};
 
 function CampaignEdit(props) {
     const [mainForm] = Form.useForm();
@@ -70,7 +120,7 @@ function CampaignEdit(props) {
         selectedCampaign.columns = _columns;
         selectedCampaign.group.columns = _columns;
         selectedCampaign.query = form.query;
-        selectedCampaign.url = form.url;
+        selectedCampaign.urls = form.urls;
         selectedCampaign.schedule = form.schedule;
         props.updateCampaign(selectedCampaign);
 
@@ -78,24 +128,6 @@ function CampaignEdit(props) {
         setTimeout(function() {
             navigate('/campaigns');
         }, 1000);
-    }
-
-    const layout = {
-        labelCol: {
-            span: 6,
-        },
-        wrapperCol: {
-            span: 18,
-        },
-    };
-
-    const columnLayout = {
-        labelCol: {
-            span: 12,
-        },
-        wrapperCol: {
-            span: 11,
-        },
     }
 
     const validateMessages = {
@@ -167,17 +199,71 @@ function CampaignEdit(props) {
                         >
                             <Input readOnly />
                         </Form.Item>
-                        <Form.Item
-                            name={['url']}
-                            label="Sheet URL"
+                        <Form.List
+                            name="urls"
                             rules={[
                                 {
-                                    required: true,
+                                    validator: async (_, names) => {
+                                        if (!names || names.length < 1) {
+                                            return Promise.reject(new Error('At least 1 sheets'));
+                                        }
+                                    },
                                 },
                             ]}
                         >
-                            <Input />
-                        </Form.Item>
+                            {(fields, { add, remove }, { errors }) => (
+                                <>
+                                    {fields.map((field, index) => (
+                                        <Form.Item
+                                            {...(index === 0 ? formItemLayout : formItemLayoutWithOutLabel)}
+                                            label={index === 0 ? 'Sheet URLS' : ''}
+                                            required={false}
+                                            key={field.key}
+                                        >
+                                            <Form.Item
+                                                {...field}
+                                                validateTrigger={['onChange', 'onBlur']}
+                                                rules={[
+                                                    {
+                                                        required: true,
+                                                        whitespace: true,
+                                                        message: "Please input sheet url or delete this field.",
+                                                    },
+                                                ]}
+                                                noStyle
+                                            >
+                                                <Input
+                                                    placeholder="Sheet URL"
+                                                    style={{
+                                                        width: '95%',
+                                                    }}
+                                                />
+                                            </Form.Item>
+                                            {fields.length > 1 ? (
+                                                <MinusCircleOutlined
+                                                    className="dynamic-delete-button"
+                                                    onClick={() => remove(field.name)}
+                                                />
+                                            ) : null}
+                                        </Form.Item>
+                                    ))}
+                                    <Form.Item>
+                                        <Button
+                                            type="dashed"
+                                            onClick={() => add()}
+                                            style={{
+                                                width: '40%',
+                                                marginLeft: '33%'
+                                            }}
+                                            icon={<PlusOutlined />}
+                                        >
+                                            Add Sheet URL
+                                        </Button>
+                                        <Form.ErrorList errors={errors} />
+                                    </Form.Item>
+                                </>
+                            )}
+                        </Form.List>
                         <Form.Item
                             name={['schedule']}
                             label="Schedule Name"

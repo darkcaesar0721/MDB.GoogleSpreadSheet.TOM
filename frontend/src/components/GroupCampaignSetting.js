@@ -184,25 +184,33 @@ const GroupCampaignSetting = (props) => {
                                 </Form.Item>
                                 <Form.Item
                                     name={['query']}
-                                    label="Query"
+                                    label="Query Name"
                                 >
                                     <span>{props.campaigns.data[campaignIndex].query}</span>
                                 </Form.Item>
                                 <Form.Item
-                                    name={['url']}
-                                    label="Sheet URL"
+                                    name={['urls']}
+                                    label="Sheet URLS"
                                 >
-                                    <span>{props.campaigns.data[campaignIndex].url}</span>
+                                    {
+                                        props.campaigns.data[campaignIndex].urls.map(url => {
+                                            return (
+                                                <div key={url}>
+                                                    <span>{url}</span>
+                                                </div>
+                                            )
+                                        })
+                                    }
                                 </Form.Item>
                                 <Form.Item
                                     name={['schedule']}
-                                    label="Schedule Name"
+                                    label="Sheet Name"
                                 >
                                     <span>{props.campaigns.data[campaignIndex].schedule}</span>
                                 </Form.Item>
                                 <Form.Item
                                     name={['way']}
-                                    label="Select Way"
+                                    label="Send Type"
                                 >
                                     <Radio.Group onChange={handleWayChange} defaultValue="all" value={way}>
                                         <Radio value="all">All Select</Radio>
@@ -216,9 +224,11 @@ const GroupCampaignSetting = (props) => {
                                             name={['staticCount']}
                                             label="Static Count"
                                         >
-                                            <Col span={3}>
-                                                <InputNumber placeholder="Static Count" value={staticCount} onChange={(e) => {setStaticCount(e.target.value)}}/>
-                                            </Col>
+                                            <Row>
+                                                <Col span={4}>
+                                                    <InputNumber style={{width: '100%'}} placeholder="Static Count" value={staticCount} onChange={(e) => {setStaticCount(e.target.value)}}/>
+                                                </Col>
+                                            </Row>
                                         </Form.Item> : ''
                                 }
                                 {

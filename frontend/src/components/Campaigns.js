@@ -1,11 +1,11 @@
-import {Breadcrumb, Button, Col, Divider, Popconfirm, Row, Table} from "antd";
+import {Button, Col, Divider, Popconfirm, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {
     deleteCampaign, getCampaigns,
 } from "../redux/actions";
 import MDBPath from "./MDBPath";
-import {PlusCircleOutlined, EditOutlined, DeleteOutlined, EyeOutlined} from '@ant-design/icons';
+import {PlusCircleOutlined, EditOutlined, DeleteOutlined} from '@ant-design/icons';
 import MenuList from "./MenuList";
 
 function Campaigns(props) {
@@ -55,42 +55,40 @@ function Campaigns(props) {
 
         setColumns([no_column,
             {
-                title: 'Query',
+                title: 'Query Name',
                 dataIndex: 'query',
                 key: 'query',
-                fixed: 'left',
-                width: 300,
+                width: 400,
             },
             {
-                title: 'Sheet URL',
-                dataIndex: 'url',
-                key: 'url',
-                fixed: 'left',
-                width: 500,
-            },
-            {
-                title: 'Schedule',
+                title: 'Sheet Name',
                 dataIndex: 'schedule',
                 key: 'schedule',
-                width: 80
+                width: 250
             },
             {
-                title: 'Less Qty',
-                dataIndex: 'less_qty',
-                key: 'less_qty',
-                width: 80
+                title: 'Sheet URL Count',
+                key: 'url_count',
+                render: (_, r) => {
+                    return (
+                        <span>{r.urls.length}</span>
+                    )
+                }
             },
             {
-                title: 'Last Qty',
+                title: 'Qty Available',
                 dataIndex: 'last_qty',
-                key: 'last_qty',
-                width: 80
+                key: 'last_qty'
+            },
+            {
+                title: 'Qty Uploaded',
+                dataIndex: 'less_qty',
+                key: 'less_qty'
             },
             {
                 title: 'Last Phone',
                 dataIndex: 'last_phone',
-                key: 'last_phone',
-                width: 100
+                key: 'last_phone'
             },
             {
                 title: 'SystemCreateDate',
@@ -100,7 +98,6 @@ function Campaigns(props) {
             {
                 title: 'Action',
                 key: 'operation',
-                fixed: 'right',
                 width: 60,
                 render: (_, record) => {
                     let index = -1;
@@ -164,10 +161,6 @@ function Campaigns(props) {
                 size="small"
                 columns={columns}
                 dataSource={props.campaigns.data}
-                scroll={{
-                    x: 1500,
-                    y: 300,
-                }}
                 pagination={tableParams.pagination}
                 onChange={handleTableChange}
             />

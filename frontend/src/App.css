@@ -53,11 +53,15 @@
   border-bottom: solid 1px #d1d1d1 !important;
   border-right: solid 1px #d1d1d1 !important;
 }
+.ant-table-tbody > tr > td > input{
+  font-size: 0.7rem;
+}
+
 .ant-table-thead > tr > th{
   padding-left: 0.3rem !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   border-bottom: solid 1px #d1d1d1 !important;
   border-right: solid 1px #d1d1d1 !important;
 }
@@ -85,4 +89,8 @@
 
 .campaign_active {
   background-color: #d9d9d9;
+}
+
+label, span, div {
+  font-family: math !important;
 }

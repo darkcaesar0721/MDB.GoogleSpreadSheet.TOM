@@ -1,4 +1,4 @@
-import {Breadcrumb, Button, Checkbox, Col, Form, Input, InputNumber, message, Modal, Radio, Row} from "antd";
+import {Button, Checkbox, Col, Form, Input, InputNumber, message, Modal, Radio, Row} from "antd";
 import MDBPath from "./MDBPath";
 import {connect} from "react-redux";
 import {getCampaigns, updateCampaign} from "../redux/actions";
@@ -177,25 +177,33 @@ const GroupAddSetting = (props) => {
                             >
                                 <Form.Item
                                     name={['query']}
-                                    label="Query"
+                                    label="Query Name"
                                 >
                                     <span>{props.campaigns.data[index].query}</span>
                                 </Form.Item>
                                 <Form.Item
-                                    name={['url']}
-                                    label="Sheet URL"
+                                    name={['urls']}
+                                    label="Sheet URLS"
                                 >
-                                    <span>{props.campaigns.data[index].url}</span>
+                                    {
+                                        props.campaigns.data[index].urls.map(url => {
+                                            return (
+                                                <div key={url}>
+                                                    <span>{url}</span>
+                                                </div>
+                                            )
+                                        })
+                                    }
                                 </Form.Item>
                                 <Form.Item
                                     name={['schedule']}
-                                    label="Schedule Name"
+                                    label="Sheet Name"
                                 >
                                     <span>{props.campaigns.data[index].schedule}</span>
                                 </Form.Item>
                                 <Form.Item
                                     name={['way']}
-                                    label="Select Way"
+                                    label="Send Type"
                                 >
                                     <Radio.Group onChange={handleWayChange} defaultValue="all" value={way}>
                                         <Radio value="all">All Select</Radio>
@@ -209,9 +217,11 @@ const GroupAddSetting = (props) => {
                                             name={['staticCount']}
                                             label="Static Count"
                                         >
-                                            <Col span={3}>
-                                                <InputNumber placeholder="Static Count" value={staticCount} onChange={(e) => {setStaticCount(e.target.value)}}/>
-                                            </Col>
+                                            <Row>
+                                                <Col span={4}>
+                                                    <InputNumber style={{width: '100%'}} placeholder="Static Count" value={staticCount} onChange={(e) => {setStaticCount(e.target.value)}}/>
+                                                </Col>
+                                            </Row>
                                         </Form.Item> : ''
                                 }
                                 {
