@@ -223,7 +223,11 @@ if ($action == 'upload_all') {
     $g_i = $_REQUEST['groupIndex'];
 
     foreach ($data->groups[$g_i]->campaigns as $g_c_i => $g_c) {
-        $data = write_sheet($service, $schedule_values, $data, $g_i, $g_c_i, $data->groups[$g_i]->campaigns[$g_c_i]->index);
+        foreach ($data->upload->selectedCampaignKeys as $key) {
+            if ($key == $g_c->key) {
+                $data = write_sheet($service, $schedule_values, $data, $g_i, $g_c_i, $data->groups[$g_i]->campaigns[$g_c_i]->index);
+            }
+        }
     }
 } else {
     $g_i = $_REQUEST['groupIndex'];
