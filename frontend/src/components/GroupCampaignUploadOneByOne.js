@@ -199,7 +199,7 @@ const GroupCampaignUploadOneByOne = (props) => {
                         dataSource={props.campaigns}
                         pagination={tableParams.pagination}
                         onChange={handleTableChange}
-                        rowClassName={(record, index) => (record.isLast ? "campaign_active" : "") }
+                        rowClassName={(record, index) => ((record.isLast == true || record.isLast == "true") ? "campaign_active" : "") }
                     />
                 </Col>
             </Row>

@@ -27,10 +27,10 @@ const columnLayout = {
 
 const randomLayout = {
     labelCol: {
-        span: 13,
+        span: 14
     },
     wrapperCol: {
-        span: 3,
+        span: 8,
     },
 };
 
@@ -82,7 +82,7 @@ const GroupCampaignSetting = (props) => {
             setWay(selectedGroupCampaign.way);
             setStaticCount(selectedGroupCampaign.staticCount);
             setDayOld(selectedGroupCampaign.dayOld);
-            setMeridiem(selectedGroupCampaign.meridiem);
+            setMeridiem(!selectedGroupCampaign.meridiem ? 'AM' : selectedGroupCampaign.meridiem);
             setTime(selectedGroupCampaign.time);
             setIsTime(selectedGroupCampaign.isTime == "true");
         }
@@ -103,6 +103,7 @@ const GroupCampaignSetting = (props) => {
                 groupCampaign.date = moment(Date.now()).add(0 - dayOld, 'day').format('MM/DD/YYYY');
             }
             delete form['date'];
+            console.log(groupCampaign);
             props.updateGroupCampaign(groupIndex, groupCampaignIndex, Object.assign({...groupCampaign}, {...form}));
 
             messageApi.success('save success');
@@ -309,7 +310,7 @@ const GroupCampaignSetting = (props) => {
                                                 name={['randomEnd']}
                                                 style={{
                                                     display: 'inline-block',
-                                                    width: 'calc(30% - 5px)',
+                                                    width: 'calc(13% - 5px)',
                                                     margin: '0 5px',
                                                 }}
                                             >

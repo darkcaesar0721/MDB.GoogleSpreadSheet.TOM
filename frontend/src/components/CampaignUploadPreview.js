@@ -1,4 +1,4 @@
-import {Button, Col, Form, InputNumber, Radio, Row, Table} from "antd";
+import {Button, Checkbox, Col, Form, Input, InputNumber, Radio, Row, Select, Table} from "antd";
 import MDBPath from "./MDBPath";
 import {connect} from "react-redux";
 import {getCampaigns, getGroups} from "../redux/actions";
@@ -24,6 +24,11 @@ const randomLayout = {
     },
 };
 
+const meridiemOption = [
+    {value: 'AM', label: 'AM'},
+    {value: 'PM', label: 'PM'},
+]
+
 const CampaignUploadPreview = (props) => {
     const [way, setWay] = useState('all'); //all,static,random
     const [mainForm] = Form.useForm();
@@ -36,6 +41,10 @@ const CampaignUploadPreview = (props) => {
         },
     });
     const {groupIndex, groupCampaignIndex, campaignIndex} = useParams();
+    const [isTime, setIsTime] = useState(false);
+    const [time, setTime] = useState('');
+    const [meridiem, setMeridiem] = useState('AM');
+    const [dayOld, setDayOld] = useState(1);
 
     useEffect(function() {
         props.getCampaigns();
@@ -45,7 +54,14 @@ const CampaignUploadPreview = (props) => {
     useEffect(function() {
         if (props.groups.data.length > 0 && props.campaigns.data.length > 0) {
             const selectedCampaign = props.groups.data[groupIndex].campaigns[groupCampaignIndex];
+
             setWay(selectedCampaign.way);
+            setStaticCount(selectedCampaign.staticCount);
+            setDayOld(selectedCampaign.dayOld);
+            setMeridiem(!selectedCampaign.meridiem ? 'AM' : selectedCampaign.meridiem);
+            setTime(selectedCampaign.time);
+            setIsTime(selectedCampaign.isTime == "true");
+
             setStaticCount(selectedCampaign.staticCount);
             mainForm.setFieldsValue(selectedCampaign);
 
@@ -143,6 +159,7 @@ const CampaignUploadPreview = (props) => {
                                         <Radio value="all">All Select</Radio>
                                         <Radio value="static">Static Select</Radio>
                                         <Radio value="random">Random Select</Radio>
+                                        <Radio value="date">Date & Time</Radio>
                                     </Radio.Group>
                                 </Form.Item>
                                 {
@@ -191,6 +208,32 @@ const CampaignUploadPreview = (props) => {
                                                 <InputNumber disabled={true} placeholder="End"/>
                                             </Form.Item>
                                         </Col> : ''
+                                }
+                                {
+                                    way === 'date' ?
+                                        <Form.Item label="Days Old" name={['date']} valuePropName="checked">
+                                            <Row>
+                                                <Col span={3}>
+                                                    <Input disabled={true} placeholder="Days Old" value={dayOld}/>
+                                                </Col>
+                                                <Col span={1} offset={1}>
+                                                    <Checkbox disabled={true} checked={true} style={{paddingTop: '0.3rem'}}></Checkbox>
+                                                </Col>
+                                                <Col span={2}>
+                                                    <Input disabled={true} placeholder="Time" value={time}/>
+                                                </Col>
+                                                <Col span={2}>
+                                                    <Select
+                                                        size="middle"
+                                                        defaultValue="AM"
+                                                        style={{ width: 70 }}
+                                                        options={meridiemOption}
+                                                        value={meridiem}
+                                                        disabled={true}
+                                                    />
+                                                </Col>
+                                            </Row>
+                                        </Form.Item> : ''
                                 }
                             </Form> : ''
                     }

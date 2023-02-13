@@ -27,10 +27,10 @@ const columnLayout = {
 
 const randomLayout = {
     labelCol: {
-        span: 13,
+        span: 14,
     },
     wrapperCol: {
-        span: 3,
+        span: 8,
     },
 };
 
@@ -80,7 +80,7 @@ const GroupAddSetting = (props) => {
             setWay(selectedCampaign.group.way);
             setStaticCount(selectedCampaign.group.staticCount);
             setDayOld(selectedCampaign.group.dayOld);
-            setMeridiem(selectedCampaign.group.meridiem);
+            setMeridiem(!selectedCampaign.group.meridiem ? 'AM' : selectedCampaign.group.meridiem);
             setTime(selectedCampaign.group.time);
             setIsTime(selectedCampaign.group.isTime == "true");
         }
@@ -303,7 +303,7 @@ const GroupAddSetting = (props) => {
                                                 name={['randomEnd']}
                                                 style={{
                                                     display: 'inline-block',
-                                                    width: 'calc(30% - 5px)',
+                                                    width: 'calc(13% - 5px)',
                                                     margin: '0 5px',
                                                 }}
                                             >
