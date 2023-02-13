@@ -137,7 +137,7 @@ const GroupCampaignUploadOneByOne = (props) => {
                             <>
                                 <Popconfirm
                                     title="Upload data"
-                                    description="Are you sure to upload the rows of this campaign?"
+                                    description="Are you sure to upload the row of this campaign?"
                                     onConfirm={(e) => {handleUpload(record)}}
                                     okText="Yes"
                                     cancelText="No"

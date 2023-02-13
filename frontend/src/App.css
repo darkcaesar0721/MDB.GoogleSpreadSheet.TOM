@@ -79,7 +79,7 @@
 }
 
 .group-setting-form .ant-form-item {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .ant-form-item-control-input-content span{
@@ -91,6 +91,6 @@
   background-color: #d9d9d9;
 }
 
-label, span, div {
+label, span, div, input {
   font-family: math !important;
 }
