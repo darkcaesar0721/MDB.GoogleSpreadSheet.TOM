@@ -1,4 +1,4 @@
-import {Breadcrumb, Button, Col, Divider, message, Radio, Row, Select, Spin, Table} from "antd";
+import {Button, Col, Divider, message, Radio, Row, Select, Spin, Table} from "antd";
 import MDBPath from "./MDBPath";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
@@ -7,7 +7,6 @@ import {
     getGroups,
     getUpload,
     updateCampaign,
-    updateGroup,
     updateGroupCampaign,
     updateUpload
 } from "../redux/actions";
@@ -70,6 +69,10 @@ const Upload = (props) => {
                 campaign.staticCount = c.staticCount;
                 campaign.isLast = c.isLast;
                 campaign.isEditPhone = c.isEditPhone;
+                campaign.dayOld = c.dayOld;
+                campaign.isTime = c.isTime;
+                campaign.time = c.time;
+                campaign.meridiem = c.meridiem;
                 _campaigns.push(campaign);
             });
         }
@@ -197,6 +200,7 @@ const Upload = (props) => {
             setColumns(_columns);
         }
     }, [props.groups, campaigns]);
+
     const handleGroupChange = function(value) {
         setGroup(value);
         props.updateUpload({group: value, way: way});

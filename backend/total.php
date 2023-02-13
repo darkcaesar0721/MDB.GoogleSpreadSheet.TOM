@@ -143,7 +143,7 @@ function write_sheet($service, $schedule_values, $d, $g_i, $g_c_i, $c_i) {
                         array_push($up_rows_with_key, $row);
                         array_push($up_rows, $up_row);
                     }
-                } else {
+                } else if ($g_c->way === 'random') {
                     $count = rand($g_c->randomStart, $g_c->randomEnd);
                     if ($count >= count($rows)) {
                         foreach ($rows as $row) {
@@ -181,6 +181,38 @@ function write_sheet($service, $schedule_values, $d, $g_i, $g_c_i, $c_i) {
                                     array_push($up_rows_with_key, $row);
                                     array_push($up_rows, $up_row);
                                 }
+                            }
+                        }
+                    }
+                } else {
+                    foreach ($rows as $row) {
+                        if ($g_c->isTime) {
+                            $date = strtotime(date("m/d/Y h A", strtotime($g_c->date . ' ' . $g_c->time . ' '. $g_c->meridiem)));
+                            $r_date = strtotime(date("m/d/Y h A", strtotime($row['SystemCreateDate'])));
+
+                            if ($r_date > $date) {
+                                $up_row = array();
+                                foreach ($g_c->columns as $column) {
+                                    if ($column->display == 'true') {
+                                        array_push($up_row, $row[$column->name]);
+                                    }
+                                }
+                                array_push($up_rows_with_key, $row);
+                                array_push($up_rows, $up_row);
+                            }
+                        } else {
+                            $date = strtotime(date("m/d/Y", strtotime($g_c->date . ' ' . $g_c->time . ' '. $g_c->meridiem)));
+                            $r_date = strtotime(date("m/d/Y", strtotime($row['SystemCreateDate'])));
+
+                            if ($r_date > $date) {
+                                $up_row = array();
+                                foreach ($g_c->columns as $column) {
+                                    if ($column->display == 'true') {
+                                        array_push($up_row, $row[$column->name]);
+                                    }
+                                }
+                                array_push($up_rows_with_key, $row);
+                                array_push($up_rows, $up_row);
                             }
                         }
                     }

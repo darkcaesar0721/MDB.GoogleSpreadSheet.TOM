@@ -1,10 +1,11 @@
-import {Button, Checkbox, Col, Form, Input, InputNumber, message, Modal, Radio, Row} from "antd";
+import {Button, Checkbox, Col, Form, Input, message, Modal, Radio, Row, Select} from "antd";
 import MDBPath from "./MDBPath";
 import {connect} from "react-redux";
 import {getCampaigns, updateCampaign} from "../redux/actions";
 import React, {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import MenuList from "./MenuList";
+import moment from "moment";
 
 const layout = {
     labelCol: {
@@ -33,6 +34,11 @@ const randomLayout = {
     },
 };
 
+const meridiemOption = [
+    {value: 'AM', label: 'AM'},
+    {value: 'PM', label: 'PM'},
+]
+
 const GroupAddSetting = (props) => {
     const [way, setWay] = useState('all'); //all,static,random
     const [columnForm] = Form.useForm();
@@ -41,6 +47,10 @@ const GroupAddSetting = (props) => {
     const [open, setOpen] = useState(false);
     const [columns, setColumns] = useState([]);
     const [staticCount, setStaticCount] = useState(1);
+    const [isTime, setIsTime] = useState(false);
+    const [time, setTime] = useState('');
+    const [meridiem, setMeridiem] = useState('AM');
+    const [dayOld, setDayOld] = useState(1);
 
     const {index} = useParams();
     const navigate = useNavigate();
@@ -65,9 +75,14 @@ const GroupAddSetting = (props) => {
             });
             columnForm.setFieldsValue(data);
 
+            mainForm.setFieldsValue(selectedCampaign.group);
+
             setWay(selectedCampaign.group.way);
             setStaticCount(selectedCampaign.group.staticCount);
-            mainForm.setFieldsValue(selectedCampaign.group);
+            setDayOld(selectedCampaign.group.dayOld);
+            setMeridiem(selectedCampaign.group.meridiem);
+            setTime(selectedCampaign.group.time);
+            setIsTime(selectedCampaign.group.isTime == "true");
         }
     }, [props.campaigns.data]);
 
@@ -79,6 +94,16 @@ const GroupAddSetting = (props) => {
             const group = campaign.group;
             campaign.group = form;
             campaign.group.order = group.order;
+            campaign.group.isTime = isTime;
+            campaign.group.dayOld = dayOld;
+            campaign.group.time = time;
+            campaign.group.meridiem = meridiem;
+            if (isTime) {
+                campaign.group.date = moment(Date.now()).add(0 - (dayOld - 1), 'day').format('MM/DD/YYYY');
+            } else {
+                campaign.group.date = moment(Date.now()).add(0 - dayOld, 'day').format('MM/DD/YYYY');
+            }
+
             props.updateCampaign(campaign);
 
             messageApi.success('save success');
@@ -106,6 +131,16 @@ const GroupAddSetting = (props) => {
             }
             if (parseInt(form.randomStart) > parseInt(form.randomEnd)) {
                 messageApi.warning('Random start count must be less than random end count.');
+                return false;
+            }
+        }
+        if (form.way === 'date') {
+            if (!dayOld) {
+                messageApi.warning('Please input dayOld field.');
+                return false;
+            }
+            if (isTime && !time) {
+                messageApi.warning('Please input time field.');
                 return false;
             }
         }
@@ -155,6 +190,21 @@ const GroupAddSetting = (props) => {
         setColumns(_columns);
 
         setOpen(true);
+    }
+    const handleIsTimeCheck = function(e) {
+        setIsTime(e.target.checked);
+    }
+
+    const handleTimeChange = function(e) {
+        setTime(e.target.value);
+    }
+
+    const handleDayOldChange = function(e) {
+        setDayOld(e.target.value);
+    }
+
+    const handleMeridiemChange = function(value) {
+        setMeridiem(value);
     }
 
     return (
@@ -209,6 +259,7 @@ const GroupAddSetting = (props) => {
                                         <Radio value="all">All Select</Radio>
                                         <Radio value="static">Static Select</Radio>
                                         <Radio value="random">Random Select</Radio>
+                                        <Radio value="date">Date & Time</Radio>
                                     </Radio.Group>
                                 </Form.Item>
                                 {
@@ -219,7 +270,7 @@ const GroupAddSetting = (props) => {
                                         >
                                             <Row>
                                                 <Col span={4}>
-                                                    <InputNumber style={{width: '100%'}} placeholder="Static Count" value={staticCount} onChange={(e) => {setStaticCount(e.target.value)}}/>
+                                                    <Input style={{width: '100%'}} placeholder="Static Count" value={staticCount} onChange={(e) => {setStaticCount(e.target.value)}}/>
                                                 </Col>
                                             </Row>
                                         </Form.Item> : ''
@@ -236,7 +287,7 @@ const GroupAddSetting = (props) => {
                                                     width: 'calc(30% - 5px)',
                                                 }}
                                             >
-                                                <InputNumber placeholder="Start"/>
+                                                <Input placeholder="Start"/>
                                             </Form.Item>
                                             <Form.Item
                                                 name={['random']}
@@ -256,9 +307,36 @@ const GroupAddSetting = (props) => {
                                                     margin: '0 5px',
                                                 }}
                                             >
-                                                <InputNumber placeholder="End"/>
+                                                <Input placeholder="End"/>
                                             </Form.Item>
                                         </Col> : ''
+                                }
+                                {
+                                    way === 'date' ?
+                                        <Form.Item label="Days Old" name={['date']} valuePropName="checked">
+                                            <Row>
+                                                <Col span={3}>
+                                                    <Input placeholder="Days Old" value={dayOld} onChange={handleDayOldChange}/>
+                                                </Col>
+                                                <Col span={1} offset={1}>
+                                                    <Checkbox checked={isTime} onChange={handleIsTimeCheck} style={{paddingTop: '0.3rem'}}></Checkbox>
+                                                </Col>
+                                                <Col span={2}>
+                                                    <Input disabled={!isTime} placeholder="Time" value={time} onChange={handleTimeChange}/>
+                                                </Col>
+                                                <Col span={2}>
+                                                    <Select
+                                                        size="middle"
+                                                        defaultValue="AM"
+                                                        onChange={handleMeridiemChange}
+                                                        style={{ width: 70 }}
+                                                        options={meridiemOption}
+                                                        value={meridiem}
+                                                        disabled={!isTime}
+                                                    />
+                                                </Col>
+                                            </Row>
+                                        </Form.Item> : ''
                                 }
                                 <Form.Item
                                     name={['column']}

@@ -155,7 +155,6 @@ if ($action === 'update_group') {
         $group['name'] = $data->tempGroup->name;
         $group['campaigns'] = array();
 
-
         foreach($data->tempGroup->selectedCampaignKeys as $key) {
             foreach($data->campaigns as $i => $c) {
                 if ($key == $c->key) {

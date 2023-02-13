@@ -84,6 +84,10 @@ const GroupCampaignUploadOneByOne = (props) => {
                             case 'random':
                                 count = record.randomStart + ' ~ ' + record.randomEnd;
                                 break;
+                            case 'date':
+                                let old = record.dayOld == 1 ? 'today' : record.dayOld + 'old';
+                                count = old + (record.isTime == "true" ? '  ' + record.time + record.meridiem : '');
+                                break;
                         }
 
                         return (

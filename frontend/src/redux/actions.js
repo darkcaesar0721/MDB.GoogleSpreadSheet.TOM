@@ -13,7 +13,7 @@ export const getMDBPath = () => async (dispatch) => {
 }
 
 export const setMDBPath = (path) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
+    await axios.post(APP_API_URL + 'json.php', qs.stringify({
         action: 'write_mdb_path',
         path
     }));
