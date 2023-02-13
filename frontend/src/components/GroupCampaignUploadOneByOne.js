@@ -3,11 +3,8 @@ import React, {useEffect, useState} from "react";
 import {UploadOutlined} from "@ant-design/icons";
 import {Link} from "react-router-dom";
 import {Input} from "antd/lib";
-import axios from "axios";
-import {APP_API_URL} from "../constants";
-import qs from "qs";
 
-const GroupCampaignList = (props) => {
+const GroupCampaignUploadOneByOne = (props) => {
     const [tableParams, setTableParams] = useState({
         pagination: {
             current: 1,
@@ -206,4 +203,4 @@ const GroupCampaignList = (props) => {
     )
 }
 
-export default GroupCampaignList;
+export default GroupCampaignUploadOneByOne;

@@ -15,8 +15,9 @@ import axios from "axios";
 import {APP_API_URL} from "../constants";
 import qs from "qs";
 import {EyeOutlined} from "@ant-design/icons";
-import GroupCampaignList from "./GroupCampaignList";
+import GroupCampaignUploadOneByOne from "./GroupCampaignUploadOneByOne";
 import MenuList from "./MenuList";
+import GroupCampaignUploadAll from "./GroupCampaignUploadAll";
 
 const Upload = (props) => {
     const [options, setOptions] = useState([]);
@@ -215,8 +216,12 @@ const Upload = (props) => {
         });
     };
 
-    const handleUpload = function() {
-        // if (validation()) {
+    const handleUploadAll = function() {
+        if (props.upload.selectedCampaignKeys === undefined || props.upload.selectedCampaignKeys.length === 0) {
+            messageApi.warning('Please select campaign list.');
+            return;
+        }
+
         setLoading(true);
         setTip("Wait for uploading....");
         axios.post(APP_API_URL + 'total.php', qs.stringify({
@@ -228,7 +233,6 @@ const Upload = (props) => {
             props.getGroups();
             messageApi.success('upload success');
         })
-        // }
     }
 
     const handleUploadOneByOne = (data) => {
@@ -283,19 +287,23 @@ const Upload = (props) => {
                     </Radio.Group>
                 </Col>
             </Row>
-            <Row style={{marginTop: '1rem'}}>
-                {
-                    way === 'all' ?
-                        <Col span={1} offset={11} style={{paddingLeft: '1rem'}}>
-                            <Button type="primary" onClick={handleUpload}>
-                                Upload
-                            </Button>
-                        </Col> : ''
-                }
-            </Row>
+            {
+                props.groups.data.length > 0 && props.campaigns.data.length > 0 && way === 'all' ?
+                    <GroupCampaignUploadAll
+                        campaigns={campaigns}
+                        groupIndex={group}
+                        gobalCampaigns={props.campaigns.data}
+                        group={props.groups.data[group]}
+                        upload={handleUploadAll}
+                        uploadInfo={props.upload}
+                        updateCampaign={props.updateCampaign}
+                        updateGroupCampaign={props.updateGroupCampaign}
+                        updateUpload={props.updateUpload}
+                    /> : ''
+            }
             {
                 props.groups.data.length > 0 && props.campaigns.data.length > 0 && way === 'one' ?
-                    <GroupCampaignList
+                    <GroupCampaignUploadOneByOne
                         campaigns={campaigns}
                         groupIndex={group}
                         gobalCampaigns={props.campaigns.data}
