@@ -31,29 +31,38 @@ const GroupCampaignUploadAll = (props) => {
     }, [props.campaigns]);
 
     const setColumnInfo = () => {
-        let no_column = {
-            title: 'no',
-            key: 'no',
-            width: 30,
-            fixed: 'left',
-            render: (_, record) => {
+        let _columns = [
+            {
+                title: 'no',
+                key: 'no',
+                width: 30,
+                fixed: 'left',
+                render: (_, record) => {
+                    let number = 0;
+                    props.campaigns.forEach((c, i) => {
+                        if (c.key === record.key) {
+                            number = i + 1;
+                            return;
+                        }
+                    })
 
-                let number = 0;
-                props.campaigns.forEach((c, i) => {
-                    if (c.key === record.key) {
-                        number = i + 1;
-                        return;
-                    }
-                })
-
-                return (
-                    <>
-                        <span>{number}</span>
-                    </>
-                )
-            }
-        }
-        let _columns = [no_column,
+                    return (
+                        <>
+                            <span>{number}</span>
+                        </>
+                    )
+                }
+            },
+            {
+                title: 'Yellow',
+                key: 'yellow',
+                width: 50,
+                render: (_, r) => {
+                    return (
+                        <Checkbox checked={(r.isLast == true || r.isLast == "true")} onChange={(e) => {handleIsLastCheck(e, r)}}/>
+                    )
+                }
+            },
             {
                 title: 'Query',
                 key: 'query',
@@ -168,15 +177,24 @@ const GroupCampaignUploadAll = (props) => {
     }, [props.uploadInfo]);
 
     const handlePhoneChange = (e, r) => {
-        let campaign = props.gobalCampaigns[r.index];
-        campaign.last_phone = e.target.value;
-        props.updateCampaign(campaign);
+        const fields = {
+            last_phone: e.target.value
+        };
+        props.updateCampaignFields(r.index, fields);
     };
 
     const handlePhoneEditCheck = (e, r) => {
         let groupCampaign = props.group.campaigns[r.groupCampaignIndex];
         groupCampaign.isEditPhone = e.target.checked;
         props.updateGroupCampaign(props.groupIndex, r.groupCampaignIndex, groupCampaign);
+    }
+
+    const handleIsLastCheck = (e, r) => {
+        let campaign = props.globalCampaigns[r.index];
+        const fields = {
+            isLast: (campaign.isLast == true || campaign.isLast == "true") ? false : true
+        };
+        props.updateCampaignFields(r.index, fields);
     }
 
     const handleTableChange = (pagination, filters, sorter) => {
@@ -222,6 +240,7 @@ const GroupCampaignUploadAll = (props) => {
                             selectedRowKeys: selectedCampaignKeys,
                             ...rowSelection,
                         }}
+                        rowClassName={(record, index) => ((record.isLast == true || record.isLast == "true") ? "campaign_active" : "") }
                     />
                 </Col>
             </Row>

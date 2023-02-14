@@ -110,6 +110,22 @@ if ($action === 'delete_campaign') {
     }
 }
 
+if ($action === 'update_campaign_fields') {
+    if (file_exists($json_file_name))
+    {
+        $data = json_decode(file_get_contents($json_file_name));
+
+        foreach($_REQUEST['fields'] as $key => $value) {
+            $data->campaigns[$_REQUEST['campaignIndex']]->$key = $value;
+        }
+
+        file_put_contents($json_file_name, json_encode($data));
+
+        echo json_encode($data->campaigns);
+        exit;
+    }
+}
+
 if ($action === 'create_group') {
     if (file_exists($json_file_name))
     {

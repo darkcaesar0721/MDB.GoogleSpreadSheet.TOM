@@ -6,7 +6,7 @@ import {
     getCampaigns,
     getGroups,
     getUpload,
-    updateCampaign,
+    updateCampaign, updateCampaignFields,
     updateGroupCampaign,
     updateUpload
 } from "../redux/actions";
@@ -67,7 +67,6 @@ const Upload = (props) => {
                 campaign.randomStart = c.randomStart;
                 campaign.randomEnd = c.randomEnd;
                 campaign.staticCount = c.staticCount;
-                campaign.isLast = c.isLast;
                 campaign.isEditPhone = c.isEditPhone;
                 campaign.dayOld = c.dayOld;
                 campaign.isTime = c.isTime;
@@ -282,11 +281,11 @@ const Upload = (props) => {
                     <GroupCampaignUploadAll
                         campaigns={campaigns}
                         groupIndex={group}
-                        gobalCampaigns={props.campaigns.data}
+                        globalCampaigns={props.campaigns.data}
                         group={props.groups.data[group]}
                         upload={handleUploadAll}
                         uploadInfo={props.upload}
-                        updateCampaign={props.updateCampaign}
+                        updateCampaignFields={props.updateCampaignFields}
                         updateGroupCampaign={props.updateGroupCampaign}
                         updateUpload={props.updateUpload}
                     /> : ''
@@ -296,10 +295,10 @@ const Upload = (props) => {
                     <GroupCampaignUploadOneByOne
                         campaigns={campaigns}
                         groupIndex={group}
-                        gobalCampaigns={props.campaigns.data}
+                        globalCampaigns={props.campaigns.data}
                         group={props.groups.data[group]}
                         updateGroupCampaign={props.updateGroupCampaign}
-                        updateCampaign={props.updateCampaign}
+                        updateCampaignFields={props.updateCampaignFields}
                         upload={handleUploadOneByOne}
                     /> : ''
             }
@@ -326,5 +325,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign }
+    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign, updateCampaignFields }
 )(Upload);

@@ -88,7 +88,14 @@
 }
 
 .campaign_active {
-  background-color: yellow;
+  background-color: #ffff63 !important;
+}
+.ant-table-row-selected.campaign_active {
+  background-color: #ffff63 !important;
+}
+
+:where(.css-dev-only-do-not-override-ixblex).ant-table-wrapper .ant-table-tbody >tr.ant-table-row-selected.campaign_active >td {
+  background-color: #ffff63 !important;
 }
 
 label, span, div, input {

@@ -264,23 +264,29 @@ if ($action == 'upload_all') {
         foreach ($data->upload->selectedCampaignKeys as $key) {
             if ($key == $g_c->key) {
                 $data = write_sheet($service, $schedule_values, $data, $g_i, $g_c_i, $data->groups[$g_i]->campaigns[$g_c_i]->index);
+                $data->campaigns[$data->groups[$g_i]->campaigns[$g_c_i]->index]->isLast = true;
             }
         }
     }
+
+//    foreach($data->campaigns as $i => $c) {
+//        if ($c->islast) $data->campaigns[$i]->isLast = false;
+//    }
 } else {
     $g_i = $_REQUEST['groupIndex'];
     $g_c_i = $_REQUEST['groupCampaignIndex'];
     $c_i = $_REQUEST['campaignIndex'];
 
     $data = write_sheet($service, $schedule_values, $data, $g_i, $g_c_i, $c_i);
+    $data->campaigns[$c_i]->isLast = true;
 
-    foreach($data->groups[$g_i]->campaigns as $i => $c) {
-        if ($g_c_i == $i) {
-            $data->groups[$g_i]->campaigns[$i]->isLast = true;
-        } else {
-            $data->groups[$g_i]->campaigns[$i]->isLast = false;
-        }
-    }
+//    foreach($data->campaigns as $i => $c) {
+//        if ($c_i == $i) {
+//            $data->campaigns[$i]->isLast = true;
+//        } else {
+//            $data->campaigns[$i]->isLast = false;
+//        }
+//    }
 }
 
 if (date('w') == 4) {

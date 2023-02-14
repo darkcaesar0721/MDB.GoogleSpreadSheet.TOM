@@ -178,3 +178,15 @@ export const updateGroupCampaign = (groupIndex, groupCampaignIndex, groupCampaig
         data: json.data
     });
 }
+
+export const updateCampaignFields = (campaignIndex, fields) => async (dispatch) => {
+    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
+        action: 'update_campaign_fields',
+        campaignIndex,
+        fields
+    }));
+    dispatch({
+        type: INIT_CAMPAIGN_DATA,
+        data: json.data
+    });
+}
