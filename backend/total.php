@@ -223,10 +223,10 @@ function write_sheet($service, $schedule_values, $d, $g_i, $g_c_i, $c_i) {
                 if (count($up_rows_with_key) > 0) {
                     $d->campaigns[$c_i]->last_phone = $up_rows_with_key[0]['Phone'];
                     $d->campaigns[$c_i]->SystemCreateDate = $up_rows_with_key[0]['SystemCreateDate'];
-                } else {
+                }/* else {
                     $d->campaigns[$c_i]->last_phone = "";
                     $d->campaigns[$c_i]->SystemCreateDate = "";
-                }
+                }*/
                 $d->campaigns[$c_i]->upRows = $up_rows_with_key;
                 $d->campaigns[$c_i]->lastGroupIndex = $g_i;
             }
