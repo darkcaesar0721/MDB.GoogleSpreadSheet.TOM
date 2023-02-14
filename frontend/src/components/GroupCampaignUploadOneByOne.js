@@ -12,9 +12,12 @@ const GroupCampaignUploadOneByOne = (props) => {
         },
     });
     const [columns, setColumns] = useState([]);
+    const [campaigns, setCampaigns] = useState([]);
 
     useEffect(function() {
         if (props.campaigns.length > 0) {
+            setCampaigns(props.campaigns);
+
             setTableParams({
                 ...tableParams,
                 pagination: {
@@ -56,6 +59,16 @@ const GroupCampaignUploadOneByOne = (props) => {
                     }
                 },
                 {
+                    title: 'Comment',
+                    key: 'comment',
+                    width: 160,
+                    render: (_, r) => {
+                        return (
+                            <Input value={r.comment} onKeyPress={(e) => handleCommentKeyPress(e, r)} onChange={(e) => {handleCommentChange(e, r)}}/>
+                        )
+                    }
+                },
+                {
                     title: 'Query Name',
                     key: 'query',
                     render: (_, record) => {
@@ -76,10 +89,12 @@ const GroupCampaignUploadOneByOne = (props) => {
                     title: 'Send Type',
                     dataIndex: 'way',
                     key: 'way',
+                    width: 40,
                 },
                 {
                     title: 'Send Amount',
                     key: 'count',
+                    width: 80,
                     render: (_, record) => {
                         let count = 'all';
 
@@ -109,17 +124,19 @@ const GroupCampaignUploadOneByOne = (props) => {
                 {
                     title: 'Qty Available',
                     dataIndex: 'last_qty',
-                    key: 'last_qty'
+                    key: 'last_qty',
+                    width: 25,
                 },
                 {
                     title: 'Qty Uploaded',
                     dataIndex: 'less_qty',
-                    key: 'less_qty'
+                    key: 'less_qty',
+                    width: 25
                 },
                 {
                     title: 'Edit Phone',
                     key: 'edit_phone',
-                    width: 100,
+                    width: 30,
                     render: (_, r) => {
                         return (
                             <Checkbox checked={r.isEditPhone == "true" ? true: false} onChange={(e) => {handlePhoneEditCheck(e, r)}}/>
@@ -129,10 +146,10 @@ const GroupCampaignUploadOneByOne = (props) => {
                 {
                     title: 'Last Phone',
                     key: 'last_phone',
-                    width: 130,
+                    width: 110,
                     render: (_, r) => {
                         return (
-                            <Input style={{color: '#000000'}} disabled={!(r.isEditPhone == "true")} value={r.last_phone} onChange={(e) => {handlePhoneChange(e, r)}}/>
+                            <Input onKeyPress={(e) => handlePhoneKeyPress(e, r)} style={{color: '#000000'}} disabled={!(r.isEditPhone == "true")} value={r.last_phone} onChange={(e) => {handlePhoneChange(e, r)}}/>
                         )
                     }
                 },
@@ -140,6 +157,7 @@ const GroupCampaignUploadOneByOne = (props) => {
                     title: 'SystemCreateDate',
                     dataIndex: 'SystemCreateDate',
                     key: 'SystemCreateDate',
+                    width: 100,
                 },
                 {
                     title: 'Upload',
@@ -166,12 +184,37 @@ const GroupCampaignUploadOneByOne = (props) => {
         }
     }, [props.campaigns]);
 
+    const handleCommentChange = (e, r) => {
+        r.comment = e.target.value;
+        setCampaigns([...props.campaigns].map(c => {
+            return (c.index === r.index ? r : c);
+        }));
+    }
+
+    const handleCommentKeyPress = (e, r) => {
+        if (e.charCode === 13) { //enter code
+            const campaign = {
+                comment: r.comment,
+            }
+            props.updateCampaignFields(r.index, campaign);
+        }
+    }
+
     const handlePhoneChange = (e, r) => {
-        const fields = {
-            last_phone: e.target.value
-        };
-        props.updateCampaignFields(r.index, fields);
+        r.last_phone = e.target.value;
+        setCampaigns([...props.campaigns].map(c => {
+            return (c.index === r.index ? r : c);
+        }));
     };
+
+    const handlePhoneKeyPress = (e, r) => {
+        if (e.charCode === 13) { //enter code
+            const fields = {
+                last_phone: e.target.value
+            };
+            props.updateCampaignFields(r.index, fields);
+        }
+    }
 
     const handleIsLastCheck = (e, r) => {
         let campaign = props.globalCampaigns[r.index];

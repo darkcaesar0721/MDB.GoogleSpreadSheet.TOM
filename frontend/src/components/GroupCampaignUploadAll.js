@@ -12,6 +12,7 @@ const GroupCampaignUploadAll = (props) => {
     });
     const [columns, setColumns] = useState([]);
     const [selectedCampaignKeys, setSelectedCampaignKeys] = useState([]);
+    const [campaigns, setCampaigns] = useState([]);
 
     useEffect(function() {
         setColumnInfo();
@@ -19,6 +20,8 @@ const GroupCampaignUploadAll = (props) => {
 
     useEffect(function() {
         if (props.campaigns.length > 0) {
+            setCampaigns(props.campaigns);
+
             setTableParams({
                 ...tableParams,
                 pagination: {
@@ -29,6 +32,8 @@ const GroupCampaignUploadAll = (props) => {
             setColumnInfo();
         }
     }, [props.campaigns]);
+
+
 
     const setColumnInfo = () => {
         let _columns = [
@@ -45,7 +50,6 @@ const GroupCampaignUploadAll = (props) => {
                             return;
                         }
                     })
-
                     return (
                         <>
                             <span>{number}</span>
@@ -54,8 +58,8 @@ const GroupCampaignUploadAll = (props) => {
                 }
             },
             {
-                title: 'Yellow',
-                key: 'yellow',
+                title: 'yellow',
+                key: 'active',
                 width: 50,
                 render: (_, r) => {
                     return (
@@ -64,7 +68,17 @@ const GroupCampaignUploadAll = (props) => {
                 }
             },
             {
-                title: 'Query',
+                title: 'Comment',
+                key: 'comment',
+                width: 160,
+                render: (_, r) => {
+                    return (
+                        <Input value={r.comment} onKeyPress={(e) => handleCommentKeyPress(e, r)} onChange={(e) => {handleCommentChange(e, r)}}/>
+                    )
+                }
+            },
+            {
+                title: 'Query Name',
                 key: 'query',
                 render: (_, record) => {
                     const link = '/groups/' + props.groupIndex + '/' + record.groupCampaignIndex + '/' + record.campaignIndex;
@@ -84,10 +98,12 @@ const GroupCampaignUploadAll = (props) => {
                 title: 'Send Type',
                 dataIndex: 'way',
                 key: 'way',
+                width: 40,
             },
             {
                 title: 'Send Amount',
                 key: 'count',
+                width: 80,
                 render: (_, record) => {
                     let count = 'all';
 
@@ -117,17 +133,19 @@ const GroupCampaignUploadAll = (props) => {
             {
                 title: 'Qty Available',
                 dataIndex: 'last_qty',
-                key: 'last_qty'
+                key: 'last_qty',
+                width: 25,
             },
             {
                 title: 'Qty Uploaded',
                 dataIndex: 'less_qty',
-                key: 'less_qty'
+                key: 'less_qty',
+                width: 25
             },
             {
                 title: 'Edit Phone',
                 key: 'edit_phone',
-                width: 100,
+                width: 30,
                 render: (_, r) => {
                     let selectedIndex = -1;
                     if (selectedCampaignKeys) {
@@ -146,7 +164,7 @@ const GroupCampaignUploadAll = (props) => {
             {
                 title: 'Last Phone',
                 key: 'last_phone',
-                width: 130,
+                width: 110,
                 render: (_, r) => {
                     let selectedIndex = -1;
                     if (selectedCampaignKeys) {
@@ -158,7 +176,7 @@ const GroupCampaignUploadAll = (props) => {
                     }
 
                     return (
-                        <Input style={{color: '#000000'}} disabled={!(r.isEditPhone == "true" && selectedIndex !== -1)} value={r.last_phone} onChange={(e) => {handlePhoneChange(e, r)}}/>
+                        <Input onKeyPress={(e) => handlePhoneKeyPress(e, r)}  style={{color: '#000000'}} disabled={!(r.isEditPhone == "true" && selectedIndex !== -1)} value={r.last_phone} onChange={(e) => {handlePhoneChange(e, r)}}/>
                     )
                 }
             },
@@ -166,6 +184,7 @@ const GroupCampaignUploadAll = (props) => {
                 title: 'SystemCreateDate',
                 dataIndex: 'SystemCreateDate',
                 key: 'SystemCreateDate',
+                width: 100,
             }
         ];
         setColumns(_columns);
@@ -176,12 +195,7 @@ const GroupCampaignUploadAll = (props) => {
         else setSelectedCampaignKeys(props.uploadInfo.selectedCampaignKeys);
     }, [props.uploadInfo]);
 
-    const handlePhoneChange = (e, r) => {
-        const fields = {
-            last_phone: e.target.value
-        };
-        props.updateCampaignFields(r.index, fields);
-    };
+
 
     const handlePhoneEditCheck = (e, r) => {
         let groupCampaign = props.group.campaigns[r.groupCampaignIndex];
@@ -204,6 +218,38 @@ const GroupCampaignUploadAll = (props) => {
             ...sorter,
         });
     };
+
+    const handleCommentChange = (e, r) => {
+        r.comment = e.target.value;
+        setCampaigns([...props.campaigns].map(c => {
+            return (c.index === r.index ? r : c);
+        }));
+    }
+
+    const handleCommentKeyPress = (e, r) => {
+        if (e.charCode === 13) { //enter code
+            const campaign = {
+                comment: r.comment,
+            }
+            props.updateCampaignFields(r.index, campaign);
+        }
+    }
+
+    const handlePhoneChange = (e, r) => {
+        r.last_phone = e.target.value;
+        setCampaigns([...props.campaigns].map(c => {
+            return (c.index === r.index ? r : c);
+        }));
+    };
+
+    const handlePhoneKeyPress = (e, r) => {
+        if (e.charCode === 13) { //enter code
+            const fields = {
+                last_phone: e.target.value
+            };
+            props.updateCampaignFields(r.index, fields);
+        }
+    }
 
     // rowSelection object indicates the need for row selection
     const rowSelection = {
@@ -232,7 +278,7 @@ const GroupCampaignUploadAll = (props) => {
                         bordered={true}
                         size="small"
                         columns={columns}
-                        dataSource={props.campaigns}
+                        dataSource={campaigns}
                         pagination={tableParams.pagination}
                         onChange={handleTableChange}
                         rowSelection={{
