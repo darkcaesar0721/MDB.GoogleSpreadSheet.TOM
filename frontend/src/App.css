@@ -94,7 +94,23 @@
   background-color: #ffff63 !important;
 }
 
-:where(.css-dev-only-do-not-override-ixblex).ant-table-wrapper .ant-table-tbody >tr.ant-table-row-selected.campaign_active >td {
+/*.ant-table-tbody >tr.ant-table-row-selected.campaign_active >td {*/
+/*  background-color: #ffff63 !important;*/
+/*}*/
+
+.ant-table-tbody >tr.campaign_active >td .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #b5b54b !important;
+  border-color: #b5b54b !important;
+  outline: 2px solid #d5d570 !important;
+}
+
+.ant-table-tbody >tr.campaign_active >td.ant-table-cell-row-hover .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #b5b54b !important;
+  border-color: #b5b54b !important;
+  outline: 2px solid #d5d570 !important;
+}
+
+.ant-table-tbody >tr.campaign_active >td.ant-table-cell-row-hover {
   background-color: #ffff63 !important;
 }
 

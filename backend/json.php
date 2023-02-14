@@ -297,8 +297,12 @@ if ($action === 'update_upload_fields') {
     {
         $data = json_decode(file_get_contents($json_file_name));
 
-        foreach($_REQUEST['fields'] as $key => $value) {
-            $data->upload->$key = $value;
+        if (!array_key_exists('fields', $_REQUEST)) {
+            $data->upload->selectedCampaignKeys = [];
+        } else {
+            foreach($_REQUEST['fields'] as $key => $value) {
+                $data->upload->$key = $value;
+            }
         }
 
         file_put_contents($json_file_name, json_encode($data));
