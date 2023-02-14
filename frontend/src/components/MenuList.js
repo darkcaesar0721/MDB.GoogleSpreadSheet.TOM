@@ -7,22 +7,13 @@ const MenuList = function(props) {
             <Col span={20} offset={1}>
                 <Breadcrumb>
                     <Breadcrumb.Item>
-                        {
-                            props.currentPage === 'campaign' ?
-                                <a className="selected"  href="#/campaigns">Manage Campaign Page</a> : <a href="#/campaigns">Manage Campaign Page</a>
-                        }
+                        <a className={props.currentPage === "campaign" ? "selected" : ""} href="#/campaigns">Add Campaigns</a>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>
-                        {
-                            props.currentPage === 'group' ?
-                                <a className="selected" href="#/groups">Manage Campaign Action Group Page</a> : <a href="#/groups">Manage Campaign Action Group Page</a>
-                        }
+                        <a className={props.currentPage === "group" ? "selected" : ""} href="#/groups">Edit Campaigns</a>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>
-                        {
-                            props.currentPage === 'upload' ?
-                                <a className="selected" href="#/">Upload Page</a> : <a href="#/">Upload Page</a>
-                        }
+                        <a className={props.currentPage === "upload" ? "selected" : ""} href="#/">Upload</a>
                     </Breadcrumb.Item>
                 </Breadcrumb>
             </Col>
