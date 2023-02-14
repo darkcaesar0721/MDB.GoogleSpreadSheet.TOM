@@ -291,3 +291,19 @@ if ($action === 'update_upload') {
         exit;
     }
 }
+
+if ($action === 'update_upload_fields') {
+    if (file_exists($json_file_name))
+    {
+        $data = json_decode(file_get_contents($json_file_name));
+
+        foreach($_REQUEST['fields'] as $key => $value) {
+            $data->upload->$key = $value;
+        }
+
+        file_put_contents($json_file_name, json_encode($data));
+
+        echo json_encode($data->upload);
+        exit;
+    }
+}

@@ -8,7 +8,7 @@ import {
     getUpload,
     updateCampaign, updateCampaignFields,
     updateGroupCampaign,
-    updateUpload
+    updateUpload, updateUploadFields
 } from "../redux/actions";
 import axios from "axios";
 import {APP_API_URL} from "../constants";
@@ -202,11 +202,17 @@ const Upload = (props) => {
 
     const handleGroupChange = function(value) {
         setGroup(value);
-        props.updateUpload({group: value, way: way});
+        const fields = {
+            group: value
+        };
+        props.updateUploadFields(fields);
     }
     const handleWayChange = function(e) {
         setWay(e.target.value);
-        props.updateUpload({group: group, way: e.target.value});
+        const fields = {
+            way: e.target.value
+        };
+        props.updateUploadFields(fields);
     }
     const handleTableChange = (pagination, filters, sorter) => {
         setTableParams({
@@ -287,7 +293,7 @@ const Upload = (props) => {
                         uploadInfo={props.upload}
                         updateCampaignFields={props.updateCampaignFields}
                         updateGroupCampaign={props.updateGroupCampaign}
-                        updateUpload={props.updateUpload}
+                        updateUploadFields={props.updateUploadFields}
                     /> : ''
             }
             {
@@ -325,5 +331,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign, updateCampaignFields }
+    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign, updateCampaignFields, updateUploadFields }
 )(Upload);

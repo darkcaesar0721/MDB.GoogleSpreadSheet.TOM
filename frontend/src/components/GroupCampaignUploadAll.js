@@ -209,10 +209,10 @@ const GroupCampaignUploadAll = (props) => {
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
             setSelectedCampaignKeys(selectedRowKeys);
-
-            let uploadInfo = props.uploadInfo;
-            uploadInfo.selectedCampaignKeys = selectedRowKeys;
-            props.updateUpload(uploadInfo);
+            const fields = {
+                selectedCampaignKeys:  selectedRowKeys
+            };
+            props.updateUploadFields(fields);
         }
     };
 
