@@ -25,10 +25,10 @@ import MenuList from "./MenuList";
 
 const layout = {
     labelCol: {
-        span: 6,
+        span: 3,
     },
     wrapperCol: {
-        span: 18,
+        span: 21,
     },
 };
 
@@ -44,18 +44,18 @@ const columnLayout = {
 const formItemLayout = {
     labelCol: {
         xs: {
-            span: 6,
+            span: 3,
         },
         sm: {
-            span: 6,
+            span: 3,
         },
     },
     wrapperCol: {
         xs: {
-            span: 18,
+            span: 21,
         },
         sm: {
-            span: 18,
+            span: 21,
         },
     },
 };
@@ -63,12 +63,12 @@ const formItemLayout = {
 const formItemLayoutWithOutLabel = {
     wrapperCol: {
         xs: {
-            span: 18,
-            offset: 6,
+            span: 21,
+            offset: 3,
         },
         sm: {
-            span: 18,
-            offset: 6,
+            span: 21,
+            offset: 3,
         },
     },
 };
@@ -205,7 +205,7 @@ function CampaignAdd(props) {
             />
             <MDBPath/>
             <Row style={{marginTop: '1rem'}}>
-                <Col span={12} offset={6}>
+                <Col span={20} offset={2}>
                     <Divider>CAMPAIGN ADD FORM</Divider>
                     <Form
                         {...layout}
@@ -279,8 +279,8 @@ function CampaignAdd(props) {
                                             type="dashed"
                                             onClick={() => add()}
                                             style={{
-                                                width: '40%',
-                                                marginLeft: '33%'
+                                                width: '20%',
+                                                marginLeft: '14%'
                                             }}
                                             icon={<PlusOutlined />}
                                         >
@@ -312,7 +312,7 @@ function CampaignAdd(props) {
                         <Form.Item
                             wrapperCol={{
                                 ...layout.wrapperCol,
-                                offset: 15,
+                                offset: 19,
                             }}
                         >
                             <Button type="primary" htmlType="submit">
