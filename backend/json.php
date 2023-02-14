@@ -110,21 +110,7 @@ if ($action === 'delete_campaign') {
     }
 }
 
-if ($action === 'update_campaign_fields') {
-    if (file_exists($json_file_name))
-    {
-        $data = json_decode(file_get_contents($json_file_name));
 
-        foreach($_REQUEST['fields'] as $key => $value) {
-            $data->campaigns[$_REQUEST['campaignIndex']]->$key = $value;
-        }
-
-        file_put_contents($json_file_name, json_encode($data));
-
-        echo json_encode($data->campaigns);
-        exit;
-    }
-}
 
 if ($action === 'create_group') {
     if (file_exists($json_file_name))
@@ -297,17 +283,45 @@ if ($action === 'update_upload_fields') {
     {
         $data = json_decode(file_get_contents($json_file_name));
 
-        if (!array_key_exists('fields', $_REQUEST)) {
-            $data->upload->selectedCampaignKeys = [];
-        } else {
-            foreach($_REQUEST['fields'] as $key => $value) {
-                $data->upload->$key = $value;
-            }
+        foreach($_REQUEST['fields'] as $i => $field) {
+            $data->upload->$field = $_REQUEST['values'][$i];
         }
 
         file_put_contents($json_file_name, json_encode($data));
 
         echo json_encode($data->upload);
+        exit;
+    }
+}
+
+if ($action === 'update_campaign_fields') {
+    if (file_exists($json_file_name))
+    {
+        $data = json_decode(file_get_contents($json_file_name));
+
+        foreach($_REQUEST['fields'] as $i => $field) {
+            $data->campaigns[$_REQUEST['index']]->$field = $_REQUEST['values'][$i];
+        }
+
+        file_put_contents($json_file_name, json_encode($data));
+
+        echo json_encode($data->campaigns);
+        exit;
+    }
+}
+
+if ($action === 'update_campaign_group_fields') {
+    if (file_exists($json_file_name))
+    {
+        $data = json_decode(file_get_contents($json_file_name));
+
+        foreach($_REQUEST['fields'] as $i => $field) {
+            $data->campaigns[$_REQUEST['index']]->group->$field = $_REQUEST['values'][$i];
+        }
+
+        file_put_contents($json_file_name, json_encode($data));
+
+        echo json_encode($data->campaigns);
         exit;
     }
 }

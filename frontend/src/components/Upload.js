@@ -202,17 +202,11 @@ const Upload = (props) => {
 
     const handleGroupChange = function(value) {
         setGroup(value);
-        const fields = {
-            group: value
-        };
-        props.updateUploadFields(fields);
+        props.updateUploadFields(['group'], [value]);
     }
     const handleWayChange = function(e) {
         setWay(e.target.value);
-        const fields = {
-            way: e.target.value
-        };
-        props.updateUploadFields(fields);
+        props.updateUploadFields(['way'], [e.target.value]);
     }
     const handleTableChange = (pagination, filters, sorter) => {
         setTableParams({

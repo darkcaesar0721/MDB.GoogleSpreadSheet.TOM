@@ -193,10 +193,7 @@ const GroupCampaignUploadOneByOne = (props) => {
 
     const handleCommentKeyPress = (e, r) => {
         if (e.charCode === 13) { //enter code
-            const campaign = {
-                comment: r.comment,
-            }
-            props.updateCampaignFields(r.index, campaign);
+            props.updateCampaignFields('update_campaign_fields', r.index, ['comment'], [r.comment]);
         }
     }
 
@@ -209,19 +206,13 @@ const GroupCampaignUploadOneByOne = (props) => {
 
     const handlePhoneKeyPress = (e, r) => {
         if (e.charCode === 13) { //enter code
-            const fields = {
-                last_phone: e.target.value
-            };
-            props.updateCampaignFields(r.index, fields);
+            props.updateCampaignFields('update_campaign_fields', r.index, ['last_phone'], [e.target.value]);
         }
     }
 
     const handleIsLastCheck = (e, r) => {
         let campaign = props.globalCampaigns[r.index];
-        const fields = {
-            isLast: (campaign.isLast == true || campaign.isLast == "true") ? false : true
-        };
-        props.updateCampaignFields(r.index, fields);
+        props.updateCampaignFields('update_campaign_fields', r.index, ['isLast'], [(campaign.isLast == true || campaign.isLast == "true") ? false : true]);
     }
 
     const handlePhoneEditCheck = (e, r) => {

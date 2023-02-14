@@ -45,17 +45,7 @@ export const updateUpload = (upload) => async (dispatch) => {
     });
 }
 
-export const updateUploadFields = (fields) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
-        action: 'update_upload_fields',
-        fields
-    }));
 
-    dispatch({
-        type: INIT_UPLOAD_DATA,
-        data: json.data
-    });
-}
 
 export const getTempGroup = () => async (dispatch) => {
     const json = await axios.get(APP_API_URL + 'json.php?action=get_temp_group');
@@ -191,14 +181,28 @@ export const updateGroupCampaign = (groupIndex, groupCampaignIndex, groupCampaig
     });
 }
 
-export const updateCampaignFields = (campaignIndex, fields) => async (dispatch) => {
+export const updateCampaignFields = (action, index, fields, values) => async (dispatch) => {
     const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
-        action: 'update_campaign_fields',
-        campaignIndex,
-        fields
+        action: action,
+        index,
+        fields,
+        values
     }));
     dispatch({
         type: INIT_CAMPAIGN_DATA,
+        data: json.data
+    });
+}
+
+export const updateUploadFields = (fields, values) => async (dispatch) => {
+    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
+        action: 'update_upload_fields',
+        fields,
+        values,
+    }));
+
+    dispatch({
+        type: INIT_UPLOAD_DATA,
         data: json.data
     });
 }

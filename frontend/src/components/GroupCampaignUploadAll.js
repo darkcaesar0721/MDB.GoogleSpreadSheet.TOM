@@ -195,8 +195,6 @@ const GroupCampaignUploadAll = (props) => {
         else setSelectedCampaignKeys(props.uploadInfo.selectedCampaignKeys);
     }, [props.uploadInfo]);
 
-
-
     const handlePhoneEditCheck = (e, r) => {
         let groupCampaign = props.group.campaigns[r.groupCampaignIndex];
         groupCampaign.isEditPhone = e.target.checked;
@@ -205,10 +203,7 @@ const GroupCampaignUploadAll = (props) => {
 
     const handleIsLastCheck = (e, r) => {
         let campaign = props.globalCampaigns[r.index];
-        const fields = {
-            isLast: (campaign.isLast == true || campaign.isLast == "true") ? false : true
-        };
-        props.updateCampaignFields(r.index, fields);
+        props.updateCampaignFields('update_campaign_fields', r.index, ['isLast'], [(campaign.isLast == true || campaign.isLast == "true") ? false : true]);
     }
 
     const handleTableChange = (pagination, filters, sorter) => {
@@ -228,10 +223,7 @@ const GroupCampaignUploadAll = (props) => {
 
     const handleCommentKeyPress = (e, r) => {
         if (e.charCode === 13) { //enter code
-            const campaign = {
-                comment: r.comment,
-            }
-            props.updateCampaignFields(r.index, campaign);
+            props.updateCampaignFields('update_campaign_fields', r.index, ['comment'], [r.comment]);
         }
     }
 
@@ -244,10 +236,7 @@ const GroupCampaignUploadAll = (props) => {
 
     const handlePhoneKeyPress = (e, r) => {
         if (e.charCode === 13) { //enter code
-            const fields = {
-                last_phone: e.target.value
-            };
-            props.updateCampaignFields(r.index, fields);
+            props.updateCampaignFields('update_campaign_fields', r.index, ['last_phone'], [e.target.value]);
         }
     }
 
@@ -255,10 +244,7 @@ const GroupCampaignUploadAll = (props) => {
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
             setSelectedCampaignKeys(selectedRowKeys);
-            const fields = {
-                selectedCampaignKeys:  selectedRowKeys
-            };
-            props.updateUploadFields(fields);
+            props.updateUploadFields(['selectedCampaignKeys'], [selectedRowKeys]);
         }
     };
 
