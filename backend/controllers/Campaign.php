@@ -56,6 +56,29 @@ class Campaign
         exit;
     }
 
+    public function update()
+    {
+        $file_name = $_REQUEST['file_name'];
+        $c = $_REQUEST['campaign'];
+        $g = $_REQUEST['group'];
+
+        $file_path = $this->folder_path . '/' . $file_name;
+
+        $campaign = json_decode(file_get_contents($file_path));
+
+        foreach($c as $k => $v) {
+            $campaign->$k = $v;
+        }
+        foreach($g as $k => $v) {
+            $campaign->group->$k = $v;
+        }
+        file_put_contents($file_path, json_encode($campaign));
+
+        $this->set_campaign_lists();
+        echo json_encode($this->campaign_lists);
+        exit;
+    }
+
     public function get_data()
     {
         echo json_encode($this->campaign_lists);

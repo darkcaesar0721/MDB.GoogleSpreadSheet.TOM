@@ -37,30 +37,16 @@ const columnLayout = {
 
 const formItemLayout = {
     labelCol: {
-        xs: {
-            span: 3,
-        },
-        sm: {
-            span: 3,
-        },
+        span: 3,
     },
     wrapperCol: {
-        xs: {
-            span: 21,
-        },
-        sm: {
-            span: 21,
-        },
+        span: 21,
     },
 };
 
 const formItemLayoutWithOutLabel = {
     wrapperCol: {
         xs: {
-            span: 21,
-            offset: 3,
-        },
-        sm: {
             span: 21,
             offset: 3,
         },
@@ -103,31 +89,32 @@ function CampaignEdit(props) {
     }, [props.campaigns.data]);
 
     const handleSubmit = function(form) {
+        if (validation()) {
+            const currentCampaign = props.campaigns.data[index];
+
+            let _columns = columns;
+            _columns = _columns.sort((a, b) => {
+                if (parseInt(a.order) < parseInt(b.order)) return -1;
+                return 0;
+            });
+
+            const campaign = {columns: _columns, urls: form.urls, schedule: form.schedule};
+            const group = {columns: _columns};
+            props.updateCampaign(currentCampaign.file_name, campaign, group, function() {
+                messageApi.success('update success');
+                setTimeout(function() {
+                    navigate('/campaigns');
+                }, 1000);
+            });
+        }
+    }
+
+    const validation = () => {
         if (columns.length === 0) {
             messageApi.warning('Please custom column! Currently nothing columns.');
-            return;
+            return false;
         }
-
-        const selectedCampaign = props.campaigns.data[index];
-
-        let _columns = columns;
-        _columns = _columns.sort((a, b) => {
-            if (parseInt(a.order) < parseInt(b.order)) return -1;
-
-            return 0;
-        });
-
-        selectedCampaign.columns = _columns;
-        selectedCampaign.group.columns = _columns;
-        selectedCampaign.query = form.query;
-        selectedCampaign.urls = form.urls;
-        selectedCampaign.schedule = form.schedule;
-        props.updateCampaign(selectedCampaign);
-
-        messageApi.success('update success');
-        setTimeout(function() {
-            navigate('/campaigns');
-        }, 1000);
+        return true;
     }
 
     const validateMessages = {
@@ -147,7 +134,6 @@ function CampaignEdit(props) {
         _columns = _columns.map((c, i) => c === column ? Object.assign({...c}, {order: e.target.value}) : c);
         _columns = _columns.sort((a, b) => {
             if (parseInt(a.order) < parseInt(b.order)) return -1;
-
             return 0;
         });
         setColumns(_columns);

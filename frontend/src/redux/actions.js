@@ -38,15 +38,28 @@ export const getCampaigns = () => async (dispatch) => {
     });
 }
 
-export const createCampaign = (data, callback = function(){}) => async (dispatch) => {
+export const createCampaign = (data, callback = function() {}) => async (dispatch) => {
     const result = await axios.post(APP_API_URL + 'api.php?class=Campaign&fn=create', qs.stringify({
-        action: 'create_campaign',
         data
     }));
 
     dispatch({
         type: INIT_CAMPAIGN_DATA,
         data: result.data
+    });
+    callback();
+}
+
+export const updateCampaign = (file_name, campaign = {}, group = {}, callback = function() {}) => async (dispatch) => {
+    const json = await axios.post(APP_API_URL + 'api.php?class=Campaign&fn=update', qs.stringify({
+        file_name,
+        campaign,
+        group,
+    }));
+
+    dispatch({
+        type: INIT_CAMPAIGN_DATA,
+        data: json.data
     });
     callback();
 }
@@ -157,16 +170,7 @@ export const getGroups = () => async (dispatch) => {
 
 
 
-export const updateCampaign = (campaign) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
-        action: 'update_campaign',
-        campaign
-    }));
-    dispatch({
-        type: INIT_CAMPAIGN_DATA,
-        data: json.data
-    });
-}
+
 
 export const deleteCampaign = (campaign) => async (dispatch) => {
     const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({

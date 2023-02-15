@@ -1,11 +1,9 @@
-import {Button, Col, Divider, Popconfirm, Row, Table} from "antd";
+import {Button, Col, Divider, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {
-    deleteCampaign, getCampaigns,
-} from "../redux/actions";
+import {PlusCircleOutlined, EditOutlined} from '@ant-design/icons';
+import {getCampaigns} from "../redux/actions";
 import MDBPath from "./MDBPath";
-import {PlusCircleOutlined, EditOutlined, DeleteOutlined} from '@ant-design/icons';
 import MenuList from "./MenuList";
 
 function Campaigns(props) {
@@ -22,38 +20,28 @@ function Campaigns(props) {
     }, []);
 
     useEffect(function() {
-        let campaigns = props.campaigns.data;
-
         setTableParams({
             ...tableParams,
             pagination: {
                 ...tableParams.pagination,
-                total: campaigns.length,
+                total: props.campaigns.data.length,
             },
         });
 
-        let no_column = {
-            title: 'no',
-            key: 'no',
-            width: 30,
-            fixed: 'left',
-            render: (_, record) => {
-                let number = 0;
-                campaigns.forEach((c, i) => {
-                    if (c['query'] === record['query']) {
-                        number = i + 1;
-                        return;
-                    }
-                })
-                return (
-                    <>
-                        <span>{number}</span>
-                    </>
-                )
-            }
-        }
-
-        setColumns([no_column,
+        setColumns([
+            {
+                title: 'no',
+                key: 'no',
+                width: 30,
+                fixed: 'left',
+                render: (_, record) => {
+                    return (
+                        <>
+                            <span>{(record.index + 1)}</span>
+                        </>
+                    )
+                }
+            },
             {
                 title: 'Query Name',
                 dataIndex: 'query',
@@ -100,39 +88,16 @@ function Campaigns(props) {
                 key: 'operation',
                 width: 60,
                 render: (_, record) => {
-                    let index = -1;
-                    campaigns.forEach((c, i) => {
-                        if (c.query === record.query) {
-                            index = i;
-                        }
-                    });
-
-                    const editUrl = "#/campaigns/" + index;
-                    const previewUrl = "#/preview/" + index;
+                    const editUrl = "#/campaigns/" + record.index;
                     return (
                         <>
                             <Button icon={<EditOutlined /> } href={editUrl} style={{marginRight: 1}}/>
-                            {/*<Button icon={<EyeOutlined /> } href={previewUrl} style={{marginRight: 1}}/>*/}
-                            {/*<Popconfirm*/}
-                            {/*    title="Delete the campaign"*/}
-                            {/*    description="Are you sure to delete this campaign?"*/}
-                            {/*    onConfirm={(e) => {handleRemoveClick(record)}}*/}
-                            {/*    okText="Yes"*/}
-                            {/*    cancelText="No"*/}
-                            {/*>*/}
-                            {/*    <Button danger icon={<DeleteOutlined /> }/>*/}
-                            {/*</Popconfirm>*/}
                         </>
                     )
                 }
             },
         ]);
-
     }, [props.campaigns]);
-
-    const handleRemoveClick = function(campaign) {
-        props.deleteCampaign(campaign);
-    }
 
     const handleTableChange = (pagination, filters, sorter) => {
         setTableParams({
@@ -174,5 +139,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, deleteCampaign }
+    { getCampaigns }
 )(Campaigns);
