@@ -46,6 +46,19 @@ class Campaign
         }
     }
 
+    public function save_data_by_rows($index, $rows)
+    {
+        $campaign = $this->campaign_lists[$index];
+
+        $file_name = $campaign->file_name;
+        $file_path = $this->folder_path . '/' . $file_name;
+
+        foreach ($rows as $key => $value) {
+            $campaign->$key = $value;
+        }
+        file_put_contents($file_path, json_encode($campaign));
+    }
+
     public function create()
     {
         $name = (count($this->campaign_lists) + 1) . '.json';

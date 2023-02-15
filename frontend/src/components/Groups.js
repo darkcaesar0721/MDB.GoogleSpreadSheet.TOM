@@ -2,7 +2,7 @@ import {Button, Col, Divider, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {
-    deleteGroup, getGroups, initEditGroup, setIsUpdatedGroup,
+    deleteGroup, getGroups, initEditGroup
 } from "../redux/actions";
 import MDBPath from "./MDBPath";
 import { PlusCircleOutlined, EditOutlined } from '@ant-design/icons';
@@ -26,52 +26,53 @@ function Groups(props) {
     }, []);
 
     useEffect(function() {
-        let groups = props.groups.data;
+        if (props.groups.data.length > 0) {
+            let groups = props.groups.data;
 
-        setTableParams({
-            ...tableParams,
-            pagination: {
-                ...tableParams.pagination,
-                total: groups.length,
-            },
-        });
+            setTableParams({
+                ...tableParams,
+                pagination: {
+                    ...tableParams.pagination,
+                    total: groups.length,
+                },
+            });
 
-        setColumns([
-            {
-                title: 'no',
-                key: 'no',
-                width: 30,
-                render: (_, record) => {
-                    return (
-                        <span>{record.index + 1}</span>
-                    )
-                }
-            },
-            {
-                title: 'Group Name',
-                dataIndex: 'name',
-                key: 'name',
-            },
-            {
-                title: 'Campaign Count',
-                key: 'campaign_count',
-                render: (_, record) => {
-                    return (
-                        <span>{record.campaigns.length}</span>
-                    )
-                }
-            },
-            {
-                title: 'Action',
-                key: 'operation',
-                render: (_, record) => {
-                    return (
-                        <Button icon={<EditOutlined /> } onClick={(e) => {handleEditClick(record.index)}} style={{marginRight: 1}}/>
-                    )
-                }
-            },
-        ]);
-
+            setColumns([
+                {
+                    title: 'no',
+                    key: 'no',
+                    width: 30,
+                    render: (_, record) => {
+                        return (
+                            <span>{record.index + 1}</span>
+                        )
+                    }
+                },
+                {
+                    title: 'Group Name',
+                    dataIndex: 'name',
+                    key: 'name',
+                },
+                {
+                    title: 'Campaign Count',
+                    key: 'campaign_count',
+                    render: (_, record) => {
+                        return (
+                            <span>{record.campaigns.length}</span>
+                        )
+                    }
+                },
+                {
+                    title: 'Action',
+                    key: 'operation',
+                    render: (_, record) => {
+                        return (
+                            <Button icon={<EditOutlined /> } onClick={(e) => {handleEditClick(record.index)}} style={{marginRight: 1}}/>
+                        )
+                    }
+                },
+            ]);
+        }
     }, [props.groups]);
 
     const handleAddClick = function() {
@@ -79,9 +80,7 @@ function Groups(props) {
     }
 
     const handleEditClick = function(index) {
-        props.setIsUpdatedGroup(index, function() {
-            navigate('/groups/' + index);
-        });
+        navigate('/groups/' + index);
     }
 
     const handleTableChange = (pagination, filters, sorter) => {
@@ -128,5 +127,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps,
-    { getGroups, deleteGroup, initEditGroup, setIsUpdatedGroup }
+    { getGroups, deleteGroup, initEditGroup }
 )(Groups);

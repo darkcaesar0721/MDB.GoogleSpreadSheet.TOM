@@ -42,6 +42,28 @@ class Group
         exit;
     }
 
+    public function set_edit_group()
+    {
+
+        $tempGroupObj = new \controllers\TempGroup();
+        $tempGroupObj->init();
+
+        $campaignObj = new \controllers\Campaign();
+        $campaignObj->init();
+
+        $group = $this->group_lists[$_REQUEST['index']];
+
+        $selectedCampaignKeys = [];
+        foreach($group->campaigns as $k => $c) {
+            $campaignObj->save_data_by_rows($c->index, ["group" => $c]);
+            array_push($selectedCampaignKeys, $c->key);
+        }
+
+        $tempGroupObj->save_data_by_rows(["selectedCampaignKeys" => $selectedCampaignKeys, "name" => $group->name]);
+        echo json_encode("success");
+        exit;
+    }
+
     public function create()
     {
         $tempGroupObj = new \controllers\TempGroup();
@@ -93,15 +115,44 @@ class Group
 
     public function update()
     {
-        $file_name = $_REQUEST['file_name'];
+        $tempGroupObj = new \controllers\TempGroup();
+        $temp_group = $tempGroupObj->get_temp_group();
 
-        $file_path = $this->folder_path . '/' . $file_name;
+        $campaignObj = new \controllers\Campaign();
+        $campaigns = $campaignObj->get_campaigns();
 
-        $group = json_decode(file_get_contents($file_path));
+        $group = $this->group_lists[$_REQUEST['index']];
 
-        file_put_contents($file_path, json_encode($group));
+        $group->key = $temp_group->name;
+        $group->name = $temp_group->name;
+        $group->campaigns = array();
+        
 
-        $this->set_group_lists();
+        foreach($temp_group->selectedCampaignKeys as $key) {
+            foreach($campaigns as $i => $c) {
+                if ($key === $c->key) {
+                    $g_c = array();
+                    $g_c = $c->group;
+                    $g_c->key = $key;
+                    $g_c->index = $c->index;
+                    $g_c->order = $c->group->order;
+                    array_push($group->campaigns, $g_c);
+                }
+            }
+        }
+
+        $tempGroupObj->init();
+        $tempGroupObj->init_data_to_edit_group();
+
+        $campaignObj->init();
+        $campaignObj->init_data_to_edit_group();
+
+        $fp = fopen($this->folder_path . '/' . $group->file_name, 'w');
+        fwrite($fp, json_encode($group));
+        fclose($fp);
+
+        array_push($this->group_lists, $group);
+
         echo json_encode($this->group_lists);
         exit;
     }

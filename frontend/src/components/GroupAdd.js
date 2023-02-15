@@ -176,10 +176,8 @@ function GroupAdd(props) {
     }, [props.campaigns, selectedCampaignKeys]);
 
     useEffect(function() {
-        if (props.temp !== undefined) {
-            setName(props.temp.name);
-            setSelectedCampaignKeys(props.temp.selectedCampaignKeys);
-        }
+        setName(props.temp.name);
+        setSelectedCampaignKeys(props.temp.selectedCampaignKeys);
     }, [props.temp]);
 
     const handleOrderChange = function(e, r) {
@@ -201,6 +199,7 @@ function GroupAdd(props) {
         });
         setSelectedCampaignKeys(_selectedCampaignKeys);
 
+        if (_selectedCampaignKeys.length === 0) _selectedCampaignKeys = "";
         props.updateTempGroup({selectedCampaignKeys: _selectedCampaignKeys});
         props.updateCampaign(r.file_name, {}, {order: e.target.value});
     }

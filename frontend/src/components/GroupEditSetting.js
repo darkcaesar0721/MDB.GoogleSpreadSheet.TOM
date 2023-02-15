@@ -88,34 +88,39 @@ const GroupEditSetting = (props) => {
     }, [props.campaigns.data]);
 
     const handleSubmit = (form) => {
-        form.columns = columns;
-
         if (validation(form)) {
             let campaign = props.campaigns.data[campaignIndex];
-            const group = campaign.group;
-            campaign.group = form;
-            campaign.group.order = group.order;
-            campaign.group.isTime = isTime;
-            campaign.group.dayOld = dayOld;
-            campaign.group.time = time;
-            campaign.group.meridiem = meridiem;
-            if (isTime) {
-                campaign.group.date = moment(Date.now()).add(0 - (dayOld - 1), 'day').format('MM/DD/YYYY');
-            } else {
-                campaign.group.date = moment(Date.now()).add(0 - dayOld, 'day').format('MM/DD/YYYY');
+
+            let group = {};
+            group.way = way;
+            group.columns = columns;
+            switch (way) {
+                case 'static':
+                    group['staticCount'] = staticCount;
+                    break;
+                case 'random':
+                    group['randomStart'] = form.randomStart;
+                    group['randomEnd'] = form.randomEnd;
+                    break;
+                case 'date':
+                    group['isTime'] = isTime;
+                    group['dayOld'] = dayOld;
+                    group['time'] = time;
+                    group['meridiem'] = meridiem;
+                    if (isTime) {
+                        group['date'] = moment(Date.now()).add(0 - (dayOld - 1), 'day').format('MM/DD/YYYY');
+                    } else {
+                        group['date'] = moment(Date.now()).add(0 - dayOld, 'day').format('MM/DD/YYYY');
+                    }
+                    break;
             }
-            props.groups.data[groupIndex].campaigns.forEach(g_c => {
-                if (g_c.index === campaignIndex) {
-                    campaign.group.isLast = g_c.isLast;
-                }
-            })
 
-            props.updateCampaign(campaign);
-
-            messageApi.success('save success');
-            setTimeout(function() {
-                navigate('/groups/' + groupIndex);
-            }, 1000);
+            props.updateCampaign(campaign['file_name'], {}, group, function () {
+                messageApi.success('save success');
+                setTimeout(function () {
+                    navigate('/groups/' + groupIndex + '/status/fix');
+                }, 1000);
+            });
         }
     }
 
@@ -368,7 +373,7 @@ const GroupEditSetting = (props) => {
                                     <Button type="primary" htmlType="submit" style={{marginRight: 5}}>
                                         Save Setting
                                     </Button>
-                                    <Button type="dashed" href={"#/groups/" + groupIndex}>
+                                    <Button type="dashed" href={"#/groups/" + groupIndex + '/status/fix'}>
                                         Cancel
                                     </Button>
                                 </Form.Item>

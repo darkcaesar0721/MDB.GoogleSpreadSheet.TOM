@@ -2,7 +2,7 @@ import {Button, Col, Divider, Input, message, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {
-    getCampaigns, getGroups, getTempGroup, updateCampaign, updateGroup, updateTempGroup,
+    getCampaigns, getGroups, getTempGroup, setGroupEditData, updateCampaign, updateGroup, updateTempGroup,
 } from "../redux/actions";
 import MDBPath from "./MDBPath";
 import { SettingOutlined } from '@ant-design/icons';
@@ -23,12 +23,20 @@ function GroupEdit(props) {
     const [messageApi, contextHolder] = message.useMessage();
 
     const navigate = useNavigate();
-    const {index} = useParams();
+    const {index, status} = useParams();
 
     useEffect(function() {
-        props.getCampaigns();
-        props.getTempGroup();
-        props.getGroups();
+        if (status === 'fix') {
+            props.getCampaigns();
+            props.getGroups();
+            props.getTempGroup();
+        } else {
+            props.setGroupEditData(index, function() {
+                props.getCampaigns();
+                props.getGroups();
+                props.getTempGroup();
+            });
+        }
     }, []);
 
     useEffect(function() {
@@ -177,20 +185,19 @@ function GroupEdit(props) {
     }, [props.campaigns, selectedCampaignKeys]);
 
     useEffect(function() {
-        if (typeof campaigns === 'object' && campaigns !== '' && campaigns.length > 0 && selectedCampaignKeys.length > 0) {
-            let _selectedCampaignKeys = [];
-            campaigns.forEach(c => {
-                selectedCampaignKeys.forEach(k => {
-                    if (c.key === k) _selectedCampaignKeys.push(k);
-                });
-            });
-            setSelectedCampaignKeys(_selectedCampaignKeys);
-
-            let temp = props.temp;
-            temp.selectedCampaignKeys = _selectedCampaignKeys;
-            props.updateTempGroup(temp);
+        if (campaigns.length > 0) {
+            // let _selectedCampaignKeys = [];
+            // campaigns.forEach(c => {
+            //     selectedCampaignKeys.forEach(k => {
+            //         if (c.key === k) _selectedCampaignKeys.push(k);
+            //     });
+            // });
+            // setSelectedCampaignKeys(_selectedCampaignKeys);
+            //
+            // if (_selectedCampaignKeys.length === 0) _selectedCampaignKeys = "";
+            // props.updateTempGroup({selectedCampaignKeys: _selectedCampaignKeys});
         }
-    }, [campaigns]);
+    }, [campaigns, props.temp]);
 
     useEffect(function() {
         setName(props.temp.name);
@@ -216,11 +223,9 @@ function GroupEdit(props) {
         });
         setSelectedCampaignKeys(_selectedCampaignKeys);
 
-        let temp = props.temp;
-        temp.selectedCampaignKeys = _selectedCampaignKeys;
-        props.updateTempGroup(temp);
-
-        props.updateCampaign(r);
+        if (_selectedCampaignKeys.length === 0) _selectedCampaignKeys = "";
+        props.updateTempGroup({selectedCampaignKeys: _selectedCampaignKeys});
+        props.updateCampaign(r.file_name, {}, {order: e.target.value});
     }
 
     const handleSubmit = function() {
@@ -262,9 +267,8 @@ function GroupEdit(props) {
             });
             setSelectedCampaignKeys(_selectedCampaignKeys);
 
-            let temp = props.temp;
-            temp.selectedCampaignKeys = _selectedCampaignKeys;
-            props.updateTempGroup(temp);
+            if (_selectedCampaignKeys.length === 0) _selectedCampaignKeys = "";
+            props.updateTempGroup({selectedCampaignKeys: _selectedCampaignKeys});
         }
     };
 
@@ -278,9 +282,10 @@ function GroupEdit(props) {
 
     const handleNameChange = (e) => {
         setName(e.target.value);
-        let temp = props.temp;
-        temp.name = e.target.value;
-        props.updateTempGroup(temp);
+    }
+
+    const saveName = () => {
+        props.updateTempGroup({name: name});
     }
 
     return (
@@ -296,7 +301,7 @@ function GroupEdit(props) {
                     <span style={{lineHeight: 2}}>Group Name:</span>
                 </Col>
                 <Col span={7}>
-                    <Input placeholder="8AM ACTION" value={name} onChange={handleNameChange}/>
+                    <Input onBlur={saveName} placeholder="8AM ACTION" value={name} onChange={handleNameChange}/>
                 </Col>
             </Row>
             <Table
@@ -332,5 +337,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, updateCampaign, getTempGroup, updateTempGroup, updateGroup, getGroups }
+    { getCampaigns, updateCampaign, getTempGroup, updateTempGroup, updateGroup, getGroups, setGroupEditData }
 )(GroupEdit);

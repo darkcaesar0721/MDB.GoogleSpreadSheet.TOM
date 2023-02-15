@@ -32,6 +32,7 @@ export const AppRouter = () => {
                             <Route path="/groups/add" element={<GroupAdd />} />
                             <Route path="/groups/add/:index" element={<GroupAddSetting />} />
                             <Route path="/groups/:index" element={<GroupEdit />} />
+                            <Route path="/groups/:index/status/:status" element={<GroupEdit />} />
                             <Route path="/groups/:groupIndex/:campaignIndex" element={<GroupEditSetting />} />
                             <Route path="/groups/:groupIndex/:groupCampaignIndex/:campaignIndex" element={<GroupCampaignSetting />} />
                             <Route path="/upload/:groupIndex/:groupCampaignIndex/:campaignIndex" element={<GroupCampaignUpload />} />

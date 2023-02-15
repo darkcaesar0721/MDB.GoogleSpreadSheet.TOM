@@ -30,6 +30,14 @@ class TempGroup
         $this->save_data();
     }
 
+    public function save_data_by_rows($rows)
+    {
+        foreach ($rows as $key => $value) {
+            $this->temp_group->$key = $value;
+        }
+        file_put_contents($this->file_path, json_encode($this->temp_group));
+    }
+
     public function get_temp_group()
     {
         $this->set_temp_group();

@@ -108,6 +108,37 @@ export const createGroup = (callback = function() {}) => async (dispatch) => {
     callback();
 }
 
+export const setGroupEditData = (index, callback = function() {}) => async (dispatch) => {
+    await axios.post(APP_API_URL + 'api.php?class=Group&fn=set_edit_group', qs.stringify({
+        index
+    }));
+
+    callback();
+}
+
+export const updateGroup = (index, callback = function() {}) => async (dispatch) => {
+    const result = await axios.post(APP_API_URL + 'api.php?class=Group&fn=update', qs.stringify({
+        index
+    }));
+
+    dispatch({
+        type: INIT_GROUP_DATA,
+        data: result.data
+    });
+
+    callback();
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -137,17 +168,7 @@ export const updateUpload = (upload) => async (dispatch) => {
     });
 }
 
-export const updateGroup = (index) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
-        action: 'update_group',
-        index
-    }));
 
-    dispatch({
-        type: INIT_GROUP_DATA,
-        data: json.data
-    });
-}
 
 export const deleteGroup = (group) => async (dispatch) => {
     const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
@@ -157,39 +178,6 @@ export const deleteGroup = (group) => async (dispatch) => {
 
     dispatch({
         type: INIT_GROUP_DATA,
-        data: json.data
-    });
-}
-
-export const setIsUpdatedGroup = (index, callback) => async (dispatch) => {
-    await axios.post(APP_API_URL + 'json.php', qs.stringify({
-        action: 'set_isupdated_group',
-        index
-    }));
-
-    callback();
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-export const deleteCampaign = (campaign) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
-        action: 'delete_campaign',
-        campaign
-    }));
-
-    dispatch({
-        type: INIT_CAMPAIGN_DATA,
         data: json.data
     });
 }
