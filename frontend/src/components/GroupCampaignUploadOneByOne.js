@@ -64,7 +64,7 @@ const GroupCampaignUploadOneByOne = (props) => {
                     width: 160,
                     render: (_, r) => {
                         return (
-                            <Input value={r.comment} onKeyPress={(e) => handleCommentKeyPress(e, r)} onChange={(e) => {handleCommentChange(e, r)}}/>
+                            <Input value={r.comment} onBlur={() => {handleCommentSave(r)}} onChange={(e) => {handleCommentChange(e, r)}}/>
                         )
                     }
                 },
@@ -149,7 +149,7 @@ const GroupCampaignUploadOneByOne = (props) => {
                     width: 110,
                     render: (_, r) => {
                         return (
-                            <Input onKeyPress={(e) => handlePhoneKeyPress(e, r)} style={{color: '#000000'}} disabled={!(r.isEditPhone == "true")} value={r.last_phone} onChange={(e) => {handlePhoneChange(e, r)}}/>
+                            <Input onBlur={() => {handlePhoneSave(r)}} style={{color: '#000000'}} disabled={!(r.isEditPhone == "true")} value={r.last_phone} onChange={(e) => {handlePhoneChange(e, r)}}/>
                         )
                     }
                 },
@@ -191,10 +191,8 @@ const GroupCampaignUploadOneByOne = (props) => {
         }));
     }
 
-    const handleCommentKeyPress = (e, r) => {
-        if (e.charCode === 13) { //enter code
-            props.updateCampaignFields('update_campaign_fields', r.index, ['comment'], [r.comment]);
-        }
+    const handleCommentSave = (r) => {
+        props.updateCampaignFields('update_campaign_fields', r.index, ['comment'], [r.comment]);
     }
 
     const handlePhoneChange = (e, r) => {
@@ -204,10 +202,8 @@ const GroupCampaignUploadOneByOne = (props) => {
         }));
     };
 
-    const handlePhoneKeyPress = (e, r) => {
-        if (e.charCode === 13) { //enter code
-            props.updateCampaignFields('update_campaign_fields', r.index, ['last_phone'], [e.target.value]);
-        }
+    const handlePhoneSave = (r) => {
+        props.updateCampaignFields('update_campaign_fields', r.index, ['last_phone'], [r.last_phone]);
     }
 
     const handleIsLastCheck = (e, r) => {
