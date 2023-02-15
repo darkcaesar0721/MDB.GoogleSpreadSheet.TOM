@@ -28,6 +28,12 @@ class Group
         $this->set_group_lists();
     }
 
+    public function get_groups()
+    {
+        $this->set_group_lists();
+        return $this->group_lists;
+    }
+
     public function init_edit_group()
     {
         $tempGroupObj = new \controllers\TempGroup();

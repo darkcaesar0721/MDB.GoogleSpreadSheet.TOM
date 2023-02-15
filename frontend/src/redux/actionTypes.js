@@ -1,5 +1,7 @@
 export const INIT_MDB_DATA = "INIT_MDB_DATA";
 
+export const INIT_BACKUP_DATA = "INIT_BACKUP_DATA";
+
 export const INIT_CAMPAIGN_DATA = "INIT_CAMPAIGN_DATA";
 
 export const INIT_TEMP_GROUP_DATA = "INIT_TEMP_GROUP_DATA";

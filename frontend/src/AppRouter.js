@@ -13,6 +13,7 @@ import Upload from "./components/Upload";
 import UploadPreview from "./components/CampaignUploadPreview";
 import GroupCampaignUpload from "./components/GroupCampaignUpload";
 import GroupCampaignSetting from "./components/GroupCampaignSetting";
+import Backup from "./components/Backup";
 
 export const DASHBOARD = '/';
 
@@ -24,6 +25,7 @@ export const AppRouter = () => {
                     <Routes>
                         <Route path={DASHBOARD}>
                             <Route index path="/" element={<Upload />} />
+                            <Route path="/backup" element={<Backup />} />
                             <Route path="/mdb" element={<MDBPath />} />
                             <Route path="/campaigns" element={<Campaigns />} />
                             <Route path="/campaigns/add" element={<CampaignAdd />} />

@@ -26,6 +26,12 @@ class UploadConfig
         $this->set_upload_config();
     }
 
+    public function get_upload_config()
+    {
+        $this->set_upload_config();
+        return $this->upload_config;
+    }
+
     public function update()
     {
         $rows = $_REQUEST['rows'];

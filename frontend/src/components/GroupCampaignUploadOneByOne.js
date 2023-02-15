@@ -225,7 +225,6 @@ const GroupCampaignUploadOneByOne = (props) => {
 
     const handleUpload = (r) => {
         props.upload({
-            action: 'upload_one',
             groupIndex: props.groupIndex,
             groupCampaignIndex: r.groupCampaignIndex,
             campaignIndex: r.campaignIndex

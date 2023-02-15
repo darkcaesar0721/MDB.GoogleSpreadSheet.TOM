@@ -223,8 +223,7 @@ const Upload = (props) => {
 
         setLoading(true);
         setTip("Wait for uploading....");
-        axios.post(APP_API_URL + 'total.php', qs.stringify({
-            action: 'upload_all',
+        axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_all', qs.stringify({
             groupIndex: group,
         })).then(function(resp) {
             setLoading(false);
@@ -236,7 +235,7 @@ const Upload = (props) => {
     const handleUploadOneByOne = (data) => {
         setLoading(true);
         setTip("Wait for uploading....");
-        axios.post(APP_API_URL + 'total.php', qs.stringify(data)).then(function(resp) {
+        axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_one_by_one', qs.stringify(data)).then(function(resp) {
             setLoading(false);
             props.getCampaigns();
             props.getGroups();

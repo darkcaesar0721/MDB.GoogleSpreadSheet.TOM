@@ -5,7 +5,7 @@ import {
     INIT_GROUP_DATA,
     INIT_TEMP_GROUP_DATA,
     INIT_UPLOAD_DATA,
-    INIT_MDB_DATA
+    INIT_MDB_DATA, INIT_BACKUP_DATA
 } from "./actionTypes";
 import { APP_API_URL } from "../constants";
 
@@ -159,6 +159,27 @@ export const updateGroupCampaign = (groupIndex, groupCampaignIndex, rows, callba
     }));
     dispatch({
         type: INIT_GROUP_DATA,
+        data: result.data
+    });
+    callback();
+}
+
+export const getBackup = (callback = function() {}) => async (dispatch) => {
+    const result = await axios.post(APP_API_URL + 'api.php?class=Backup&fn=get_data');
+    dispatch({
+        type: INIT_BACKUP_DATA,
+        data: result.data
+    });
+    callback();
+}
+
+export const updateBackup = (rows, callback = function() {}) => async (dispatch) => {
+    const result = await axios.post(APP_API_URL + 'api.php?class=Backup&fn=set_data', qs.stringify({
+        rows
+    }));
+
+    dispatch({
+        type: INIT_BACKUP_DATA,
         data: result.data
     });
     callback();

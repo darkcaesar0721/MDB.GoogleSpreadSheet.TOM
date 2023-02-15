@@ -26,6 +26,12 @@ class Mdb
         $this->set_mdb();
     }
 
+    public function get_mdb()
+    {
+        $this->set_mdb();
+        return $this->mdb;
+    }
+
     public function set_data()
     {
         $rows = $_REQUEST['rows'];

@@ -7,6 +7,9 @@ const MenuList = function(props) {
             <Col span={20} offset={1}>
                 <Breadcrumb>
                     <Breadcrumb.Item>
+                        <a className={props.currentPage === "backup" ? "selected" : ""} href="#/backup">Backup</a>
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>
                         <a className={props.currentPage === "campaign" ? "selected" : ""} href="#/campaigns">Add Campaigns</a>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>

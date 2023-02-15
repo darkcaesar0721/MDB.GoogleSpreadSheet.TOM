@@ -128,6 +128,13 @@ class Campaign
         }
     }
 
+    public function save_datas($datas)
+    {
+        foreach ($datas as $data) {
+            file_put_contents($this->folder_path . '/' . $data->file_name, json_encode($data));
+        }
+    }
+
     public function is_duplicated($query)
     {
         $is_duplicated = false;
