@@ -1,4 +1,4 @@
-export const SET_MDB_DATA = "SET_MDB_DATA";
+export const INIT_MDB_DATA = "INIT_MDB_DATA";
 
 export const INIT_CAMPAIGN_DATA = "INIT_CAMPAIGN_DATA";
 

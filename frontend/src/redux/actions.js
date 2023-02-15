@@ -5,7 +5,7 @@ import {
     INIT_GROUP_DATA,
     INIT_TEMP_GROUP_DATA,
     INIT_UPLOAD_DATA,
-    SET_MDB_DATA
+    INIT_MDB_DATA
 } from "./actionTypes";
 import { APP_API_URL } from "../constants";
 
@@ -13,7 +13,7 @@ export const getMDBPath = () => async (dispatch) => {
     const result = await axios.get(APP_API_URL + 'api.php?class=Mdb&fn=get_data');
 
     dispatch({
-        type: SET_MDB_DATA,
+        type: INIT_MDB_DATA,
         data: result.data
     });
 }
@@ -24,9 +24,31 @@ export const setMDBPath = (rows) => async (dispatch) => {
     }));
 
     dispatch({
-        type: SET_MDB_DATA,
+        type: INIT_MDB_DATA,
         data: result.data
     });
+}
+
+export const getCampaigns = () => async (dispatch) => {
+    const result = await axios.get(APP_API_URL + 'api.php?class=Campaign&fn=get_data');
+
+    dispatch({
+        type: INIT_CAMPAIGN_DATA,
+        data: result.data
+    });
+}
+
+export const createCampaign = (data, callback = function(){}) => async (dispatch) => {
+    const result = await axios.post(APP_API_URL + 'api.php?class=Campaign&fn=create', qs.stringify({
+        action: 'create_campaign',
+        data
+    }));
+
+    dispatch({
+        type: INIT_CAMPAIGN_DATA,
+        data: result.data
+    });
+    callback();
 }
 
 export const getUpload = () => async (dispatch) => {
@@ -131,27 +153,9 @@ export const getGroups = () => async (dispatch) => {
     });
 }
 
-export const getCampaigns = () => async (dispatch) => {
-    const json = await axios.get(APP_API_URL + 'json.php?action=get_campaigns');
 
-    dispatch({
-        type: INIT_CAMPAIGN_DATA,
-        data: json.data
-    });
-}
 
-export const createCampaign = (campaign, callback = function(){}) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
-        action: 'create_campaign',
-        campaign
-    }));
 
-    dispatch({
-        type: INIT_CAMPAIGN_DATA,
-        data: json.data
-    });
-    callback();
-}
 
 export const updateCampaign = (campaign) => async (dispatch) => {
     const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({

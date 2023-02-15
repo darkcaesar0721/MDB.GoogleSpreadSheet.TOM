@@ -18,10 +18,8 @@ import qs from "qs";
 import MDBPath from "./MDBPath";
 import {connect} from "react-redux";
 import { useNavigate } from 'react-router-dom';
-import {
-    createCampaign, getCampaigns
-} from "../redux/actions";
 import MenuList from "./MenuList";
+import {createCampaign} from "../redux/actions";
 
 const layout = {
     labelCol: {
@@ -99,54 +97,46 @@ function CampaignAdd(props) {
         columnForm.setFieldsValue(data);
     }, [columns]);
 
+    const getQueryColumns = function(query) {
+        setLoading(true);
+
+        axios.post(APP_API_URL + 'api.php?class=Mdb&fn=get_query_columns', qs.stringify({
+            query,
+        })).then(function(resp) {
+            setLoading(false);
+            if (resp.data.status === 'error') {
+                messageApi.error(resp.data.description);
+            } else {
+                let _columns = [];
+                let status = false;
+                resp.data.columns.forEach((c, i) => {
+                    if (c === 'SystemCreateDate')
+                        status = true;
+
+                    if (!status)
+                        _columns.push({name: c, field: c, display: true, order: (i + 1)});
+                });
+                setColumns(_columns);
+                setOpen(true);
+                setButtonState('campaign');
+            }
+        })
+    }
+
     const handleSubmit = function(form) {
         if (buttonState === 'column') {
-            setLoading(true);
-            const query = form.query;
+            getQueryColumns(form.query);
+            return;
+        }
 
-            axios.post(APP_API_URL + 'mdb.php', qs.stringify({
-                action: 'get_query_data',
-                query,
-            })).then(function(resp) {
-                setLoading(false);
-                if (resp.data.status === 'error') {
-                    messageApi.error(resp.data.description);
-                } else {
-                    let _columns = [];
-                    let status = false;
-                    resp.data.columnList.forEach((c, i) => {
-                        if (c === 'SystemCreateDate')
-                            status = true;
-
-                        if (!status)
-                            _columns.push({name: c, field: c, display: true, order: (i + 1)});
-                    });
-                    setColumns(_columns);
-                    setOpen(true);
-                    setButtonState('compaign');
-                }
-            })
-        } else {
-            if (columns.length === 0) {
-                messageApi.warning('Please custom column! Currently nothing columns.');
-                return;
-            }
-
+        if (validation()) {
             let _columns = columns;
             _columns = _columns.sort((a, b) => {
                 if (parseInt(a.order) < parseInt(b.order)) return -1;
 
                 return 0;
             });
-
-            form.key = form.query;
-            form.index = props.campaigns.data.length;
             form.columns = _columns;
-
-            form.group = {};
-            form.group.way = "all";
-            form.group.columns = _columns;
-            form.group.order = form.index + 1;
 
             props.createCampaign(form, function() {
                 messageApi.success('create success');
@@ -155,6 +145,15 @@ function CampaignAdd(props) {
                 }, 1000);
             });
         }
+    }
+
+    const validation = function() {
+        if (columns.length === 0) {
+            messageApi.warning('Please custom column! Currently nothing columns.');
+            return false;
+        }
+
+        return true;
     }
 
     const validateMessages = {
@@ -379,11 +378,7 @@ function CampaignAdd(props) {
     );
 }
 
-const mapStateToProps = state => {
-    return { campaigns: state.campaigns };
-};
-
 export default connect(
-    mapStateToProps,
-    { getCampaigns, createCampaign }
+    "",
+    { createCampaign }
 )(CampaignAdd);

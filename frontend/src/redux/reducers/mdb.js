@@ -1,10 +1,10 @@
-import { SET_MDB_DATA } from "../actionTypes";
+import {INIT_MDB_DATA} from "../actionTypes";
 
 const initialState = {};
 
 function mdb(state = initialState, action) {
     switch (action.type) {
-        case SET_MDB_DATA: {
+        case INIT_MDB_DATA: {
             return Object.assign({...state}, {...action.data})
         }
         default: {
