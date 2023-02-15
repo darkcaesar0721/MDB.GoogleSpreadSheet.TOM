@@ -73,7 +73,7 @@ const GroupCampaignUploadAll = (props) => {
                 width: 160,
                 render: (_, r) => {
                     return (
-                        <Input value={r.comment} onKeyPress={(e) => handleCommentKeyPress(e, r)} onChange={(e) => {handleCommentChange(e, r)}}/>
+                        <Input value={r.comment} onBlur={() => {handleCommentSave(r)}} onChange={(e) => {handleCommentChange(e, r)}}/>
                     )
                 }
             },
@@ -176,7 +176,7 @@ const GroupCampaignUploadAll = (props) => {
                     }
 
                     return (
-                        <Input onKeyPress={(e) => handlePhoneKeyPress(e, r)}  style={{color: '#000000'}} disabled={!(r.isEditPhone == "true" && selectedIndex !== -1)} value={r.last_phone} onChange={(e) => {handlePhoneChange(e, r)}}/>
+                        <Input onBlur={() => {handlePhoneSave(r)}} style={{color: '#000000'}} disabled={!(r.isEditPhone == "true" && selectedIndex !== -1)} value={r.last_phone} onChange={(e) => {handlePhoneChange(e, r)}}/>
                     )
                 }
             },
@@ -221,10 +221,8 @@ const GroupCampaignUploadAll = (props) => {
         }));
     }
 
-    const handleCommentKeyPress = (e, r) => {
-        if (e.charCode === 13) { //enter code
-            props.updateCampaignFields('update_campaign_fields', r.index, ['comment'], [r.comment]);
-        }
+    const handleCommentSave = (r) => {
+        props.updateCampaignFields('update_campaign_fields', r.index, ['comment'], [r.comment]);
     }
 
     const handlePhoneChange = (e, r) => {
@@ -234,16 +232,16 @@ const GroupCampaignUploadAll = (props) => {
         }));
     };
 
-    const handlePhoneKeyPress = (e, r) => {
-        if (e.charCode === 13) { //enter code
-            props.updateCampaignFields('update_campaign_fields', r.index, ['last_phone'], [e.target.value]);
-        }
+    const handlePhoneSave = (r) => {
+        props.updateCampaignFields('update_campaign_fields', r.index, ['last_phone'], [r.last_phone]);
     }
 
     // rowSelection object indicates the need for row selection
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
             setSelectedCampaignKeys(selectedRowKeys);
+
+            if (selectedRowKeys.length == 0) selectedRowKeys = '';
             props.updateUploadFields(['selectedCampaignKeys'], [selectedRowKeys]);
         }
     };
