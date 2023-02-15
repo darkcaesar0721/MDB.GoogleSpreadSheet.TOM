@@ -11,18 +11,21 @@ function MDBPath(props) {
     }, []);
 
     useEffect(function() {
-        setPath(props.mdb.fullPath);
-    }, [props.mdb.fullPath]);
+        setPath(props.mdb.path);
+    }, [props.mdb.path]);
 
     const handleChange = function(e) {
         setPath(e.target.value);
-        props.setMDBPath(e.target.value);
+    }
+
+    const savePath = function() {
+        props.setMDBPath({path: path});
     }
 
     return (
         <Row style={{marginTop: '2rem'}}>
             <Col span={6} offset={9}>
-                <Input addonBefore="MDB PATH" placeholder="C:\mdb_work\LeadDB_ThisSMALL.mdb" onChange={handleChange} value={path} />
+                <Input addonBefore="MDB PATH" onBlur={savePath} placeholder="C:\mdb_work\LeadDB_ThisSMALL.mdb" onChange={handleChange} value={path} />
             </Col>
         </Row>
     );

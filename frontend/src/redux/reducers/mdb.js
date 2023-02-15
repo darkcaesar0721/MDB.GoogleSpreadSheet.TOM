@@ -1,15 +1,11 @@
-import { SET_MDB_PATH } from "../actionTypes";
+import { SET_MDB_DATA } from "../actionTypes";
 
-const initialState = {
-    fullPath: ''
-};
+const initialState = {};
 
 function mdb(state = initialState, action) {
     switch (action.type) {
-        case SET_MDB_PATH: {
-            return {
-                fullPath: action.fullPath
-            };
+        case SET_MDB_DATA: {
+            return Object.assign({...state}, {...action.data})
         }
         default: {
             return state;

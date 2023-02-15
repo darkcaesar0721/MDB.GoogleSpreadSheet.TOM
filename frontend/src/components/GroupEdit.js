@@ -177,6 +177,22 @@ function GroupEdit(props) {
     }, [props.campaigns, selectedCampaignKeys]);
 
     useEffect(function() {
+        if (typeof campaigns === 'object' && campaigns !== '' && campaigns.length > 0 && selectedCampaignKeys.length > 0) {
+            let _selectedCampaignKeys = [];
+            campaigns.forEach(c => {
+                selectedCampaignKeys.forEach(k => {
+                    if (c.key === k) _selectedCampaignKeys.push(k);
+                });
+            });
+            setSelectedCampaignKeys(_selectedCampaignKeys);
+
+            let temp = props.temp;
+            temp.selectedCampaignKeys = _selectedCampaignKeys;
+            props.updateTempGroup(temp);
+        }
+    }, [campaigns]);
+
+    useEffect(function() {
         setName(props.temp.name);
         setSelectedCampaignKeys(props.temp.selectedCampaignKeys);
     }, [props.temp]);

@@ -148,11 +148,12 @@ function CampaignAdd(props) {
             form.group.columns = _columns;
             form.group.order = form.index + 1;
 
-            props.createCampaign(form);
-            messageApi.success('create success');
-            setTimeout(function() {
-                navigate('/campaigns');
-            }, 1000);
+            props.createCampaign(form, function() {
+                messageApi.success('create success');
+                setTimeout(function() {
+                    navigate('/campaigns');
+                }, 1000);
+            });
         }
     }
 

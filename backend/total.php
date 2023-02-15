@@ -322,7 +322,20 @@ if (date('w') == 4) {
                 if ($action == 'upload_all' || ($action != 'upload_all' && $c_index == $c_i)) {
                     if ($cur_schedule_index !== -1) {
                         if ($cur_schedule[$i]) {
-                            array_push($row, $cur_schedule[$i] . ' ' . $c->less_qty);
+                            if (strpos($cur_schedule, '+') !== false) {
+                                array_push($row, $cur_schedule[$i] . '+' . $c->less_qty);
+                            } else {
+                                $exp = explode(" ", $cur_schedule[$i]);
+                                if (count($exp) > 2) {
+                                    array_push($row, $cur_schedule[$i] . ' ' . $c->less_qty);
+                                } else {
+                                    if ((int)$exp[1] < 13) {
+                                        array_push($row, $cur_schedule[$i] . '+' . $c->less_qty);
+                                    } else {
+                                        array_push($row, $cur_schedule[$i] . ' ' . $c->less_qty);
+                                    }
+                                }
+                            }
                         } else {
                             array_push($row, $c->less_qty);
                         }
@@ -360,7 +373,20 @@ if (date('w') == 4) {
                 if ($action == 'upload_all' || ($action != 'upload_all' && $c_index == $c_i)) {
                     if ($cur_schedule_index !== -1) {
                         if ($cur_schedule[$i]) {
-                            array_push($row, $cur_schedule[$i] . ' ' . $c->less_qty);
+                            if (strpos($cur_schedule, '+') !== false) {
+                                array_push($row, $cur_schedule[$i] . '+' . $c->less_qty);
+                            } else {
+                                $exp = explode(" ", $cur_schedule[$i]);
+                                if (count($exp) > 2) {
+                                    array_push($row, $cur_schedule[$i] . ' ' . $c->less_qty);
+                                } else {
+                                    if ((int)$exp[1] < 13) {
+                                        array_push($row, $cur_schedule[$i] . '+' . $c->less_qty);
+                                    } else {
+                                        array_push($row, $cur_schedule[$i] . ' ' . $c->less_qty);
+                                    }
+                                }
+                            }
                         } else {
                             array_push($row, $c->less_qty);
                         }

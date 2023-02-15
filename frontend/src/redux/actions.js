@@ -1,26 +1,31 @@
 import axios from "axios";
 import qs from "qs";
-import {INIT_CAMPAIGN_DATA, INIT_GROUP_DATA, INIT_TEMP_GROUP_DATA, INIT_UPLOAD_DATA, SET_MDB_PATH} from "./actionTypes";
+import {
+    INIT_CAMPAIGN_DATA,
+    INIT_GROUP_DATA,
+    INIT_TEMP_GROUP_DATA,
+    INIT_UPLOAD_DATA,
+    SET_MDB_DATA
+} from "./actionTypes";
 import { APP_API_URL } from "../constants";
 
 export const getMDBPath = () => async (dispatch) => {
-    const json = await axios.get(APP_API_URL + 'json.php?action=read_mdb_path');
+    const result = await axios.get(APP_API_URL + 'api.php?class=Mdb&fn=get_data');
 
     dispatch({
-        type: SET_MDB_PATH,
-        fullPath: json.data
+        type: SET_MDB_DATA,
+        data: result.data
     });
 }
 
-export const setMDBPath = (path) => async (dispatch) => {
-    await axios.post(APP_API_URL + 'json.php', qs.stringify({
-        action: 'write_mdb_path',
-        path
+export const setMDBPath = (rows) => async (dispatch) => {
+    const result = await axios.post(APP_API_URL + 'api.php?class=Mdb&fn=set_data', qs.stringify({
+        rows
     }));
 
     dispatch({
-        type: SET_MDB_PATH,
-        fullPath: path
+        type: SET_MDB_DATA,
+        data: result.data
     });
 }
 
@@ -44,8 +49,6 @@ export const updateUpload = (upload) => async (dispatch) => {
         data: json.data
     });
 }
-
-
 
 export const getTempGroup = () => async (dispatch) => {
     const json = await axios.get(APP_API_URL + 'json.php?action=get_temp_group');
@@ -91,17 +94,21 @@ export const deleteGroup = (group) => async (dispatch) => {
     });
 }
 
-export const setIsUpdatedGroup = (index) => async (dispatch) => {
+export const setIsUpdatedGroup = (index, callback) => async (dispatch) => {
     await axios.post(APP_API_URL + 'json.php', qs.stringify({
         action: 'set_isupdated_group',
         index
     }));
+
+    callback();
 }
 
-export const initTempGroup = () => async (dispatch) => {
+export const initTempGroup = (callback = function(){}) => async (dispatch) => {
     await axios.post(APP_API_URL + 'json.php', qs.stringify({
         action: 'init_temp_group'
     }));
+
+    callback();
 }
 
 export const updateTempGroup = (temp) => async (dispatch) => {
@@ -133,7 +140,7 @@ export const getCampaigns = () => async (dispatch) => {
     });
 }
 
-export const createCampaign = (campaign) => async (dispatch) => {
+export const createCampaign = (campaign, callback = function(){}) => async (dispatch) => {
     const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
         action: 'create_campaign',
         campaign
@@ -143,6 +150,7 @@ export const createCampaign = (campaign) => async (dispatch) => {
         type: INIT_CAMPAIGN_DATA,
         data: json.data
     });
+    callback();
 }
 
 export const updateCampaign = (campaign) => async (dispatch) => {

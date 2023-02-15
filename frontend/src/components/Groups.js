@@ -105,13 +105,15 @@ function Groups(props) {
     }, [props.groups]);
 
     const handleAddClick = function() {
-        props.initTempGroup();
-        navigate('/groups/add');
+        props.initTempGroup(function() {
+            navigate('/groups/add');
+        });
     }
 
     const handleEditClick = function(index) {
-        props.setIsUpdatedGroup(index);
-        navigate('/groups/' + index);
+        props.setIsUpdatedGroup(index, function() {
+            navigate('/groups/' + index);
+        });
     }
 
     const handleRemoveClick = function(group) {
