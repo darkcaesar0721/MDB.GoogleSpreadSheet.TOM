@@ -89,27 +89,36 @@ const GroupCampaignSetting = (props) => {
     }, [props.campaigns.data, props.groups.data]);
 
     const handleSubmit = (form) => {
-        form.columns = columns;
-
         if (validation(form)) {
-            let groupCampaign = props.groups.data[groupIndex].campaigns[groupCampaignIndex];
-            groupCampaign.isTime = isTime;
-            groupCampaign.dayOld = dayOld;
-            groupCampaign.time = time;
-            groupCampaign.meridiem = meridiem;
-            if (isTime) {
-                groupCampaign.date = moment(Date.now()).add(0 - (dayOld - 1), 'day').format('MM/DD/YYYY');
-            } else {
-                groupCampaign.date = moment(Date.now()).add(0 - dayOld, 'day').format('MM/DD/YYYY');
+            let group = {};
+            group.way = way;
+            group.columns = columns;
+            switch (way) {
+                case 'static':
+                    group['staticCount'] = staticCount;
+                    break;
+                case 'random':
+                    group['randomStart'] = form.randomStart;
+                    group['randomEnd'] = form.randomEnd;
+                    break;
+                case 'date':
+                    group['isTime'] = isTime;
+                    group['dayOld'] = dayOld;
+                    group['time'] = time;
+                    group['meridiem'] = meridiem;
+                    if (isTime) {
+                        group['date'] = moment(Date.now()).add(0 - (dayOld - 1), 'day').format('MM/DD/YYYY');
+                    } else {
+                        group['date'] = moment(Date.now()).add(0 - dayOld, 'day').format('MM/DD/YYYY');
+                    }
+                    break;
             }
-            delete form['date'];
-            console.log(groupCampaign);
-            props.updateGroupCampaign(groupIndex, groupCampaignIndex, Object.assign({...groupCampaign}, {...form}));
-
-            messageApi.success('save success');
-            setTimeout(function() {
-                navigate('/');
-            }, 1000);
+            props.updateGroupCampaign(groupIndex, groupCampaignIndex, group, function() {
+                messageApi.success('save success');
+                setTimeout(function() {
+                    navigate('/');
+                }, 1000);
+            });
         }
     }
 
