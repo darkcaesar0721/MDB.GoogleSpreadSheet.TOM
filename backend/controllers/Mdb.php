@@ -13,6 +13,8 @@ class Mdb
 
     public $init_data = ["path" => ""];
 
+    public $mdb = [];
+
     public function init()
     {
         if (!file_exists($this->file_path)) {
@@ -20,33 +22,37 @@ class Mdb
             fwrite($fp, json_encode($this->init_data));
             fclose($fp);
         }
+
+        $this->set_mdb();
     }
 
     public function set_data()
     {
         $rows = $_REQUEST['rows'];
 
-        $contents = json_decode(file_get_contents($this->file_path));
-
         foreach($rows as $key => $value) {
-            $contents->$key = $value;
+            $this->mdb->$key = $value;
         }
 
-        file_put_contents($this->file_path, json_encode($contents));
-        echo json_encode($contents);
+        file_put_contents($this->file_path, json_encode($this->mdb));
+        echo json_encode($this->mdb);
         exit;
     }
 
     public function get_data()
     {
-        $contents = json_decode(file_get_contents($this->file_path));
-        echo json_encode($contents);
+        echo json_encode($this->mdb);
         exit;
     }
 
-    public function get_data_by_key($key) {
-        $contents = json_decode(file_get_contents($this->file_path));
-        return $contents->$key;
+    public function get_data_by_key($key)
+    {
+        return $this->mdb->$key;
+    }
+
+    public function set_mdb()
+    {
+        $this->mdb = json_decode(file_get_contents($this->file_path));
     }
 
     public function get_query_columns()

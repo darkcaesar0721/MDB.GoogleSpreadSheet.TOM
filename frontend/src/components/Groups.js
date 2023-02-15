@@ -1,11 +1,11 @@
-import {Breadcrumb, Button, Col, Divider, Popconfirm, Row, Table} from "antd";
+import {Button, Col, Divider, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {
-    deleteGroup, getGroups, initTempGroup, setIsUpdatedGroup,
+    deleteGroup, getGroups, initEditGroup, setIsUpdatedGroup,
 } from "../redux/actions";
 import MDBPath from "./MDBPath";
-import { PlusCircleOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusCircleOutlined, EditOutlined } from '@ant-design/icons';
 import {useNavigate} from "react-router-dom";
 import MenuList from "./MenuList";
 
@@ -22,7 +22,7 @@ function Groups(props) {
 
     useEffect(function() {
         props.getGroups();
-        props.initTempGroup();
+        props.initEditGroup();
     }, []);
 
     useEffect(function() {
@@ -36,27 +36,17 @@ function Groups(props) {
             },
         });
 
-        let no_column = {
-            title: 'no',
-            key: 'no',
-            width: 30,
-            render: (_, record) => {
-                let number = 0;
-                groups.forEach((g, i) => {
-                    if (g['key'] === record['key']) {
-                        number = i + 1;
-                        return;
-                    }
-                })
-                return (
-                    <>
-                        <span>{number}</span>
-                    </>
-                )
-            }
-        }
-
-        setColumns([no_column,
+        setColumns([
+            {
+                title: 'no',
+                key: 'no',
+                width: 30,
+                render: (_, record) => {
+                    return (
+                        <span>{record.index + 1}</span>
+                    )
+                }
+            },
             {
                 title: 'Group Name',
                 dataIndex: 'name',
@@ -67,9 +57,7 @@ function Groups(props) {
                 key: 'campaign_count',
                 render: (_, record) => {
                     return (
-                        <>
-                            <span>{record.campaigns.length}</span>
-                        </>
+                        <span>{record.campaigns.length}</span>
                     )
                 }
             },
@@ -77,26 +65,8 @@ function Groups(props) {
                 title: 'Action',
                 key: 'operation',
                 render: (_, record) => {
-                    let index = -1;
-                    groups.forEach((g, i) => {
-                        if (g.key === record.key) {
-                            index = i;
-                        }
-                    });
-
                     return (
-                        <>
-                            <Button icon={<EditOutlined /> } onClick={(e) => {handleEditClick(index)}} style={{marginRight: 1}}/>
-                            {/*<Popconfirm*/}
-                            {/*    title="Delete the campaign"*/}
-                            {/*    description="Are you sure to delete this campaign?"*/}
-                            {/*    onConfirm={(e) => {handleRemoveClick(record)}}*/}
-                            {/*    okText="Yes"*/}
-                            {/*    cancelText="No"*/}
-                            {/*>*/}
-                            {/*    <Button danger icon={<DeleteOutlined /> }/>*/}
-                            {/*</Popconfirm>*/}
-                        </>
+                        <Button icon={<EditOutlined /> } onClick={(e) => {handleEditClick(record.index)}} style={{marginRight: 1}}/>
                     )
                 }
             },
@@ -105,19 +75,13 @@ function Groups(props) {
     }, [props.groups]);
 
     const handleAddClick = function() {
-        props.initTempGroup(function() {
-            navigate('/groups/add');
-        });
+        navigate('/groups/add');
     }
 
     const handleEditClick = function(index) {
         props.setIsUpdatedGroup(index, function() {
             navigate('/groups/' + index);
         });
-    }
-
-    const handleRemoveClick = function(group) {
-        props.deleteGroup(group);
     }
 
     const handleTableChange = (pagination, filters, sorter) => {
@@ -164,5 +128,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps,
-    { getGroups, deleteGroup, initTempGroup, setIsUpdatedGroup }
+    { getGroups, deleteGroup, initEditGroup, setIsUpdatedGroup }
 )(Groups);

@@ -32,15 +32,28 @@ class Campaign
         $this->set_campaign_lists();
     }
 
+    public function get_campaigns()
+    {
+        $this->set_campaign_lists();
+        return $this->campaign_lists;
+    }
+
+    public function init_data_to_edit_group()
+    {
+        foreach($this->campaign_lists as $i => $c) {
+            $this->campaign_lists[$i]->group = array_merge($this->init_data['group'], array("columns" => $c->columns, "order" => $c->index + 1));
+            file_put_contents($this->folder_path . '/' . $c->file_name, json_encode($this->campaign_lists[$i]));
+        }
+    }
+
     public function create()
     {
-        $campaigns = glob($this->folder_path . "\\" . "*.json");
-        $name = (count($campaigns) + 1) . '.json';
+        $name = (count($this->campaign_lists) + 1) . '.json';
 
         $data = $_REQUEST['data'];
 
         $campaign = array_merge($this->init_data, $data);
-        $campaign['index'] = count($campaigns);
+        $campaign['index'] = count($this->campaign_lists);
         $campaign['key'] = $campaign['query'];
         $campaign['file_name'] = $name;
         $campaign['group']['columns'] = $campaign['columns'];
@@ -59,19 +72,27 @@ class Campaign
     public function update()
     {
         $file_name = $_REQUEST['file_name'];
-        $c = $_REQUEST['campaign'];
+        
         $g = $_REQUEST['group'];
 
         $file_path = $this->folder_path . '/' . $file_name;
 
         $campaign = json_decode(file_get_contents($file_path));
 
-        foreach($c as $k => $v) {
-            $campaign->$k = $v;
+        if (array_key_exists('campaign', $_REQUEST)) {
+            $c = $_REQUEST['campaign'];
+            foreach($c as $k => $v) {
+                $campaign->$k = $v;
+            }
         }
-        foreach($g as $k => $v) {
-            $campaign->group->$k = $v;
+
+        if (array_key_exists('group', $_REQUEST)) {
+            $g = $_REQUEST['group'];
+            foreach($g as $k => $v) {
+                $campaign->group->$k = $v;
+            }
         }
+
         file_put_contents($file_path, json_encode($campaign));
 
         $this->set_campaign_lists();

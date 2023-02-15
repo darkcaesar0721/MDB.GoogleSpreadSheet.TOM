@@ -64,6 +64,58 @@ export const updateCampaign = (file_name, campaign = {}, group = {}, callback = 
     callback();
 }
 
+export const getGroups = () => async (dispatch) => {
+    const result = await axios.get(APP_API_URL + 'api.php?class=Group&fn=get_data');
+
+    dispatch({
+        type: INIT_GROUP_DATA,
+        data: result.data
+    });
+}
+
+export const initEditGroup = () => async (dispatch) => {
+    await axios.post(APP_API_URL + 'api.php?class=Group&fn=init_edit_group');
+}
+
+export const getTempGroup = () => async (dispatch) => {
+    const result = await axios.get(APP_API_URL + 'api.php?class=TempGroup&fn=get_data');
+
+    dispatch({
+        type: INIT_TEMP_GROUP_DATA,
+        data: result.data
+    });
+}
+
+export const updateTempGroup = (rows) => async (dispatch) => {
+    const result = await axios.post(APP_API_URL + 'api.php?class=TempGroup&fn=update', qs.stringify({
+        rows
+    }));
+
+    dispatch({
+        type: INIT_TEMP_GROUP_DATA,
+        data: result.data
+    });
+}
+
+export const createGroup = (callback = function() {}) => async (dispatch) => {
+    const result = await axios.post(APP_API_URL + 'api.php?class=Group&fn=create');
+
+    dispatch({
+        type: INIT_GROUP_DATA,
+        data: result.data
+    });
+
+    callback();
+}
+
+
+
+
+
+
+
+
+
 export const getUpload = () => async (dispatch) => {
     const json = await axios.get(APP_API_URL + 'json.php?action=get_upload');
 
@@ -81,26 +133,6 @@ export const updateUpload = (upload) => async (dispatch) => {
 
     dispatch({
         type: INIT_UPLOAD_DATA,
-        data: json.data
-    });
-}
-
-export const getTempGroup = () => async (dispatch) => {
-    const json = await axios.get(APP_API_URL + 'json.php?action=get_temp_group');
-
-    dispatch({
-        type: INIT_TEMP_GROUP_DATA,
-        temp: json.data
-    });
-}
-
-export const createGroup = () => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
-        action: 'create_group'
-    }));
-
-    dispatch({
-        type: INIT_GROUP_DATA,
         data: json.data
     });
 }
@@ -138,33 +170,11 @@ export const setIsUpdatedGroup = (index, callback) => async (dispatch) => {
     callback();
 }
 
-export const initTempGroup = (callback = function(){}) => async (dispatch) => {
-    await axios.post(APP_API_URL + 'json.php', qs.stringify({
-        action: 'init_temp_group'
-    }));
 
-    callback();
-}
 
-export const updateTempGroup = (temp) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
-        action: 'update_temp_group',
-        temp
-    }));
-    dispatch({
-        type: INIT_TEMP_GROUP_DATA,
-        temp: json.data
-    });
-}
 
-export const getGroups = () => async (dispatch) => {
-    const json = await axios.get(APP_API_URL + 'json.php?action=get_groups');
 
-    dispatch({
-        type: INIT_GROUP_DATA,
-        data: json.data
-    });
-}
+
 
 
 

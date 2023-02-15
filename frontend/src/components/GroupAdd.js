@@ -26,8 +26,8 @@ function GroupAdd(props) {
 
     useEffect(function() {
         props.getCampaigns();
-        props.getTempGroup();
         props.getGroups();
+        props.getTempGroup();
     }, []);
 
     useEffect(function() {
@@ -176,8 +176,10 @@ function GroupAdd(props) {
     }, [props.campaigns, selectedCampaignKeys]);
 
     useEffect(function() {
-        setName(props.temp.name);
-        setSelectedCampaignKeys(props.temp.selectedCampaignKeys);
+        if (props.temp !== undefined) {
+            setName(props.temp.name);
+            setSelectedCampaignKeys(props.temp.selectedCampaignKeys);
+        }
     }, [props.temp]);
 
     const handleOrderChange = function(e, r) {
@@ -199,11 +201,8 @@ function GroupAdd(props) {
         });
         setSelectedCampaignKeys(_selectedCampaignKeys);
 
-        let temp = props.temp;
-        temp.selectedCampaignKeys = _selectedCampaignKeys;
-        props.updateTempGroup(temp);
-
-        props.updateCampaign(r);
+        props.updateTempGroup({selectedCampaignKeys: _selectedCampaignKeys});
+        props.updateCampaign(r.file_name, {}, {order: e.target.value});
     }
 
     const handleSubmit = function() {
@@ -245,9 +244,8 @@ function GroupAdd(props) {
             });
             setSelectedCampaignKeys(_selectedCampaignKeys);
 
-            let temp = props.temp;
-            temp.selectedCampaignKeys = _selectedCampaignKeys;
-            props.updateTempGroup(temp);
+            if (_selectedCampaignKeys.length === 0) _selectedCampaignKeys = "";
+            props.updateTempGroup({selectedCampaignKeys: _selectedCampaignKeys});
         }
     };
 
@@ -261,9 +259,10 @@ function GroupAdd(props) {
 
     const handleNameChange = (e) => {
         setName(e.target.value);
-        let temp = props.temp;
-        temp.name = e.target.value;
-        props.updateTempGroup(temp);
+    }
+
+    const saveName = () => {
+        props.updateTempGroup({name: name});
     }
 
     return (
@@ -279,7 +278,7 @@ function GroupAdd(props) {
                     <span style={{lineHeight: 2}}>Group Name:</span>
                 </Col>
                 <Col span={7}>
-                    <Input placeholder="8AM ACTION" value={name} onChange={handleNameChange}/>
+                    <Input onBlur={saveName} placeholder="8AM ACTION" value={name} onChange={handleNameChange}/>
                 </Col>
             </Row>
             <Table
