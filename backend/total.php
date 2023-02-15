@@ -289,6 +289,8 @@ if ($action == 'upload_all') {
 //    }
 }
 
+file_put_contents($json_file_name, json_encode($data));
+
 if (date('w') == 4) {
     $name = date('l') . ' ' . $data->groups[$g_i]->name;
     $cur_schedule = [];
@@ -313,7 +315,7 @@ if (date('w') == 4) {
 
     $row = ['', date('m/d/Y'), $name];
 
-    for ($i = 3; $i < (3 + count($data->campaigns)); $i++) {
+    for ($i = 3; $i < 100; $i++) {
         $ext = false;
         foreach($data->campaigns as $c_index => $c){
             if ($i == $c->scheduleIndex) {
@@ -351,7 +353,7 @@ if (date('w') == 4) {
     }
 } else {
     $row = ['', date('m/d/Y'), date('l')];
-    for ($i = 3; $i < (3 + count($data->campaigns)); $i++) {
+    for ($i = 3; $i < 100; $i++) {
         $ext = false;
         foreach($data->campaigns as $c_index => $c){
             if ($i == $c->scheduleIndex) {
@@ -397,13 +399,12 @@ $params = [
 ];
 
 if ($cur_schedule_index == -1) {
-    $update_range = 'Sheet1!' . 'A' . (count($schedule_values) + 1) . ':' . 'Z' . (count($schedule_values) + 1);
+    $update_range = 'Sheet1!' . 'A' . (count($schedule_values) + 1) . ':' . 'ZZ' . (count($schedule_values) + 1);
 } else {
-    $update_range = 'Sheet1!' . 'A' . ($cur_schedule_index + 1) . ':' . 'Z' . ($cur_schedule_index + 1);
+    $update_range = 'Sheet1!' . 'A' . ($cur_schedule_index + 1) . ':' . 'ZZ' . ($cur_schedule_index + 1);
 }
 
 $update_sheet = $service->spreadsheets_values->update('16fiKZjpWZ3ZCY69JpRrTBAYLS4GnjqEKp8tj2G65EAI', $update_range, $body, $params);
 
-file_put_contents($json_file_name, json_encode($data));
 echo json_encode('success');
 exit;
