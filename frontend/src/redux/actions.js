@@ -129,94 +129,37 @@ export const updateGroup = (index, callback = function() {}) => async (dispatch)
     callback();
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export const getUpload = () => async (dispatch) => {
-    const json = await axios.get(APP_API_URL + 'json.php?action=get_upload');
+    const result = await axios.get(APP_API_URL + 'api.php?class=UploadConfig&fn=get_data');
 
     dispatch({
         type: INIT_UPLOAD_DATA,
-        data: json.data
+        data: result.data
     });
 }
 
-export const updateUpload = (upload) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
-        action: 'update_upload',
-        upload
+export const updateUpload = (rows, callback = function() {}) => async (dispatch) => {
+    const result = await axios.post(APP_API_URL + 'api.php?class=UploadConfig&fn=update', qs.stringify({
+        rows
     }));
 
     dispatch({
         type: INIT_UPLOAD_DATA,
-        data: json.data
+        data: result.data
     });
+
+    callback();
 }
 
-
-
-export const deleteGroup = (group) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
-        action: 'delete_group',
-        group
-    }));
-
-    dispatch({
-        type: INIT_GROUP_DATA,
-        data: json.data
-    });
-}
-
-export const updateGroupCampaign = (groupIndex, groupCampaignIndex, groupCampaign) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
-        action: 'update_group_campaign',
+export const updateGroupCampaign = (groupIndex, groupCampaignIndex, rows, callback = function() {}) => async (dispatch) => {
+    const result = await axios.post(APP_API_URL + 'api.php?class=Group&fn=update_group_campaign', qs.stringify({
         groupIndex,
         groupCampaignIndex,
-        groupCampaign,
+        rows
     }));
     dispatch({
         type: INIT_GROUP_DATA,
-        data: json.data
+        data: result.data
     });
-}
-
-export const updateCampaignFields = (action, index, fields, values) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
-        action: action,
-        index,
-        fields,
-        values
-    }));
-    dispatch({
-        type: INIT_CAMPAIGN_DATA,
-        data: json.data
-    });
-}
-
-export const updateUploadFields = (fields, values) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + 'json.php', qs.stringify({
-        action: 'update_upload_fields',
-        fields,
-        values,
-    }));
-
-    dispatch({
-        type: INIT_UPLOAD_DATA,
-        data: json.data
-    });
+    callback();
 }

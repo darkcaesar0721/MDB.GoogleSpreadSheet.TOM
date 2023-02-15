@@ -33,8 +33,6 @@ const GroupCampaignUploadAll = (props) => {
         }
     }, [props.campaigns]);
 
-
-
     const setColumnInfo = () => {
         let _columns = [
             {
@@ -196,14 +194,13 @@ const GroupCampaignUploadAll = (props) => {
     }, [props.uploadInfo]);
 
     const handlePhoneEditCheck = (e, r) => {
-        let groupCampaign = props.group.campaigns[r.groupCampaignIndex];
-        groupCampaign.isEditPhone = e.target.checked;
-        props.updateGroupCampaign(props.groupIndex, r.groupCampaignIndex, groupCampaign);
+        props.updateGroupCampaign(props.groupIndex, r.groupCampaignIndex, {isEditPhone: e.target.checked});
     }
 
     const handleIsLastCheck = (e, r) => {
         let campaign = props.globalCampaigns[r.index];
-        props.updateCampaignFields('update_campaign_fields', r.index, ['isLast'], [(campaign.isLast == true || campaign.isLast == "true") ? false : true]);
+        const isLast = (campaign.isLast == true || campaign.isLast == "true") ? false : true;
+        props.updateCampaign(r.file_name, {isLast: isLast});
     }
 
     const handleTableChange = (pagination, filters, sorter) => {
@@ -222,7 +219,7 @@ const GroupCampaignUploadAll = (props) => {
     }
 
     const handleCommentSave = (r) => {
-        props.updateCampaignFields('update_campaign_fields', r.index, ['comment'], [r.comment]);
+        props.updateCampaign(r.file_name, {comment: r.comment});
     }
 
     const handlePhoneChange = (e, r) => {
@@ -233,7 +230,7 @@ const GroupCampaignUploadAll = (props) => {
     };
 
     const handlePhoneSave = (r) => {
-        props.updateCampaignFields('update_campaign_fields', r.index, ['last_phone'], [r.last_phone]);
+        props.updateCampaign(r.file_name, {last_phone: r.last_phone});
     }
 
     // rowSelection object indicates the need for row selection
@@ -242,7 +239,7 @@ const GroupCampaignUploadAll = (props) => {
             setSelectedCampaignKeys(selectedRowKeys);
 
             if (selectedRowKeys.length == 0) selectedRowKeys = '';
-            props.updateUploadFields(['selectedCampaignKeys'], [selectedRowKeys]);
+            props.updateUpload({'selectedCampaignKeys': selectedRowKeys});
         }
     };
 

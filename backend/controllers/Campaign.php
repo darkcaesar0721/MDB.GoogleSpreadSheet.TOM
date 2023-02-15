@@ -85,8 +85,6 @@ class Campaign
     public function update()
     {
         $file_name = $_REQUEST['file_name'];
-        
-        $g = $_REQUEST['group'];
 
         $file_path = $this->folder_path . '/' . $file_name;
 

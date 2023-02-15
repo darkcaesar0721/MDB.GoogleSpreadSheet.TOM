@@ -192,7 +192,7 @@ const GroupCampaignUploadOneByOne = (props) => {
     }
 
     const handleCommentSave = (r) => {
-        props.updateCampaignFields('update_campaign_fields', r.index, ['comment'], [r.comment]);
+        props.updateCampaign(r.file_name, {comment: r.comment});
     }
 
     const handlePhoneChange = (e, r) => {
@@ -203,18 +203,16 @@ const GroupCampaignUploadOneByOne = (props) => {
     };
 
     const handlePhoneSave = (r) => {
-        props.updateCampaignFields('update_campaign_fields', r.index, ['last_phone'], [r.last_phone]);
+        props.updateCampaign(r.file_name, {last_phone: r.last_phone});
     }
 
     const handleIsLastCheck = (e, r) => {
         let campaign = props.globalCampaigns[r.index];
-        props.updateCampaignFields('update_campaign_fields', r.index, ['isLast'], [(campaign.isLast == true || campaign.isLast == "true") ? false : true]);
+        props.updateCampaign(r.file_name, {isLast: (campaign.isLast == true || campaign.isLast == "true") ? false : true});
     }
 
     const handlePhoneEditCheck = (e, r) => {
-        let groupCampaign = props.group.campaigns[r.groupCampaignIndex];
-        groupCampaign.isEditPhone = e.target.checked;
-        props.updateGroupCampaign(props.groupIndex, r.groupCampaignIndex, groupCampaign);
+        props.updateGroupCampaign(props.groupIndex, r.groupCampaignIndex, {isEditPhone: e.target.checked});
     }
 
     const handleTableChange = (pagination, filters, sorter) => {
@@ -244,7 +242,7 @@ const GroupCampaignUploadOneByOne = (props) => {
                         bordered={true}
                         size="small"
                         columns={columns}
-                        dataSource={props.campaigns}
+                        dataSource={campaigns}
                         pagination={tableParams.pagination}
                         onChange={handleTableChange}
                         rowClassName={(record, index) => ((record.isLast == true || record.isLast == "true") ? "campaign_active" : "") }

@@ -157,6 +157,27 @@ class Group
         exit;
     }
 
+    public function update_group_campaign()
+    {
+        $g_i = $_REQUEST['groupIndex'];
+        $g_c_i = $_REQUEST['groupCampaignIndex'];
+
+        $rows = $_REQUEST['rows'];
+
+        foreach($rows as $key => $value) {
+            $this->group_lists[$g_i]->campaigns[$g_c_i]->$key = $value;
+        }
+
+        $group =$this->group_lists[$g_i];
+
+        $fp = fopen($this->folder_path . '/' . $group->file_name, 'w');
+        fwrite($fp, json_encode($group));
+        fclose($fp);
+
+        echo json_encode($this->group_lists);
+        exit;
+    }
+
     public function get_data()
     {
         echo json_encode($this->group_lists);

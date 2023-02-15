@@ -2,7 +2,7 @@ import {Button, Col, Divider, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {
-    deleteGroup, getGroups, initEditGroup
+    getGroups, initEditGroup
 } from "../redux/actions";
 import MDBPath from "./MDBPath";
 import { PlusCircleOutlined, EditOutlined } from '@ant-design/icons';
@@ -127,5 +127,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps,
-    { getGroups, deleteGroup, initEditGroup }
+    { getGroups, initEditGroup }
 )(Groups);

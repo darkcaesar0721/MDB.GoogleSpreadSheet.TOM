@@ -6,9 +6,9 @@ import {
     getCampaigns,
     getGroups,
     getUpload,
-    updateCampaign, updateCampaignFields,
+    updateCampaign,
     updateGroupCampaign,
-    updateUpload, updateUploadFields
+    updateUpload
 } from "../redux/actions";
 import axios from "axios";
 import {APP_API_URL} from "../constants";
@@ -202,11 +202,11 @@ const Upload = (props) => {
 
     const handleGroupChange = function(value) {
         setGroup(value);
-        props.updateUploadFields(['group'], [value]);
+        props.updateUpload({group: value});
     }
     const handleWayChange = function(e) {
         setWay(e.target.value);
-        props.updateUploadFields(['way'], [e.target.value]);
+        props.updateUpload({way: e.target.value});
     }
     const handleTableChange = (pagination, filters, sorter) => {
         setTableParams({
@@ -285,9 +285,9 @@ const Upload = (props) => {
                         group={props.groups.data[group]}
                         upload={handleUploadAll}
                         uploadInfo={props.upload}
-                        updateCampaignFields={props.updateCampaignFields}
+                        updateCampaign={props.updateCampaign}
+                        updateUpload={props.updateUpload}
                         updateGroupCampaign={props.updateGroupCampaign}
-                        updateUploadFields={props.updateUploadFields}
                     /> : ''
             }
             {
@@ -297,9 +297,10 @@ const Upload = (props) => {
                         groupIndex={group}
                         globalCampaigns={props.campaigns.data}
                         group={props.groups.data[group]}
-                        updateGroupCampaign={props.updateGroupCampaign}
-                        updateCampaignFields={props.updateCampaignFields}
                         upload={handleUploadOneByOne}
+                        updateCampaign={props.updateCampaign}
+                        updateUpload={props.updateUpload}
+                        updateGroupCampaign={props.updateGroupCampaign}
                     /> : ''
             }
             <Row style={{marginTop: 10}}>
@@ -325,5 +326,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign, updateCampaignFields, updateUploadFields }
+    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign }
 )(Upload);
