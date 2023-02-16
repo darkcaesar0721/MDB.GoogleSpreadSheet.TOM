@@ -63,8 +63,7 @@ class Backup
 
     public function run()
     {
-        $path = $_REQUEST['path'];
-
+        $path = $this->backup->path;
         $date = date("Y") . "" . date("m") . "" . date("d") . " " . date("h") . "_" . date("m") . "_" . date("s") . " " . date("A");
         
         $campaign_path = $path . "\\" . $date . "\\Campaigns";

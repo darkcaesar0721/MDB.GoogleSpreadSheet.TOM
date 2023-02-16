@@ -6,6 +6,7 @@ require_once('Mdb.php');
 require_once('Campaign.php');
 require_once('Group.php');
 require_once('UploadConfig.php');
+require_once('Backup.php');
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -22,11 +23,13 @@ class Upload
 	public $campaign_obj;
 	public $group_obj;
 	public $upload_config_obj;
+	public $backup_obj;
 
 	public $mdb;
 	public $campaigns;
 	public $groups;
 	public $upload_config;
+	public $backup;
 
 	public $service;
 
@@ -40,6 +43,7 @@ class Upload
 		$this->init_campaigns();
 		$this->init_groups();
 		$this->init_upload_config();
+		$this->init_backup();
 
         $this->init_google_sheet_service();
 
@@ -71,9 +75,15 @@ class Upload
 
 	public function init_upload_config()
 	{
-		$this->upload_config = new \controllers\UploadConfig();
-        $this->upload_config->init();
-        $this->upload_config = $this->upload_config->get_upload_config();
+		$this->upload_config_obj = new \controllers\UploadConfig();
+        $this->upload_config_obj->init();
+        $this->upload_config = $this->upload_config_obj->get_upload_config();
+	}
+
+	public function init_backup()
+	{
+		$this->backup_obj = new \controllers\Backup();
+        $this->backup_obj->init();
 	}
 
 	public function init_google_sheet_service()
@@ -88,6 +98,8 @@ class Upload
 
 	public function init_schedule_data()
 	{
+		date_default_timezone_set('America/Los_Angeles');
+
 		$response = $this->service->spreadsheets_values->get('16fiKZjpWZ3ZCY69JpRrTBAYLS4GnjqEKp8tj2G65EAI', 'Sheet1');
 
 		$this->schedules = $response->getValues();
@@ -115,9 +127,22 @@ class Upload
 	        }
 	    }
 
+	    foreach ($this->campaigns as $c_i => $c) {
+	    	$isExist = false;
+	        foreach ($this->upload_config->selectedCampaignKeys as $key) {
+	            if ($key == $c->key) {
+	                $isExist = true;
+	            }
+	        }
+	        if (!$isExist)
+	        	$this->campaigns[$c_i]->scheduleIndex = -1;
+	    }
+
 	    $this->campaign_obj->save_datas($this->campaigns);
 
-	    $this->upload_count_by_schedule("upload_all");
+	    $this->upload_count_by_schedule("upload_all", $g_i, -1);
+
+	    $this->backup_obj->run();
 	    echo json_encode("success");
 	    exit;
 	}
@@ -131,9 +156,17 @@ class Upload
 	    $this->upload_data($g_i, $g_c_i, $c_i);
 	    $this->campaigns[$c_i]->isLast = true;
 
+	    foreach ($this->campaigns as $_c_i => $c) {
+	        if ($_c_i != $c_i) {
+	        	$this->campaigns[$_c_i]->scheduleIndex = -1;
+	        }
+	    }
+
 	    $this->campaign_obj->save_datas($this->campaigns);
 
-	    $this->upload_count_by_schedule("upload_one_by_one");
+	    $this->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i);
+
+	    $this->backup_obj->run();
 	    echo json_encode("success");
 	    exit;
 	}
@@ -355,7 +388,7 @@ class Upload
 	    $this->campaigns[$c_i]->scheduleIndex = $index;
 	}
 
-	public function upload_count_by_schedule($action)
+	public function upload_count_by_schedule($action, $g_i, $c_i)
 	{
 		$cur_schedule = $this->cur_schedule;
 		$cur_schedule_index = $this->cur_schedule_index;
