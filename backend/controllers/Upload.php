@@ -114,6 +114,57 @@ class Upload
 		}
 	}
 
+	public function get_last_phone()
+	{
+		$c_i = $_REQUEST['campaignIndex'];
+		$c = $this->campaigns[$c_i];
+
+		$url = $c->urls[0];
+
+        $url_array = parse_url($url);
+        $path_array = explode("/", $url_array["path"]);
+
+        $spreadsheetId = $path_array[3];
+
+        $spreadSheet = $this->service->spreadsheets->get($spreadsheetId);
+        $sheets = $spreadSheet->getSheets();
+
+        $cur_sheet = [];
+        foreach($sheets as $sheet) {
+            $sheetId = $sheet['properties']['sheetId'];
+
+            $pos = strpos($url, "gid=" . $sheetId);
+
+            if($pos) {
+                $cur_sheet = $sheet;
+                break;
+            }
+        }
+
+        $response = $this->service->spreadsheets_values->get($spreadsheetId, $cur_sheet['properties']['title']);
+        $values = $response->getValues();
+
+        $last_phone = '';
+
+        $is_last_phone = false;
+        for ($i = count($values) - 1; $i >= 0; $i--) {
+            if ($is_last_phone) break;
+
+            for ($j = 0; $j < count($values[$i]); $j++) {
+                if ($values[$i][$j] === 'Phone') {
+                    $last_phone = $values[$i + 1][$j];
+                    $is_last_phone = true;
+                    break;
+                }
+            }
+        }
+
+        $this->campaigns[$c_i]->last_phone = $last_phone;
+        $this->campaign_obj->save_data($this->campaigns[$c_i]);
+        echo json_encode($this->campaigns);
+        exit;
+	}
+
 	public function upload_all()
 	{
 		$g_i = $_REQUEST['groupIndex'];

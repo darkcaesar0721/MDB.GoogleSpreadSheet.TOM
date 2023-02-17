@@ -179,6 +179,16 @@ const GroupCampaignUploadAll = (props) => {
                 }
             },
             {
+                title: 'Get Phone',
+                key: 'get_phone',
+                width: 80,
+                render: (_, r) => {
+                    return (
+                        <Button type="primary" onClick={(e) => {props.getLastPhone(r)}}>Get Phone</Button>
+                    )
+                }
+            },
+            {
                 title: 'SystemCreateDate',
                 dataIndex: 'SystemCreateDate',
                 key: 'SystemCreateDate',

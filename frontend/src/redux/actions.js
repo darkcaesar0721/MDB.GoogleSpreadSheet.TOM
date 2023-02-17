@@ -184,3 +184,15 @@ export const updateBackup = (rows, callback = function() {}) => async (dispatch)
     });
     callback();
 }
+
+export const getLastPhone = (campaignIndex, callback) => async (dispatch) => {
+    const result = await axios.post(APP_API_URL + 'api.php?class=Upload&fn=get_last_phone', qs.stringify({
+        campaignIndex
+    }));
+
+    dispatch({
+        type: INIT_CAMPAIGN_DATA,
+        data: result.data
+    });
+    callback();
+}

@@ -4,7 +4,7 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {
     getCampaigns,
-    getGroups,
+    getGroups, getLastPhone,
     getUpload,
     updateCampaign,
     updateGroupCampaign,
@@ -243,6 +243,14 @@ const Upload = (props) => {
         })
     }
 
+    const getLastPhone = (campaign) => {
+        setLoading(true);
+        setTip("Wait for get last phone....");
+        props.getLastPhone(campaign.index, function() {
+            setLoading(false);
+        })
+    }
+
     return (
         <Spin spinning={loading} tip={tip} delay={500}>
             {contextHolder}
@@ -287,6 +295,7 @@ const Upload = (props) => {
                         updateCampaign={props.updateCampaign}
                         updateUpload={props.updateUpload}
                         updateGroupCampaign={props.updateGroupCampaign}
+                        getLastPhone={getLastPhone}
                     /> : ''
             }
             {
@@ -300,6 +309,7 @@ const Upload = (props) => {
                         updateCampaign={props.updateCampaign}
                         updateUpload={props.updateUpload}
                         updateGroupCampaign={props.updateGroupCampaign}
+                        getLastPhone={getLastPhone}
                     /> : ''
             }
             <Row style={{marginTop: 10}}>
@@ -325,5 +335,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign }
+    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign, getLastPhone }
 )(Upload);
