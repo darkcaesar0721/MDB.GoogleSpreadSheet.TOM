@@ -94,7 +94,7 @@ const GroupCampaignUploadOneByOne = (props) => {
                 {
                     title: 'Send Amount',
                     key: 'count',
-                    width: 80,
+                    width: 90,
                     render: (_, record) => {
                         let count = 'all';
 
@@ -109,7 +109,7 @@ const GroupCampaignUploadOneByOne = (props) => {
                                 count = record.randomStart + ' ~ ' + record.randomEnd;
                                 break;
                             case 'date':
-                                let old = record.dayOld == 1 ? 'today' : record.dayOld + 'old';
+                                let old = record.dayOld == 1 ? 'today' : record.dayOld + ' day old ';
                                 count = old + (record.isTime == "true" ? '  ' + record.time + record.meridiem : '');
                                 break;
                         }
