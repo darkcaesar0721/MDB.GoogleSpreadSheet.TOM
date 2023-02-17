@@ -171,6 +171,13 @@ class Upload
 	    exit;
 	}
 
+	public function randomGen($min, $max, $quantity)
+    {
+        $numbers = range($min, $max);
+        shuffle($numbers);
+        return array_slice($numbers, 0, $quantity);
+    }
+
 	public function upload_data($g_i, $g_c_i, $c_i)
 	{
 		$g = $this->groups[$g_i];
@@ -294,15 +301,10 @@ class Upload
 	                            array_push($up_rows, $up_row);
 	                        }
 	                    } else {
-	                        function randomGen($min, $max, $quantity)
-	                        {
-	                            $numbers = range($min, $max);
-	                            shuffle($numbers);
-	                            return array_slice($numbers, 0, $quantity);
-	                        }
+	                        
 
 	                        $first = 0;
-	                        $arrs = randomGen(1, count($rows) - 1, $count);
+	                        $arrs = $this->randomGen(1, count($rows) - 1, $count);
 	                        array_push($arrs, $first);
 	                        sort($arrs);
 
