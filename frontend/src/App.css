@@ -122,3 +122,7 @@
 label, span, div, input {
   font-family: math !important;
 }
+
+.upload-preview label, .upload-preview span{
+  font-size: 0.8rem !important;
+}

@@ -217,7 +217,7 @@ const CampaignUploadPreview = (props) => {
                                                     <Input disabled={true} placeholder="Days Old" value={dayOld}/>
                                                 </Col>
                                                 <Col span={1} offset={1}>
-                                                    <Checkbox disabled={true} checked={true} style={{paddingTop: '0.3rem'}}></Checkbox>
+                                                    <Checkbox disabled={true} checked={isTime} style={{paddingTop: '0.3rem'}}></Checkbox>
                                                 </Col>
                                                 <Col span={2}>
                                                     <Input disabled={true} placeholder="Time" value={time}/>

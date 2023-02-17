@@ -196,3 +196,17 @@ export const getLastPhone = (campaignIndex, callback) => async (dispatch) => {
     });
     callback();
 }
+
+export const uploadAfterPreview = (groupIndex, groupCampaignIndex, campaignIndex, callback) => async (dispatch) => {
+    const result = await axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_after_preview', qs.stringify({
+        groupIndex,
+        groupCampaignIndex,
+        campaignIndex
+    }));
+    console.log(result);
+    dispatch({
+        type: INIT_CAMPAIGN_DATA,
+        data: result.data
+    });
+    callback();
+}

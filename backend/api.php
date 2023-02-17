@@ -7,6 +7,8 @@ require_once('controllers/UploadConfig.php');
 require_once('controllers/Upload.php');
 require_once('controllers/Backup.php');
 
+error_reporting(E_ALL & E_NOTICE);
+
 $class = $_REQUEST['class'];
 $fn = $_REQUEST['fn'];
 

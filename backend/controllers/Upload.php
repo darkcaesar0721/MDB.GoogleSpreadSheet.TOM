@@ -165,6 +165,39 @@ class Upload
         exit;
 	}
 
+    public function upload_after_preview()
+    {
+        $g_i = $_REQUEST['groupIndex'];
+        $g_c_i = $_REQUEST['groupCampaignIndex'];
+        $c_i = $_REQUEST['campaignIndex'];
+
+        $this->upload_after_preview_data($g_i, $g_c_i, $c_i);
+
+        $this->campaigns[$c_i]->_last_qty = 0;
+        $this->campaigns[$c_i]->_less_qty = 0;
+        $this->campaigns[$c_i]->_last_phone = "";
+        $this->campaigns[$c_i]->_SystemCreateDate = "";
+        $this->campaigns[$c_i]->_upRows = [];
+        $this->campaigns[$c_i]->_up_rows = [];
+        $this->campaigns[$c_i]->isManually = false;
+
+        $this->campaigns[$c_i]->isLast = true;
+
+        foreach ($this->campaigns as $_c_i => $c) {
+            if ($_c_i != $c_i) {
+                $this->campaigns[$_c_i]->scheduleIndex = -1;
+            }
+        }
+
+        $this->campaign_obj->save_datas($this->campaigns);
+
+        $this->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i);
+
+        $this->backup_obj->run(false);
+        echo json_encode($this->campaigns);
+        exit;
+    }
+
 	public function upload_all()
 	{
 		$g_i = $_REQUEST['groupIndex'];
@@ -203,19 +236,28 @@ class Upload
 		$g_i = $_REQUEST['groupIndex'];
 	    $g_c_i = $_REQUEST['groupCampaignIndex'];
 	    $c_i = $_REQUEST['campaignIndex'];
+        $manually = $_REQUEST['manually'];
 
-	    $this->upload_data($g_i, $g_c_i, $c_i);
-	    $this->campaigns[$c_i]->isLast = true;
+	    $this->upload_data($g_i, $g_c_i, $c_i, $manually);
 
-	    foreach ($this->campaigns as $_c_i => $c) {
-	        if ($_c_i != $c_i) {
-	        	$this->campaigns[$_c_i]->scheduleIndex = -1;
-	        }
-	    }
+        if ($manually == "false") {
+            $this->campaigns[$c_i]->isLast = true;
+            $this->campaigns[$c_i]->isManually = false;
+
+            foreach ($this->campaigns as $_c_i => $c) {
+                if ($_c_i != $c_i) {
+                    $this->campaigns[$_c_i]->scheduleIndex = -1;
+                }
+            }
+        } else {
+            $this->campaigns[$c_i]->isManually = true;
+        }
 
 	    $this->campaign_obj->save_datas($this->campaigns);
 
-	    $this->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i);
+        if ($manually == "false") {
+            $this->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i);
+        }
 
 	    $this->backup_obj->run();
 	    echo json_encode("success");
@@ -229,7 +271,67 @@ class Upload
         return array_slice($numbers, 0, $quantity);
     }
 
-	public function upload_data($g_i, $g_c_i, $c_i)
+    public function upload_after_preview_data($g_i, $g_c_i, $c_i)
+    {
+        $c = $this->campaigns[$c_i];
+
+        foreach($c->urls as $u_i => $url) {
+            $url_array = parse_url($url);
+            $path_array = explode("/", $url_array["path"]);
+
+            $spreadsheetId = $path_array[3];
+
+            $spreadSheet = $this->service->spreadsheets->get($spreadsheetId);
+            $sheets = $spreadSheet->getSheets();
+
+            $cur_sheet = [];
+            foreach ($sheets as $sheet) {
+                $sheetId = $sheet['properties']['sheetId'];
+
+                $pos = strpos($url, "gid=" . $sheetId);
+
+                if ($pos) {
+                    $cur_sheet = $sheet;
+                    break;
+                }
+            }
+
+            if ($cur_sheet) {
+                if ($u_i === 0) {
+                    $this->campaigns[$c_i]->last_qty = $c->_last_qty;
+                    $this->campaigns[$c_i]->less_qty = $c->_less_qty;
+                    if ($c->_less_qty > 0) {
+                        $this->campaigns[$c_i]->last_phone = $c->_last_phone;
+                        $this->campaigns[$c_i]->SystemCreateDate = $c->_SystemCreateDate;
+                    }
+                    $this->campaigns[$c_i]->upRows = $c->_upRows;
+                    $this->campaigns[$c_i]->lastGroupIndex = $g_i;
+                }
+
+                if (count($c->_upRows) > 0) {
+                    array_push($c->_up_rows, ['', '', '', '', '', '', '', '', '', '', '', '']);
+
+                    $valueRange = new \Google_Service_Sheets_ValueRange();
+                    $valueRange->setValues($c->_up_rows);
+                    $range = $cur_sheet['properties']['title']; // the service will detect the last row of this sheet
+                    $options = ['valueInputOption' => 'USER_ENTERED'];
+                    $this->service->spreadsheets_values->append($spreadsheetId, $range, $valueRange, $options);
+                }
+            }
+        }
+
+        $index = -1;
+        foreach($this->schedules as $i => $v) {
+            foreach($v as $j => $r) {
+                if ($r == $c->schedule) {
+                    $index = $j;
+                }
+            }
+        }
+        $this->campaigns[$c_i]->scheduleIndex = $index;
+    }
+
+	public function upload_data($g_i, $g_c_i, $c_i, $manually = false)
 	{
 		$g = $this->groups[$g_i];
 	    $g_c = $this->groups[$g_i]->campaigns[$g_c_i];
@@ -261,10 +363,6 @@ class Upload
 	        }
 
 	        if ($cur_sheet) {
-	            $response = $this->service->spreadsheets_values->get($spreadsheetId, $cur_sheet['properties']['title']);
-
-	            $values = $response->getValues();
-
 	            if ($u_i === 0) {
 	                $is_last_phone = false;
 	                $last_phone = '';
@@ -272,6 +370,9 @@ class Upload
 	                if ($g_c->isEditPhone == 'true') {
 	                    $last_phone = $c->last_phone;
 	                } else {
+                        $response = $this->service->spreadsheets_values->get($spreadsheetId, $cur_sheet['properties']['title']);
+                        $values = $response->getValues();
+
 	                    for ($i = count($values) - 1; $i >= 0; $i--) {
 	                        if ($is_last_phone) break;
 
@@ -284,7 +385,6 @@ class Upload
 	                        }
 	                    }
 	                }
-
 
 	                $mdb_path = $this->mdb->path;
 
@@ -408,37 +508,56 @@ class Upload
 	                    }
 	                }
 
-	                $this->campaigns[$c_i]->last_qty = count($rows);
-	                $this->campaigns[$c_i]->less_qty = count($up_rows_with_key);
-	                if (count($up_rows_with_key) > 0) {
-	                    $this->campaigns[$c_i]->last_phone = $up_rows_with_key[0]['Phone'];
-	                    $this->campaigns[$c_i]->SystemCreateDate = $up_rows_with_key[0]['SystemCreateDate'];
-	                }
-	                $this->campaigns[$c_i]->upRows = $up_rows_with_key;
-	                $this->campaigns[$c_i]->lastGroupIndex = $g_i;
+                    if ($manually == "false") {
+                        $this->campaigns[$c_i]->last_qty = count($rows);
+                        $this->campaigns[$c_i]->less_qty = count($up_rows_with_key);
+                        if (count($up_rows_with_key) > 0) {
+                            $this->campaigns[$c_i]->last_phone = $up_rows_with_key[0]['Phone'];
+                            $this->campaigns[$c_i]->SystemCreateDate = $up_rows_with_key[0]['SystemCreateDate'];
+                        }
+                        $this->campaigns[$c_i]->upRows = $up_rows_with_key;
+                        $this->campaigns[$c_i]->lastGroupIndex = $g_i;
+                    } else {
+                        $this->campaigns[$c_i]->_last_qty = count($rows);
+                        $this->campaigns[$c_i]->_less_qty = count($up_rows_with_key);
+                        if (count($up_rows_with_key) > 0) {
+                            $this->campaigns[$c_i]->_last_phone = $up_rows_with_key[0]['Phone'];
+                            $this->campaigns[$c_i]->_SystemCreateDate = $up_rows_with_key[0]['SystemCreateDate'];
+                        } else {
+                            $this->campaigns[$c_i]->_last_phone = "";
+                            $this->campaigns[$c_i]->_SystemCreateDate = "";
+                        }
+                        $this->campaigns[$c_i]->_upRows = $up_rows_with_key;
+                        $this->campaigns[$c_i]->_up_rows = $up_rows;
+                    }
+
 	            }
 
-	            if (count($up_rows_with_key) > 0) {
-	                array_push($up_rows, ['', '', '', '', '', '', '', '', '', '', '', '']);
+                if ($manually == "false") {
+                    if (count($up_rows_with_key) > 0) {
+                        array_push($up_rows, ['', '', '', '', '', '', '', '', '', '', '', '']);
 
-	                $valueRange = new \Google_Service_Sheets_ValueRange();
-	                $valueRange->setValues($up_rows);
-	                $range = $cur_sheet['properties']['title']; // the service will detect the last row of this sheet
-	                $options = ['valueInputOption' => 'USER_ENTERED'];
-	                $this->service->spreadsheets_values->append($spreadsheetId, $range, $valueRange, $options);
-	            }
+                        $valueRange = new \Google_Service_Sheets_ValueRange();
+                        $valueRange->setValues($up_rows);
+                        $range = $cur_sheet['properties']['title']; // the service will detect the last row of this sheet
+                        $options = ['valueInputOption' => 'USER_ENTERED'];
+                        $this->service->spreadsheets_values->append($spreadsheetId, $range, $valueRange, $options);
+                    }
+                }
 	        }
 	    }
 
-	    $index = -1;
-	    foreach($this->schedules as $i => $v) {
-	        foreach($v as $j => $r) {
-	            if ($r == $c->schedule) {
-	                $index = $j;
-	            }
-	        }
-	    }
-	    $this->campaigns[$c_i]->scheduleIndex = $index;
+        if ($manually == "false") {
+            $index = -1;
+            foreach($this->schedules as $i => $v) {
+                foreach($v as $j => $r) {
+                    if ($r == $c->schedule) {
+                        $index = $j;
+                    }
+                }
+            }
+            $this->campaigns[$c_i]->scheduleIndex = $index;
+        }
 	}
 
 	public function upload_count_by_schedule($action, $g_i, $c_i)

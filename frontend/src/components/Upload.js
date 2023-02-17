@@ -8,7 +8,7 @@ import {
     getUpload,
     updateCampaign,
     updateGroupCampaign,
-    updateUpload
+    updateUpload, uploadAfterPreview
 } from "../redux/actions";
 import axios from "axios";
 import {APP_API_URL} from "../constants";
@@ -233,14 +233,23 @@ const Upload = (props) => {
             messageApi.success('upload success');
         })
     }
-    const handleUploadOneByOne = (data) => {
+    const handleUploadOneByOne = (data, callback = function() {}) => {
         setLoading(true);
-        setTip("Wait for uploading....");
+        if (data.manually)
+            setTip("Wait for getting data....");
+        else
+            setTip("Wait for uploading....");
         axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_one_by_one', qs.stringify(data)).then(function(resp) {
             setLoading(false);
             props.getCampaigns();
             props.getGroups();
-            messageApi.success('upload success');
+
+            if (data.manually)
+                messageApi.success('Get data success');
+            else
+                messageApi.success('Upload success');
+
+            callback();
         })
     }
 
@@ -304,6 +313,7 @@ const Upload = (props) => {
                     <GroupCampaignUploadOneByOne
                         campaigns={campaigns}
                         groupIndex={group}
+                        globalGroups={props.groups.data}
                         globalCampaigns={props.campaigns.data}
                         group={props.groups.data[group]}
                         upload={handleUploadOneByOne}
@@ -311,6 +321,7 @@ const Upload = (props) => {
                         updateUpload={props.updateUpload}
                         updateGroupCampaign={props.updateGroupCampaign}
                         getLastPhone={getLastPhone}
+                        uploadAfterPreview={props.uploadAfterPreview}
                     /> : ''
             }
             <Row style={{marginTop: 10}}>
@@ -336,5 +347,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign, getLastPhone }
+    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign, getLastPhone, uploadAfterPreview }
 )(Upload);

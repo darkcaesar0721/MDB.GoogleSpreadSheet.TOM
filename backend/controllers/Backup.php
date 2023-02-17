@@ -61,7 +61,7 @@ class Backup
         $this->backup = json_decode(file_get_contents($this->file_path));
     }
 
-    public function run()
+    public function run($return = true)
     {
         $path = $this->backup->path;
         $date = date("Y") . "" . date("m") . "" . date("d") . " " . date("h") . "_" . date("m") . "_" . date("s") . " " . date("A");
@@ -99,8 +99,9 @@ class Backup
             $group = file_get_contents($file);
             file_put_contents($group_path . "\\" . ($index + 1) . ".json", $group);
         }
-
-        echo json_encode("success");
-        exit;
+        if ($return) {
+            echo json_encode("success");
+            exit;
+        }
     }
 }

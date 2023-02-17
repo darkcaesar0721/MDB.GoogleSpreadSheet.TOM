@@ -1,8 +1,9 @@
-import {Button, Checkbox, Col, Divider, Popconfirm, Row, Table} from "antd";
+import {Button, Checkbox, Col, Divider, Modal, Popconfirm, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
-import {UploadOutlined} from "@ant-design/icons";
+import {UploadOutlined, MediumOutlined, EyeOutlined} from "@ant-design/icons";
 import {Link} from "react-router-dom";
 import {Input} from "antd/lib";
+import CampaignUploadManually from "./CampaignUploadManually";
 
 const GroupCampaignUploadOneByOne = (props) => {
     const [tableParams, setTableParams] = useState({
@@ -13,6 +14,10 @@ const GroupCampaignUploadOneByOne = (props) => {
     });
     const [columns, setColumns] = useState([]);
     const [campaigns, setCampaigns] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [groupIndex, setGroupIndex] = useState('');
+    const [groupCampaignIndex, setGroupCampaignIndex] = useState('');
+    const [campaignIndex, setCampaignIndex] = useState('');
 
     useEffect(function() {
         if (props.campaigns.length > 0) {
@@ -172,19 +177,34 @@ const GroupCampaignUploadOneByOne = (props) => {
                 {
                     title: 'Upload',
                     key: 'operation',
-                    width: 60,
+                    width: 80,
                     render: (_, record) => {
                         return (
                             <>
+                                {
+                                    (record.isManually != "true" && record.isManually != true) ?
+                                        <Popconfirm
+                                            title="Upload data"
+                                            description="Are you sure to upload the row of this campaign?"
+                                            onConfirm={(e) => {handleUpload(record, false)}}
+                                            okText="Yes"
+                                            cancelText="No"
+                                        >
+                                            <Button icon={<UploadOutlined /> } style={{marginRight: 1}}/>
+                                        </Popconfirm> : ''
+                                }
                                 <Popconfirm
-                                    title="Upload data"
-                                    description="Are you sure to upload the row of this campaign?"
-                                    onConfirm={(e) => {handleUpload(record)}}
+                                    title="Manually Upload data"
+                                    description="Are you gonna get data to upload the row of this campaign?"
+                                    onConfirm={(e) => {handleUpload(record, true)}}
                                     okText="Yes"
                                     cancelText="No"
                                 >
-                                    <Button icon={<UploadOutlined /> } style={{marginRight: 1}}/>
+                                    <Button disabled={(record.isManually == "true" || record.isManually == true)} icon={<MediumOutlined /> } style={{marginRight: 1}}/>
                                 </Popconfirm>
+                                {
+                                    (record.isManually == "true" || record.isManually == true) ? <Button onClick={(e) => {handleShowResult(record)}} icon={<EyeOutlined /> } style={{marginRight: 1}}/> : ''
+                                }
                             </>
                         )
                     }
@@ -233,17 +253,36 @@ const GroupCampaignUploadOneByOne = (props) => {
         });
     };
 
-    const handleUpload = (r) => {
+    const handleUpload = (r, manually) => {
+        setGroupIndex(props.groupIndex);
+        setGroupCampaignIndex(r.groupCampaignIndex);
+        setCampaignIndex(r.campaignIndex);
+
+        let callback = function(){};
+        if (manually) {
+            callback = function() {
+                setOpen(true);
+            };
+        }
+
         props.upload({
             groupIndex: props.groupIndex,
             groupCampaignIndex: r.groupCampaignIndex,
-            campaignIndex: r.campaignIndex
-        });
+            campaignIndex: r.campaignIndex,
+            manually: manually,
+        }, callback);
+    }
+
+    const handleShowResult = function(r) {
+        setGroupIndex(props.groupIndex);
+        setGroupCampaignIndex(r.groupCampaignIndex);
+        setCampaignIndex(r.campaignIndex);
+
+        setOpen(true);
     }
 
     return (
         <>
-
             <Row style={{marginTop: 10}}>
                 <Col span={22} offset={1}>
                     <Divider style={{fontSize: '0.8rem'}}>GROUP CAMPAIGN LIST</Divider>
@@ -258,6 +297,31 @@ const GroupCampaignUploadOneByOne = (props) => {
                     />
                 </Col>
             </Row>
+            <Modal
+                title="UPLOAD PREVIEW"
+                centered
+                open={open}
+                width={1200}
+                header={null}
+                footer={null}
+                onCancel={(e) => {setOpen(false)}}
+                className="upload-preview"
+            >
+                {
+                    props.globalGroups.length > 0 && props.globalCampaigns.length> 0 ?
+                        <CampaignUploadManually
+                            groupIndex={groupIndex}
+                            groupCampaignIndex={groupCampaignIndex}
+                            campaignIndex={campaignIndex}
+                            groups={props.globalGroups}
+                            campaigns={props.globalCampaigns}
+                            setOpen={setOpen}
+                            updateCampaign={props.updateCampaign}
+                            uploadAfterPreview={props.uploadAfterPreview}
+                        /> : ''
+                }
+
+            </Modal>
         </>
     )
 }
