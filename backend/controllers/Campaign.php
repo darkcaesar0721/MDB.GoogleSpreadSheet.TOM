@@ -128,6 +128,11 @@ class Campaign
         }
     }
 
+    public function save_data($data)
+    {
+        file_put_contents($this->folder_path . '/' . $data->file_name, json_encode($data));
+    }
+
     public function save_datas($datas)
     {
         foreach ($datas as $data) {

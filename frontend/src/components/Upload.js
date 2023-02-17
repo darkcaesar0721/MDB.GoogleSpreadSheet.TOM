@@ -72,6 +72,7 @@ const Upload = (props) => {
                 campaign.isTime = c.isTime;
                 campaign.time = c.time;
                 campaign.meridiem = c.meridiem;
+                campaign.comment = c.comment;
                 _campaigns.push(campaign);
             });
         }

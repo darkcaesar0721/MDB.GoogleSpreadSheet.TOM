@@ -202,7 +202,7 @@ const GroupCampaignUploadOneByOne = (props) => {
     }
 
     const handleCommentSave = (r) => {
-        props.updateCampaign(r.file_name, {comment: r.comment});
+        props.updateGroupCampaign(props.groupIndex, r.groupCampaignIndex, {comment: r.comment});
     }
 
     const handlePhoneChange = (e, r) => {
