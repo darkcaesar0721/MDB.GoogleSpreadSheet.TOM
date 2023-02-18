@@ -37,6 +37,36 @@
   }
 }
 
+.upload-status-list .ant-table-tbody{
+  padding-left: 0.3rem !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  font-size: 0.8rem;
+  border-bottom: solid 2px #d1d1d1 !important;
+  border-right: solid 1px #d1d1d1 !important;
+}
+.upload-status-list .ant-table-tbody > tr > td{
+  padding-left: 0.3rem !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  font-size: 0.8rem;
+  border-bottom: solid 1px #d1d1d1 !important;
+  border-right: solid 1px #d1d1d1 !important;
+}
+
+.upload-status-list .ant-table-tbody > tr > td > button span{
+  font-size: 0.8rem;
+}
+
+.upload-status-list .ant-table-thead > tr > th{
+  padding-left: 0.3rem !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  font-size: 0.85rem;
+  border-bottom: solid 1px #d1d1d1 !important;
+  border-right: solid 1px #d1d1d1 !important;
+}
+
 .ant-table-tbody{
   padding-left: 0.3rem !important;
   padding-top: 0 !important;
@@ -57,9 +87,19 @@
   font-size: 0.7rem;
 }
 
+.ant-table-tbody > tr > td > span[role=img]{
+  padding-top: 0.3rem;
+  font-size: 1.5rem;
+}
+
 .ant-table-tbody > tr > td > button span{
   font-size: 0.7rem;
 }
+
+.ant-table-tbody > tr > td > button span{
+  font-size: 0.7rem;
+}
+
 
 .ant-table-thead > tr > th{
   padding-left: 0.3rem !important;

@@ -203,7 +203,22 @@ export const uploadAfterPreview = (groupIndex, groupCampaignIndex, campaignIndex
         groupCampaignIndex,
         campaignIndex
     }));
-    console.log(result);
+
+    dispatch({
+        type: INIT_CAMPAIGN_DATA,
+        data: result.data
+    });
+    callback();
+}
+
+export const uploadOne = (groupIndex, groupCampaignIndex, campaignIndex, manually = false, callback = function() {}) => async (dispatch) => {
+    const result = await axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_one_by_one', qs.stringify({
+        groupIndex,
+        groupCampaignIndex,
+        campaignIndex,
+        manually
+    }));
+
     dispatch({
         type: INIT_CAMPAIGN_DATA,
         data: result.data

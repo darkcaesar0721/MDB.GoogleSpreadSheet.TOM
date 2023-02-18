@@ -1,7 +1,12 @@
-import {Button, Checkbox, Col, Divider, Row, Table} from "antd";
+import {Button, Checkbox, Col, Divider, message, Modal, Popconfirm, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import {Input} from "antd/lib";
+import GroupCampaignUploadStatusList from "./GroupCampaignUploadStatusList";
+import axios from "axios";
+import {APP_API_URL} from "../constants";
+import qs from "qs";
+import {UploadOutlined} from "@ant-design/icons";
 
 const GroupCampaignUploadAll = (props) => {
     const [tableParams, setTableParams] = useState({
@@ -13,8 +18,13 @@ const GroupCampaignUploadAll = (props) => {
     const [columns, setColumns] = useState([]);
     const [selectedCampaignKeys, setSelectedCampaignKeys] = useState([]);
     const [campaigns, setCampaigns] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [uploadStatus, setUploadStatus] = useState(false);
+    const [uploadStatusList, setUploadStatusList] = useState([]);
+    const [messageApi, contextHolder] = message.useMessage();
 
     useEffect(function() {
+        initUploadStatusList();
         setColumnInfo();
     }, [selectedCampaignKeys]);
 
@@ -203,6 +213,29 @@ const GroupCampaignUploadAll = (props) => {
         else setSelectedCampaignKeys(props.uploadInfo.selectedCampaignKeys);
     }, [props.uploadInfo]);
 
+    const initUploadStatusList = () => {
+        let campaignKeys = selectedCampaignKeys;
+        if (!campaignKeys) campaignKeys = [];
+
+        let index = 0;
+        let _uploadStatusList = [];
+        campaignKeys.forEach(key => {
+            props.globalCampaigns.forEach(c => {
+                if (c.key == key) {
+                    let uploadStatus = {};
+                    uploadStatus.no = index + 1;
+                    uploadStatus.status = index === 0 ? 'loading' : 'normal';
+                    uploadStatus.query = c.query;
+                    uploadStatus.key = key;
+                    uploadStatus.index = index;
+                    _uploadStatusList.push(uploadStatus);
+                    index++;
+                }
+            })
+        })
+        setUploadStatusList(_uploadStatusList);
+    }
+
     const handlePhoneEditCheck = (e, r) => {
         props.updateGroupCampaign(props.groupIndex, r.groupCampaignIndex, {isEditPhone: e.target.checked});
     }
@@ -253,17 +286,70 @@ const GroupCampaignUploadAll = (props) => {
         }
     };
 
+    const changeUploadStatus = function(index, key) {
+        setUploadStatusList(uploadStatusList.map((u, i) => {
+            if (u.key === key) return Object.assign(u, {status: 'complete'});
+            else if (index === i) return Object.assign(u, {status: 'loading'});
+            else return u;
+        }))
+    }
+
+    const handleUploadOne = function(key, index) {
+        props.campaigns.forEach(c => {
+            if (c.key === key) {
+                axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_one_by_one', qs.stringify({
+                    groupIndex: props.groupIndex,
+                    groupCampaignIndex: c.groupCampaignIndex,
+                    campaignIndex: c.campaignIndex,
+                    manually: false
+                })).then((resp) => {
+                    props.getCampaigns();
+                    changeUploadStatus(index + 1, key);
+
+                    if (selectedCampaignKeys.length == (index + 1)) {
+                        setTimeout(function() {
+                            messageApi.success('Upload success');
+                            setOpen(false);
+                        }, 1000)
+                    } else {
+                        handleUploadOne(selectedCampaignKeys[index + 1], index + 1);
+                    }
+                });
+            }
+        })
+    }
+
+    const handleUploadClick = function() {
+        if (selectedCampaignKeys === undefined || selectedCampaignKeys.length === 0) {
+            messageApi.warning('Please select campaign list.');
+            return;
+        }
+
+        initUploadStatusList();
+        handleUploadOne(selectedCampaignKeys[0], 0);
+        setOpen(true);
+    }
+
     return (
         <>
+            {contextHolder}
             <Row style={{marginTop: 10}}>
                 <Col span={22} offset={1}>
                     <Divider style={{fontSize: '0.8rem'}}>GROUP CAMPAIGN LIST</Divider>
                     <Row style={{marginBottom: '0.5rem'}}>
                         <Col span={1} offset={11} style={{paddingLeft: '1rem'}}>
-                            <Button type="primary" onClick={props.upload}>
-                                Upload
-                            </Button>
-                        </Col> : ''
+                            <Popconfirm
+                                title="Upload data"
+                                description="Are you sure to upload the row of this campaign?"
+                                onConfirm={handleUploadClick}
+                                okText="Yes"
+                                cancelText="No"
+                            >
+                                <Button type="primary">
+                                    Upload
+                                </Button>
+                            </Popconfirm>
+                        </Col>
                     </Row>
                     <Table
                         bordered={true}
@@ -281,6 +367,18 @@ const GroupCampaignUploadAll = (props) => {
                     />
                 </Col>
             </Row>
+            <Modal
+                title="UPLOAD STATUS LIST"
+                centered
+                open={open}
+                width={500}
+                header={null}
+                footer={null}
+            >
+                <GroupCampaignUploadStatusList
+                    uploadStatusList={uploadStatusList}
+                />
+            </Modal>
         </>
     )
 }

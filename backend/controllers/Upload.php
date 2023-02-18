@@ -259,8 +259,8 @@ class Upload
             $this->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i);
         }
 
-	    $this->backup_obj->run();
-	    echo json_encode("success");
+	    $this->backup_obj->run(false);
+	    echo json_encode($this->campaigns);
 	    exit;
 	}
 

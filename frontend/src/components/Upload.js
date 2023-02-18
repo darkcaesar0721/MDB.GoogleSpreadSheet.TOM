@@ -8,7 +8,7 @@ import {
     getUpload,
     updateCampaign,
     updateGroupCampaign,
-    updateUpload, uploadAfterPreview
+    updateUpload, uploadAfterPreview, uploadOne
 } from "../redux/actions";
 import axios from "axios";
 import {APP_API_URL} from "../constants";
@@ -305,7 +305,9 @@ const Upload = (props) => {
                         updateCampaign={props.updateCampaign}
                         updateUpload={props.updateUpload}
                         updateGroupCampaign={props.updateGroupCampaign}
+                        uploadOne={props.uploadOne}
                         getLastPhone={getLastPhone}
+                        getCampaigns={props.getCampaigns}
                     /> : ''
             }
             {
@@ -322,6 +324,7 @@ const Upload = (props) => {
                         updateGroupCampaign={props.updateGroupCampaign}
                         getLastPhone={getLastPhone}
                         uploadAfterPreview={props.uploadAfterPreview}
+                        getCampaigns={props.getCampaigns}
                     /> : ''
             }
             <Row style={{marginTop: 10}}>
@@ -347,5 +350,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign, getLastPhone, uploadAfterPreview }
+    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign, getLastPhone, uploadAfterPreview, uploadOne }
 )(Upload);
