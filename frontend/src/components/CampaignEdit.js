@@ -7,7 +7,7 @@ import {
     Input,
     message,
     Modal,
-    Row,
+    Row, Spin,
 } from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
@@ -16,6 +16,9 @@ import {useNavigate, useParams} from 'react-router-dom';
 import MDBPath from "./MDBPath";
 import MenuList from "./MenuList";
 import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
+import axios from "axios";
+import {APP_API_URL} from "../constants";
+import qs from "qs";
 
 const layout = {
     labelCol: {
@@ -28,7 +31,7 @@ const layout = {
 
 const columnLayout = {
     labelCol: {
-        span: 12,
+        span: 13,
     },
     wrapperCol: {
         span: 11,
@@ -59,6 +62,7 @@ function CampaignEdit(props) {
     const [messageApi, contextHolder] = message.useMessage();
     const [open, setOpen] = useState(false);
     const [columns, setColumns] = useState([]);
+    const [loading, setLoading] = useState(false);
 
     const {index} = useParams();
     const navigate = useNavigate();
@@ -146,6 +150,10 @@ function CampaignEdit(props) {
     }
 
     const handleViewColumnClick = function() {
+        checkInputDateField(openColumnModal);
+    }
+
+    const openColumnModal = function() {
         let _columns = columns;
         _columns = _columns.sort((a, b) => {
             if (parseInt(a.order) < parseInt(b.order)) return -1;
@@ -157,8 +165,28 @@ function CampaignEdit(props) {
         setOpen(true);
     }
 
+    const checkInputDateField = function(callback) {
+        let isInputDateField = false;
+        columns.forEach(c => {
+            if (c.isInputDate == "true" || c.isInputDate == true) {
+                isInputDateField = true;
+            }
+        })
+        if (isInputDateField) {
+            setLoading(true);
+            axios.post(APP_API_URL + 'api.php?class=Mdb&fn=get_input_date')
+                .then((resp) => {
+                    setColumns(columns.map(c => (c.isInputDate == "true" || c.isInputDate == true) ? Object.assign(c, {field: resp.data}) : c));
+                    callback();
+                    setLoading(false);
+                })
+        } else {
+            callback();
+        }
+    }
+
     return (
-        <>
+        <Spin spinning={loading} tip="Get input date from 002_DateInput query ..." delay={300}>
             {contextHolder}
             <MenuList
                 currentPage="campaign"
@@ -310,7 +338,7 @@ function CampaignEdit(props) {
                                                 }}
                                             >
                                                 {
-                                                    c.name === 'Phone' ? c.name : <Input disabled={!c.display} onChange={(e) => {handleColumnFieldChange(e, c)}} value={c.field}/>
+                                                    c.name === 'Phone' ? c.name : ((c.isInputDate == "true" || c.isInputDate == true) ? c.field : <Input disabled={!c.display} onChange={(e) => {handleColumnFieldChange(e, c)}} value={c.field}/>)
                                                 }
                                             </Form.Item>
                                             <Form.Item
@@ -331,7 +359,7 @@ function CampaignEdit(props) {
                     </Modal>
                 </Col>
             </Row>
-        </>
+        </Spin>
     );
 }
 

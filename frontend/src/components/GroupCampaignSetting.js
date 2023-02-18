@@ -1,4 +1,4 @@
-import {Button, Checkbox, Col, Form, Input, message, Modal, Radio, Row, Select} from "antd";
+import {Button, Checkbox, Col, Form, Input, message, Modal, Radio, Row, Select, Spin} from "antd";
 import MDBPath from "./MDBPath";
 import {connect} from "react-redux";
 import {getCampaigns, getGroups, updateCampaign, updateGroupCampaign} from "../redux/actions";
@@ -6,6 +6,8 @@ import React, {useEffect, useState} from "react";
 import {useNavigate, useParams} from "react-router-dom";
 import MenuList from "./MenuList";
 import moment from "moment";
+import axios from "axios";
+import {APP_API_URL} from "../constants";
 
 const layout = {
     labelCol: {
@@ -18,7 +20,7 @@ const layout = {
 
 const columnLayout = {
     labelCol: {
-        span: 12,
+        span: 13,
     },
     wrapperCol: {
         span: 11,
@@ -51,6 +53,7 @@ const GroupCampaignSetting = (props) => {
     const [time, setTime] = useState('');
     const [meridiem, setMeridiem] = useState('AM');
     const [dayOld, setDayOld] = useState(1);
+    const [loading, setLoading] = useState(false);
 
     const {groupIndex, groupCampaignIndex, campaignIndex} = useParams();
     const navigate = useNavigate();
@@ -205,6 +208,10 @@ const GroupCampaignSetting = (props) => {
     }
 
     const handleViewColumnClick = function() {
+        checkInputDateField(openColumnModal);
+    }
+
+    const openColumnModal = function() {
         let _columns = columns;
         _columns = _columns.sort((a, b) => {
             if (parseInt(a.order) < parseInt(b.order)) return -1;
@@ -214,6 +221,26 @@ const GroupCampaignSetting = (props) => {
         setColumns(_columns);
 
         setOpen(true);
+    }
+
+    const checkInputDateField = function(callback) {
+        let isInputDateField = false;
+        columns.forEach(c => {
+            if (c.isInputDate == "true" || c.isInputDate == true) {
+                isInputDateField = true;
+            }
+        })
+        if (isInputDateField) {
+            setLoading(true);
+            axios.post(APP_API_URL + 'api.php?class=Mdb&fn=get_input_date')
+                .then((resp) => {
+                    setColumns(columns.map(c => (c.isInputDate == "true" || c.isInputDate == true) ? Object.assign(c, {field: resp.data}) : c));
+                    callback();
+                    setLoading(false);
+                })
+        } else {
+            callback();
+        }
     }
 
     const handleIsTimeCheck = function(e) {
@@ -233,7 +260,7 @@ const GroupCampaignSetting = (props) => {
     }
 
     return (
-        <>
+        <Spin spinning={loading} tip="Get input date from 002_DateInput query ..." delay={300}>
             {contextHolder}
             <MenuList
                 currentPage="group"
@@ -487,7 +514,7 @@ const GroupCampaignSetting = (props) => {
                     </Modal>
                 </Col>
             </Row>
-        </>
+        </Spin>
     )
 }
 

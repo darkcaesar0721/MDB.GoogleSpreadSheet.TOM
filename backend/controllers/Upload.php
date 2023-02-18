@@ -337,6 +337,26 @@ class Upload
 	    $g_c = $this->groups[$g_i]->campaigns[$g_c_i];
 	    $c = $this->campaigns[$c_i];
 
+        $is_input_date_field = false;
+        foreach($g_c->columns as $col) {
+            $_col = json_decode(json_encode($col), true);
+            if (array_key_exists('isInputDate', $_col) && ($_col['isInputDate'] != "false")) {
+                $is_input_date_field = true;
+            }
+        }
+
+        if ($is_input_date_field) {
+            $input_date = $this->mdb_obj->get_input_date(true);
+
+            foreach($g_c->columns as $i => $col) {
+                if ($col->isInputDate != "false") {
+                    $g_c->columns[$i]->field = $input_date;
+                }
+            }
+            $this->groups[$g_i]->campaigns[$g_c_i] = $g_c;
+            $this->group_obj->save_data($this->groups[$g_i]);
+        }
+
 	    $rows = array();
 	    $up_rows = array();
 	    $up_rows_with_key = array();

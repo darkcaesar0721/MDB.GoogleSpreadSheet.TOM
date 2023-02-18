@@ -190,6 +190,11 @@ class Group
         exit;
     }
 
+    public function save_data($data)
+    {
+        file_put_contents($this->folder_path . '/' . $data->file_name, json_encode($data));
+    }
+
     public function set_group_lists()
     {
         $this->group_lists = [];

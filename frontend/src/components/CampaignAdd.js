@@ -32,7 +32,7 @@ const layout = {
 
 const columnLayout = {
     labelCol: {
-        span: 12,
+        span: 13,
     },
     wrapperCol: {
         span: 11,
@@ -110,11 +110,11 @@ function CampaignAdd(props) {
                 let _columns = [];
                 let status = false;
                 resp.data.columns.forEach((c, i) => {
-                    if (c === 'SystemCreateDate')
+                    if (c.name === 'SystemCreateDate')
                         status = true;
 
                     if (!status)
-                        _columns.push({name: c, field: c, display: true, order: (i + 1)});
+                        _columns.push({name: c.name, field: c.field, display: true, order: (i + 1), isInputDate: c.isInputDate});
                 });
                 setColumns(_columns);
                 setOpen(true);
@@ -353,7 +353,7 @@ function CampaignAdd(props) {
                                                 }}
                                             >
                                                 {
-                                                    c.name === 'Phone' ? c.name : <Input disabled={!c.display} onChange={(e) => {handleColumnFieldChange(e, c)}} value={c.field}/>
+                                                    c.name === 'Phone' ? c.name : ((c.isInputDate == "true" || c.isInputDate == true) ? c.field : <Input disabled={!c.display} onChange={(e) => {handleColumnFieldChange(e, c)}} value={c.field}/>)
                                                 }
                                             </Form.Item>
                                             <Form.Item

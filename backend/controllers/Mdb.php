@@ -61,6 +61,32 @@ class Mdb
         $this->mdb = json_decode(file_get_contents($this->file_path));
     }
 
+    public function get_input_date($return = false)
+    {
+        $mdb_path = $this->get_data_by_key('path');
+
+        $db = new PDO("odbc:Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBq=$mdb_path;Uid=;Pwd=;");
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        $input_query = "002_DateInput";
+        $input_sth = $db->prepare("select * from [$input_query]");
+        $input_sth->execute();
+
+        $field = "";
+        while ($input = $input_sth->fetch(PDO::FETCH_ASSOC)) {
+            $field = $input['Date'];
+            break;
+        }
+
+        if (!$return) {
+            echo json_encode($field);
+            exit;
+        } else {
+            return $field;
+        }
+
+    }
+
     public function get_query_columns()
     {
         $query = $_REQUEST['query'];
@@ -99,7 +125,33 @@ class Mdb
                 exit;
             }
 
-            echo json_encode(array('status' => 'success', 'columns' => $data));
+            $columns = array();
+            foreach($data as $row) {
+                $column = array();
+                $column['name'] = $row;
+
+                $pos = strpos($row, "changedate");
+                if ($pos) {
+                    $input_query = "002_DateInput";
+                    $input_sth = $db->prepare("select * from [$input_query]");
+                    $input_sth->execute();
+
+                    $field = "";
+                    while ($input = $input_sth->fetch(PDO::FETCH_ASSOC)) {
+                        $field = $input['Date'];
+                        break;
+                    }
+
+                    $column['field'] = $field;
+                    $column['isInputDate'] = true;
+                } else {
+                    $column['field'] = $row;
+                    $column['isInputDate'] = false;
+                }
+                array_push($columns, $column);
+            }
+
+            echo json_encode(array('status' => 'success', 'columns' => $columns));
             exit;
         } catch(PDOException $e) {
             echo json_encode(array('status' => 'error', 'description' => 'Please check mdb path and query name!'));
