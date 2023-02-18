@@ -20,7 +20,7 @@ const randomLayout = {
         span: 13,
     },
     wrapperCol: {
-        span: 3,
+        span: 8,
     },
 };
 
@@ -159,6 +159,7 @@ const CampaignUploadPreview = (props) => {
                                         <Radio value="all">All Select</Radio>
                                         <Radio value="static">Static Select</Radio>
                                         <Radio value="random">Random Select</Radio>
+                                        <Radio value="random_first">Random First Select</Radio>
                                         <Radio value="date">Date & Time</Radio>
                                     </Radio.Group>
                                 </Form.Item>
@@ -206,6 +207,51 @@ const CampaignUploadPreview = (props) => {
                                                 }}
                                             >
                                                 <InputNumber disabled={true} placeholder="End"/>
+                                            </Form.Item>
+                                        </Col> : ''
+                                }
+                                {
+                                    way === 'random_first' ?
+                                        <Col span={24}>
+                                            <Form.Item
+                                                {...randomLayout}
+                                                name={['randomFirst']}
+                                                label="Random First"
+                                                style={{
+                                                    display: 'inline-block',
+                                                    width: 'calc(30% - 5px)',
+                                                }}
+                                            >
+                                                <Input disabled={true} placeholder="First"/>
+                                            </Form.Item>
+                                            <Form.Item
+                                                name={['randomStart']}
+                                                style={{
+                                                    display: 'inline-block',
+                                                    width: 'calc(10% - 5px)',
+                                                }}
+                                            >
+                                                <Input disabled={true} placeholder="Start"/>
+                                            </Form.Item>
+                                            <Form.Item
+                                                name={['random']}
+                                                style={{
+                                                    display: 'inline-block',
+                                                    width: 'calc(3% - 5px)',
+                                                    margin: '0 5px',
+                                                }}
+                                            >
+                                                <span>~</span>
+                                            </Form.Item>
+                                            <Form.Item
+                                                name={['randomEnd']}
+                                                style={{
+                                                    display: 'inline-block',
+                                                    width: 'calc(10% - 5px)',
+                                                    margin: '0 5px',
+                                                }}
+                                            >
+                                                <Input disabled={true} placeholder="End"/>
                                             </Form.Item>
                                         </Col> : ''
                                 }

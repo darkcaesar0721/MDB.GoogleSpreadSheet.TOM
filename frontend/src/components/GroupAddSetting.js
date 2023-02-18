@@ -101,6 +101,11 @@ const GroupAddSetting = (props) => {
                     group['randomStart'] = form.randomStart;
                     group['randomEnd'] = form.randomEnd;
                     break;
+                case 'random_first':
+                    group['randomFirst'] = form.randomFirst;
+                    group['randomStart'] = form.randomStart;
+                    group['randomEnd'] = form.randomEnd;
+                    break;
                 case 'date':
                     group['isTime'] = isTime;
                     group['dayOld'] = dayOld;
@@ -130,7 +135,7 @@ const GroupAddSetting = (props) => {
                 return false;
             }
         }
-        if (form.way === 'random') {
+        if (form.way === 'random' || form.way === 'random_first') {
             if (!form.randomStart) {
                 messageApi.warning('Please input random start count.');
                 return false;
@@ -141,6 +146,16 @@ const GroupAddSetting = (props) => {
             }
             if (parseInt(form.randomStart) > parseInt(form.randomEnd)) {
                 messageApi.warning('Random start count must be less than random end count.');
+                return false;
+            }
+        }
+        if (form.way === 'random_first') {
+            if (!form.randomFirst) {
+                messageApi.warning('Please input random first count.');
+                return false;
+            }
+            if (parseInt(form.randomEnd) > parseInt(form.randomFirst)) {
+                messageApi.warning('Random end count must be less than random first count.');
                 return false;
             }
         }
@@ -269,6 +284,7 @@ const GroupAddSetting = (props) => {
                                         <Radio value="all">All Select</Radio>
                                         <Radio value="static">Static Select</Radio>
                                         <Radio value="random">Random Select</Radio>
+                                        <Radio value="random_first">Random First Select</Radio>
                                         <Radio value="date">Date & Time</Radio>
                                     </Radio.Group>
                                 </Form.Item>
@@ -303,7 +319,7 @@ const GroupAddSetting = (props) => {
                                                 name={['random']}
                                                 style={{
                                                     display: 'inline-block',
-                                                    width: 'calc(5% - 5px)',
+                                                    width: 'calc(3% - 5px)',
                                                     margin: '0 5px',
                                                 }}
                                             >
@@ -314,6 +330,51 @@ const GroupAddSetting = (props) => {
                                                 style={{
                                                     display: 'inline-block',
                                                     width: 'calc(13% - 5px)',
+                                                    margin: '0 5px',
+                                                }}
+                                            >
+                                                <Input placeholder="End"/>
+                                            </Form.Item>
+                                        </Col> : ''
+                                }
+                                {
+                                    way === 'random_first' ?
+                                        <Col span={24}>
+                                            <Form.Item
+                                                {...randomLayout}
+                                                name={['randomFirst']}
+                                                label="Random First"
+                                                style={{
+                                                    display: 'inline-block',
+                                                    width: 'calc(30% - 5px)',
+                                                }}
+                                            >
+                                                <Input placeholder="First"/>
+                                            </Form.Item>
+                                            <Form.Item
+                                                name={['randomStart']}
+                                                style={{
+                                                    display: 'inline-block',
+                                                    width: 'calc(10% - 5px)',
+                                                }}
+                                            >
+                                                <Input placeholder="Start"/>
+                                            </Form.Item>
+                                            <Form.Item
+                                                name={['random']}
+                                                style={{
+                                                    display: 'inline-block',
+                                                    width: 'calc(3% - 5px)',
+                                                    margin: '0 5px',
+                                                }}
+                                            >
+                                                <span>~</span>
+                                            </Form.Item>
+                                            <Form.Item
+                                                name={['randomEnd']}
+                                                style={{
+                                                    display: 'inline-block',
+                                                    width: 'calc(10% - 5px)',
                                                     margin: '0 5px',
                                                 }}
                                             >
