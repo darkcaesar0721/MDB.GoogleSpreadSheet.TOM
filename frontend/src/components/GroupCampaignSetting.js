@@ -108,13 +108,13 @@ const GroupCampaignSetting = (props) => {
                     break;
                 case 'date':
                     group['isTime'] = isTime;
-                    group['dayOld'] = dayOld;
+                    group['dayOld'] = !dayOld ? 0: dayOld;
                     group['time'] = time;
                     group['meridiem'] = meridiem;
                     if (isTime) {
-                        group['date'] = moment(Date.now()).add(0 - (dayOld - 1), 'day').format('MM/DD/YYYY');
-                    } else {
                         group['date'] = moment(Date.now()).add(0 - dayOld, 'day').format('MM/DD/YYYY');
+                    } else {
+                        group['date'] = moment(Date.now()).add(0 - (parseInt(dayOld) + 1), 'day').format('MM/DD/YYYY');
                     }
                     break;
             }
@@ -159,8 +159,8 @@ const GroupCampaignSetting = (props) => {
             }
         }
         if (form.way === 'date') {
-            if (!dayOld) {
-                messageApi.warning('Please input dayOld field.');
+            if (!dayOld && !isTime) {
+                messageApi.warning('Please input time field');
                 return false;
             }
             if (isTime && !time) {
