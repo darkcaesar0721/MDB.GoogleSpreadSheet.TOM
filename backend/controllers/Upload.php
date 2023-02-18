@@ -441,19 +441,17 @@ class Upload
 	                } else if ($g_c->way === 'random') {
 	                    $count = rand($g_c->randomStart, $g_c->randomEnd);
 	                    if ($count >= count($rows)) {
-	                        foreach ($rows as $row) {
-	                            $up_row = array();
-	                            foreach ($g_c->columns as $column) {
-	                                if ($column->display == 'true') {
-	                                    array_push($up_row, $row[$column->name]);
-	                                }
-	                            }
-	                            array_push($up_rows_with_key, $row);
-	                            array_push($up_rows, $up_row);
-	                        }
-	                    } else {
-	                        
-
+                            foreach ($rows as $row) {
+                                $up_row = array();
+                                foreach ($g_c->columns as $column) {
+                                    if ($column->display == 'true') {
+                                        array_push($up_row, $row[$column->name]);
+                                    }
+                                }
+                                array_push($up_rows_with_key, $row);
+                                array_push($up_rows, $up_row);
+                            }
+                        } else {
 	                        $first = 0;
 	                        $arrs = $this->randomGen(1, count($rows) - 1, $count);
 	                        array_push($arrs, $first);
@@ -474,7 +472,44 @@ class Upload
 	                            }
 	                        }
 	                    }
-	                } else {
+	                } else if ($g_c->way === 'random_first') {
+                        $count = rand($g_c->randomStart, $g_c->randomEnd);
+                        if ($count >= count($rows)) {
+                            foreach ($rows as $row) {
+                                $up_row = array();
+                                foreach ($g_c->columns as $column) {
+                                    if ($column->display == 'true') {
+                                        array_push($up_row, $row[$column->name]);
+                                    }
+                                }
+                                array_push($up_rows_with_key, $row);
+                                array_push($up_rows, $up_row);
+                            }
+                        } else {
+                            $end = $g_c->randomFirst;
+                            if (count($rows) < $end * 1) $end = count($rows);
+
+                            $first = 0;
+                            $arrs = $this->randomGen(1, $end * 1 - 1, $count);
+                            array_push($arrs, $first);
+                            sort($arrs);
+
+                            foreach ($rows as $index => $row) {
+                                foreach ($arrs as $arr) {
+                                    if ($index == $arr) {
+                                        $up_row = array();
+                                        foreach ($g_c->columns as $column) {
+                                            if ($column->display == 'true') {
+                                                array_push($up_row, $row[$column->name]);
+                                            }
+                                        }
+                                        array_push($up_rows_with_key, $row);
+                                        array_push($up_rows, $up_row);
+                                    }
+                                }
+                            }
+                        }
+                    } else {
 	                    foreach ($rows as $row) {
 	                        if ($g_c->isTime) {
 	                            $date = strtotime(date("m/d/Y h A", strtotime($g_c->date . ' ' . $g_c->time . ' '. $g_c->meridiem)));
