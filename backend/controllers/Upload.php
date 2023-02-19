@@ -459,7 +459,7 @@ class Upload
 	                        array_push($up_rows, $up_row);
 	                    }
 	                } else if ($g_c->way === 'random') {
-	                    $count = rand($g_c->randomStart, $g_c->randomEnd);
+	                    $count = rand($g_c->randomStart, $g_c->randomEnd * 1 - 1);
 	                    if ($count >= count($rows)) {
                             foreach ($rows as $row) {
                                 $up_row = array();
@@ -493,7 +493,7 @@ class Upload
 	                        }
 	                    }
 	                } else if ($g_c->way === 'random_first') {
-                        $count = rand($g_c->randomStart, $g_c->randomEnd);
+                        $count = rand($g_c->randomStart, $g_c->randomEnd * 1 - 1);
                         if ($count >= count($rows)) {
                             foreach ($rows as $row) {
                                 $up_row = array();
