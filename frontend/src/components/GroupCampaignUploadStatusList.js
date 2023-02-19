@@ -37,6 +37,26 @@ const GroupCampaignUploadStatusList = (props) => {
             title: 'Query Name',
             dataIndex: 'query',
             key: 'query',
+        },
+        {
+            title: 'Qty Available',
+            dataIndex: 'last_qty',
+            key: 'query',
+        },
+        {
+            title: 'Qty Uploaded',
+            dataIndex: 'less_qty',
+            key: 'query',
+        },
+        {
+            title: 'Last Phone',
+            dataIndex: 'last_phone',
+            key: 'last_phone',
+        },
+        {
+            title: 'SystemCreateDate',
+            dataIndex: 'SystemCreateDate',
+            key: 'SystemCreateDate',
         }
     ]
 

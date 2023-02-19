@@ -76,12 +76,14 @@ const CampaignUploadManually = (props) => {
             key: 'no',
             render: (_, record) => {
                 let number = 0;
-                props.campaigns[props.campaignIndex]._upRows.forEach((c, i) => {
-                    if (c['Phone'] === record['Phone']) {
-                        number = i + 1;
-                        return;
-                    }
-                });
+                if (props.campaigns[props.campaignIndex]._upRows !== undefined && props.campaigns[props.campaignIndex]._upRows != "") {
+                    props.campaigns[props.campaignIndex]._upRows.forEach((c, i) => {
+                        if (c['Phone'] === record['Phone']) {
+                            number = i + 1;
+                            return;
+                        }
+                    });
+                }
                 return (
                     <>
                         <span>{number}</span>
@@ -336,13 +338,16 @@ const CampaignUploadManually = (props) => {
                     </Popconfirm>
                 </Col>
                 <Col span={22} offset={1} style={{marginTop: 5}}>
-                    <Table
-                        size="small"
-                        columns={tableColumns}
-                        dataSource={props.campaigns[props.campaignIndex]._upRows}
-                        pagination={tableParams.pagination}
-                        onChange={handleTableChange}
-                    />
+                    {
+                        (props.campaigns[props.campaignIndex]._upRows !== undefined && props.campaigns[props.campaignIndex]._upRows != "") ?
+                            <Table
+                                size="small"
+                                columns={tableColumns}
+                                dataSource={props.campaigns[props.campaignIndex]._upRows}
+                                pagination={tableParams.pagination}
+                                onChange={handleTableChange}
+                            /> : ''
+                    }
                 </Col>
             </Row>
         </Spin>

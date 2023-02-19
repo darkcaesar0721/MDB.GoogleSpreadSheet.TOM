@@ -6,7 +6,6 @@ import GroupCampaignUploadStatusList from "./GroupCampaignUploadStatusList";
 import axios from "axios";
 import {APP_API_URL} from "../constants";
 import qs from "qs";
-import {UploadOutlined} from "@ant-design/icons";
 
 const GroupCampaignUploadAll = (props) => {
     const [tableParams, setTableParams] = useState({
@@ -42,6 +41,19 @@ const GroupCampaignUploadAll = (props) => {
         }
     }, [props.campaigns]);
 
+    useEffect(function() {
+        let _uploadStatusList = [];
+        uploadStatusList.forEach(s => {
+            let _uploadStatus = s;
+            _uploadStatus.last_phone = s.status  == 'complete' ? props.globalCampaigns[s.campaignIndex].last_phone : '';
+            _uploadStatus.SystemCreateDate = s.status  == 'complete' ? props.globalCampaigns[s.campaignIndex].SystemCreateDate : '';
+            _uploadStatus.last_qty = s.status  == 'complete' ? props.globalCampaigns[s.campaignIndex].last_qty : '';
+            _uploadStatus.less_qty = s.status  == 'complete' ? props.globalCampaigns[s.campaignIndex].less_qty : '';
+            _uploadStatusList.push(_uploadStatus);
+        })
+        setUploadStatusList(_uploadStatusList);
+    }, [props.globalCampaigns]);
+
     const setColumnInfo = () => {
         let _columns = [
             {
@@ -52,7 +64,7 @@ const GroupCampaignUploadAll = (props) => {
                 render: (_, record) => {
                     let number = 0;
                     props.campaigns.forEach((c, i) => {
-                        if (c.key === record.key) {
+                        if (c.key == record.key) {
                             number = i + 1;
                             return;
                         }
@@ -112,30 +124,9 @@ const GroupCampaignUploadAll = (props) => {
                 key: 'count',
                 width: 90,
                 render: (_, record) => {
-                    let count = 'all';
-
-                    switch (record.way) {
-                        case 'all':
-                            count = 'all';
-                            break;
-                        case 'static':
-                            count = record.staticCount;
-                            break;
-                        case 'random':
-                            count = record.randomStart + ' ~ ' + record.randomEnd;
-                            break;
-                        case 'random_first':
-                            count = record.randomFirst + ': (' + record.randomStart + ' ~ ' + record.randomEnd + ')';
-                            break;
-                        case 'date':
-                            let old = (record.dayOld == "0" || record.dayOld == "") ? 'today' : record.dayOld + ' day old ';
-                            count = old + (record.isTime == "true" ? '  ' + record.time + record.meridiem : '');
-                            break;
-                    }
-
                     return (
                         <>
-                            <span>{count}</span>
+                            <span>{customUploadAmount(record)}</span>
                         </>
                     )
                 }
@@ -160,14 +151,14 @@ const GroupCampaignUploadAll = (props) => {
                     let selectedIndex = -1;
                     if (selectedCampaignKeys) {
                         selectedCampaignKeys.forEach((key, i) => {
-                            if (key === r.key) {
+                            if (key == r.key) {
                                 selectedIndex = i;
                             }
                         })
                     }
 
                     return (
-                        <Checkbox disabled={selectedIndex === -1 ? true: false} checked={r.isEditPhone == "true" ? true: false} onChange={(e) => {handlePhoneEditCheck(e, r)}}/>
+                        <Checkbox disabled={selectedIndex == -1 ? true: false} checked={r.isEditPhone == "true" ? true: false} onChange={(e) => {handlePhoneEditCheck(e, r)}}/>
                     )
                 }
             },
@@ -179,7 +170,7 @@ const GroupCampaignUploadAll = (props) => {
                     let selectedIndex = -1;
                     if (selectedCampaignKeys) {
                         selectedCampaignKeys.forEach((key, i) => {
-                            if (key === r.key) {
+                            if (key == r.key) {
                                 selectedIndex = i;
                             }
                         })
@@ -211,9 +202,43 @@ const GroupCampaignUploadAll = (props) => {
     }
 
     useEffect(function() {
-        if (props.uploadInfo.selectedCampaignKeys === undefined) setSelectedCampaignKeys([]);
-        else setSelectedCampaignKeys(props.uploadInfo.selectedCampaignKeys);
-    }, [props.uploadInfo]);
+        if (props.uploadInfo.selectedCampaignKeys !== undefined && props.uploadInfo.selectedCampaignKeys !== "") {
+            if (props.uploadInfo.selectedCampaignKeys == undefined) setSelectedCampaignKeys([]);
+            else {
+                let _selectedCampaignKeys = [];
+                props.group.campaigns.forEach(c => {
+                    props.uploadInfo.selectedCampaignKeys.forEach(key => {
+                        if (key == c.key) _selectedCampaignKeys.push(key);
+                    })
+                })
+                setSelectedCampaignKeys(_selectedCampaignKeys);
+            }
+        }
+    }, [props.group, props.uploadInfo]);
+
+    const customUploadAmount = function(r) {
+        let count = 'all';
+
+        switch (r.way) {
+            case 'all':
+                count = 'all';
+                break;
+            case 'static':
+                count = r.staticCount;
+                break;
+            case 'random':
+                count = r.randomStart + ' ~ ' + r.randomEnd;
+                break;
+            case 'random_first':
+                count = r.randomFirst + ': (' + r.randomStart + ' ~ ' + r.randomEnd + ')';
+                break;
+            case 'date':
+                let old = (r.dayOld == "0" || r.dayOld == "") ? 'today' : r.dayOld + ' day old ';
+                count = old + (r.isTime == "true" ? '  ' + r.time + r.meridiem : '');
+                break;
+        }
+        return count;
+    }
 
     const initUploadStatusList = () => {
         let campaignKeys = selectedCampaignKeys;
@@ -228,12 +253,13 @@ const GroupCampaignUploadAll = (props) => {
 
                     let uploadStatus = {};
                     uploadStatus.no = index + 1;
-                    uploadStatus.status = index === 0 ? 'loading' : 'normal';
-                    uploadStatus.query = campaign.query;
-                    uploadStatus.last_qty = campaign.last_qty;
-                    uploadStatus.less_qty = campaign.less_qty;
-                    uploadStatus.key = key;
                     uploadStatus.index = index;
+                    uploadStatus.key = key;
+                    uploadStatus.query = campaign.query;
+                    uploadStatus.campaignIndex = c.index;
+                    uploadStatus.way = c.way;
+                    uploadStatus.amount = customUploadAmount(c);
+                    uploadStatus.status = index == 0 ? 'loading' : 'normal';
                     _uploadStatusList.push(uploadStatus);
                     index++;
                 }
@@ -263,7 +289,7 @@ const GroupCampaignUploadAll = (props) => {
     const handleCommentChange = (e, r) => {
         r.comment = e.target.value;
         setCampaigns([...props.campaigns].map(c => {
-            return (c.index === r.index ? r : c);
+            return (c.index == r.index ? r : c);
         }));
     }
 
@@ -274,7 +300,7 @@ const GroupCampaignUploadAll = (props) => {
     const handlePhoneChange = (e, r) => {
         r.last_phone = e.target.value;
         setCampaigns([...props.campaigns].map(c => {
-            return (c.index === r.index ? r : c);
+            return (c.index == r.index ? r : c);
         }));
     };
 
@@ -285,24 +311,30 @@ const GroupCampaignUploadAll = (props) => {
     // rowSelection object indicates the need for row selection
     const rowSelection = {
         onChange: (selectedRowKeys, selectedRows) => {
-            setSelectedCampaignKeys(selectedRowKeys);
+            let _selectedCampaignKeys = [];
+            props.group.campaigns.forEach(c => {
+                selectedRowKeys.forEach(key => {
+                    if (key == c.key) _selectedCampaignKeys.push(key);
+                })
+            })
+            setSelectedCampaignKeys(_selectedCampaignKeys);
 
-            if (selectedRowKeys.length == 0) selectedRowKeys = '';
-            props.updateUpload({'selectedCampaignKeys': selectedRowKeys});
+            if (selectedRowKeys.length == 0) _selectedCampaignKeys = '';
+            props.updateUpload({'selectedCampaignKeys': _selectedCampaignKeys});
         }
     };
 
     const changeUploadStatus = function(index, key) {
         setUploadStatusList(uploadStatusList.map((u, i) => {
-            if (u.key === key) return Object.assign(u, {status: 'complete'});
-            else if (index === i) return Object.assign(u, {status: 'loading'});
+            if (u.key == key) return Object.assign(u, {status: 'complete'});
+            else if (index == i) return Object.assign(u, {status: 'loading'});
             else return u;
         }))
     }
 
     const handleUploadOne = function(key, index) {
         props.campaigns.forEach(c => {
-            if (c.key === key) {
+            if (c.key == key) {
                 axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_one_by_one', qs.stringify({
                     groupIndex: props.groupIndex,
                     groupCampaignIndex: c.groupCampaignIndex,
@@ -326,7 +358,7 @@ const GroupCampaignUploadAll = (props) => {
     }
 
     const handleUploadClick = function() {
-        if (selectedCampaignKeys === undefined || selectedCampaignKeys.length === 0) {
+        if (selectedCampaignKeys == undefined || selectedCampaignKeys.length == 0) {
             messageApi.warning('Please select campaign list.');
             return;
         }
@@ -377,7 +409,7 @@ const GroupCampaignUploadAll = (props) => {
                 title="UPLOAD STATUS LIST"
                 centered
                 open={open}
-                width={500}
+                width={1200}
                 header={null}
                 footer={null}
             >

@@ -66,7 +66,7 @@ const GroupCampaignUploadOneByOne = (props) => {
                 {
                     title: 'Comment',
                     key: 'comment',
-                    width: 160,
+                    width: 130,
                     render: (_, r) => {
                         return (
                             <Input value={r.comment} onBlur={() => {handleCommentSave(r)}} onChange={(e) => {handleCommentChange(e, r)}}/>
