@@ -19,7 +19,6 @@ const GroupCampaignUploadAll = (props) => {
     const [selectedCampaignKeys, setSelectedCampaignKeys] = useState([]);
     const [campaigns, setCampaigns] = useState([]);
     const [open, setOpen] = useState(false);
-    const [uploadStatus, setUploadStatus] = useState(false);
     const [uploadStatusList, setUploadStatusList] = useState([]);
     const [messageApi, contextHolder] = message.useMessage();
 
@@ -222,20 +221,24 @@ const GroupCampaignUploadAll = (props) => {
 
         let index = 0;
         let _uploadStatusList = [];
-        campaignKeys.forEach(key => {
-            props.globalCampaigns.forEach(c => {
+        props.group.campaigns.forEach(c => {
+            campaignKeys.forEach(key => {
                 if (c.key == key) {
+                    const campaign = props.globalCampaigns[c.index];
+
                     let uploadStatus = {};
                     uploadStatus.no = index + 1;
                     uploadStatus.status = index === 0 ? 'loading' : 'normal';
-                    uploadStatus.query = c.query;
+                    uploadStatus.query = campaign.query;
+                    uploadStatus.last_qty = campaign.last_qty;
+                    uploadStatus.less_qty = campaign.less_qty;
                     uploadStatus.key = key;
                     uploadStatus.index = index;
                     _uploadStatusList.push(uploadStatus);
                     index++;
                 }
-            })
-        })
+            });
+        });
         setUploadStatusList(_uploadStatusList);
     }
 
