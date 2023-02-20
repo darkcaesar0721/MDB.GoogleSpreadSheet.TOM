@@ -78,23 +78,17 @@ const GroupCampaignUploadAll = (props) => {
                 }
             },
             {
-                title: 'color',
+                title: 'N G Y P',
                 key: 'color',
-                width: 100,
+                width: 130,
                 render: (_, r) => {
                     const color = r.color === undefined || r.color === "" ? "none" : r.color;
                     return (
-                        <Radio.Group defaultValue="none" value={color} onChange={(e) => {handleColorChange(e, r)}}>
-                            <Row>
-                                <Col span={12}>
-                                    <Radio value="none">n</Radio>
-                                    <Radio value="green">g</Radio>
-                                </Col>
-                                <Col span={12}>
-                                    <Radio value="yellow">y</Radio>
-                                    <Radio value="pink">p</Radio>
-                                </Col>
-                            </Row>
+                        <Radio.Group onChange={(e) => {handleColorChange(e, r)}} defaultValue="none" value={color}>
+                            <Radio.Button value="none">N</Radio.Button>
+                            <Radio.Button value="green">G</Radio.Button>
+                            <Radio.Button value="yellow">Y</Radio.Button>
+                            <Radio.Button value="pink">P</Radio.Button>
                         </Radio.Group>
                     )
                 }
@@ -198,12 +192,12 @@ const GroupCampaignUploadAll = (props) => {
                 }
             },
             {
-                title: 'Get Phone',
+                title: 'Last Phone',
                 key: 'get_phone',
-                width: 80,
+                width: 90,
                 render: (_, r) => {
                     return (
-                        <Button type="primary" onClick={(e) => {props.getLastPhone(r)}}>Get Phone</Button>
+                        <Button type="primary" onClick={(e) => {props.getLastPhone(r)}}>Last Phone</Button>
                     )
                 }
             }
@@ -416,6 +410,7 @@ const GroupCampaignUploadAll = (props) => {
                             selectedRowKeys: selectedCampaignKeys,
                             ...rowSelection,
                         }}
+                        className="campaign-table"
                         rowClassName={(record, index) => ((record.color === undefined || record.color == "" || record.color === "none") ? "" : "campaign_" + record.color) }
                     />
                 </Col>

@@ -216,12 +216,12 @@ const GroupCampaignUploadOneByOne = (props) => {
                     }
                 },
                 {
-                    title: 'Get Phone',
+                    title: 'Last Phone',
                     key: 'get_phone',
-                    width: 80,
+                    width: 90,
                     render: (_, r) => {
                         return (
-                            <Button type="primary" onClick={(e) => {props.getLastPhone(r)}}>Get Phone</Button>
+                            <Button type="primary" onClick={(e) => {props.getLastPhone(r)}}>Last Phone</Button>
                         )
                     }
                 }
