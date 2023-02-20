@@ -1,4 +1,4 @@
-import {Button, Checkbox, Col, Divider, message, Modal, Popconfirm, Row, Table} from "antd";
+import {Button, Checkbox, Col, Divider, message, Modal, Popconfirm, Radio, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import {Input} from "antd/lib";
@@ -78,12 +78,24 @@ const GroupCampaignUploadAll = (props) => {
                 }
             },
             {
-                title: 'yellow',
-                key: 'active',
-                width: 50,
+                title: 'color',
+                key: 'color',
+                width: 100,
                 render: (_, r) => {
+                    const color = r.color === undefined || r.color === "" ? "none" : r.color;
                     return (
-                        <Checkbox checked={(r.isLast == true || r.isLast == "true")} onChange={(e) => {handleIsLastCheck(e, r)}}/>
+                        <Radio.Group defaultValue="none" value={color} onChange={(e) => {handleColorChange(e, r)}}>
+                            <Row>
+                                <Col span={12}>
+                                    <Radio value="none">n</Radio>
+                                    <Radio value="green">g</Radio>
+                                </Col>
+                                <Col span={12}>
+                                    <Radio value="yellow">y</Radio>
+                                    <Radio value="pink">p</Radio>
+                                </Col>
+                            </Row>
+                        </Radio.Group>
                     )
                 }
             },
@@ -214,6 +226,10 @@ const GroupCampaignUploadAll = (props) => {
         }
     }, [props.group, props.uploadInfo]);
 
+    const handleColorChange = function(e, r) {
+        props.updateCampaign(r.file_name, {color: e.target.value});
+    }
+
     const customUploadAmount = function(r) {
         let count = 'all';
 
@@ -296,8 +312,6 @@ const GroupCampaignUploadAll = (props) => {
         r.last_phone = e.target.value;
         setCampaigns([...props.campaigns].map(c => {
             return (c.index == r.index ? r : c);
-
-
         }));
     };
 
@@ -402,7 +416,7 @@ const GroupCampaignUploadAll = (props) => {
                             selectedRowKeys: selectedCampaignKeys,
                             ...rowSelection,
                         }}
-                        rowClassName={(record, index) => ((record.isLast == true || record.isLast == "true") ? "campaign_active" : "") }
+                        rowClassName={(record, index) => ((record.color === undefined || record.color == "" || record.color === "none") ? "" : "campaign_" + record.color) }
                     />
                 </Col>
             </Row>

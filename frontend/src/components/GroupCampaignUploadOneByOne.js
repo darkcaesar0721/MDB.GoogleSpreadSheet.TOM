@@ -1,4 +1,4 @@
-import {Button, Checkbox, Col, Divider, Modal, Popconfirm, Row, Table} from "antd";
+import {Button, Checkbox, Col, Divider, Modal, Popconfirm, Radio, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {UploadOutlined, MediumOutlined, EyeOutlined} from "@ant-design/icons";
 import {Link} from "react-router-dom";
@@ -55,12 +55,24 @@ const GroupCampaignUploadOneByOne = (props) => {
                     }
                 },
                 {
-                    title: 'Yellow',
-                    key: 'yellow',
-                    width: 50,
+                    title: 'color',
+                    key: 'color',
+                    width: 100,
                     render: (_, r) => {
+                        const color = r.color === undefined || r.color === "" ? "none" : r.color;
                         return (
-                            <Checkbox checked={(r.isLast == true || r.isLast == "true")} onChange={(e) => {handleIsLastCheck(e, r)}}/>
+                            <Radio.Group defaultValue="none" value={color} onChange={(e) => {handleColorChange(e, r)}}>
+                                <Row>
+                                    <Col span={12}>
+                                        <Radio value="none">n</Radio>
+                                        <Radio value="green">g</Radio>
+                                    </Col>
+                                    <Col span={12}>
+                                        <Radio value="yellow">y</Radio>
+                                        <Radio value="pink">p</Radio>
+                                    </Col>
+                                </Row>
+                            </Radio.Group>
                         )
                     }
                 },
@@ -224,6 +236,10 @@ const GroupCampaignUploadOneByOne = (props) => {
         }
     }, [props.campaigns]);
 
+    const handleColorChange = function(e, r) {
+        props.updateCampaign(r.file_name, {color: e.target.value});
+    }
+
     const handleCommentChange = (e, r) => {
         r.comment = e.target.value;
         setCampaigns([...props.campaigns].map(c => {
@@ -299,7 +315,7 @@ const GroupCampaignUploadOneByOne = (props) => {
                         dataSource={campaigns}
                         pagination={tableParams.pagination}
                         onChange={handleTableChange}
-                        rowClassName={(record, index) => ((record.isLast == true || record.isLast == "true") ? "campaign_active" : "") }
+                        rowClassName={(record, index) => ((record.color === undefined || record.color == "" || record.color === "none") ? "" : "campaign_" + record.color) }
                     />
                 </Col>
             </Row>
