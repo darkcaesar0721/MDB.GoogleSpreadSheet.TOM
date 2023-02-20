@@ -156,6 +156,7 @@ class Upload
         $this->campaigns[$c_i]->_upRows = [];
         $this->campaigns[$c_i]->_up_rows = [];
         $this->campaigns[$c_i]->isManually = false;
+        $this->campaigns[$c_i]->isGetLastPhone = false;
 
         $this->campaigns[$c_i]->isLast = true;
 
@@ -292,6 +293,9 @@ class Upload
                     $valueRange->setValues($c->_up_rows);
                     $range = $cur_sheet['properties']['title']; // the service will detect the last row of this sheet
                     $options = ['valueInputOption' => 'USER_ENTERED'];
+
+                    $response = $this->service->spreadsheets_values->get($spreadsheetId, $range);
+                    $values = $response->getValues();
                     $this->service->spreadsheets_values->append($spreadsheetId, $range, $valueRange, $options);
                 }
             }
@@ -509,8 +513,8 @@ class Upload
                     } else {
 	                    foreach ($rows as $row) {
 	                        if ($g_c->isTime) {
-	                            $date = strtotime(date("m/d/Y h A", strtotime($g_c->date . ' ' . $g_c->time . ' '. $g_c->meridiem)));
-	                            $r_date = strtotime(date("m/d/Y h A", strtotime($row['SystemCreateDate'])));
+	                            $date = strtotime(date("m/d/Y h:i A", strtotime($g_c->date . ' ' . $g_c->time . ':00 '. $g_c->meridiem)));
+	                            $r_date = strtotime(date("m/d/Y h:i A", strtotime($row['SystemCreateDate'])));
 
 	                            if ($r_date > $date) {
 	                                $up_row = array();
