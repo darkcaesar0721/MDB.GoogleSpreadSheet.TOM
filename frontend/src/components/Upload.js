@@ -17,6 +17,7 @@ import {EyeOutlined} from "@ant-design/icons";
 import GroupCampaignUploadOneByOne from "./GroupCampaignUploadOneByOne";
 import MenuList from "./MenuList";
 import GroupCampaignUploadAll from "./GroupCampaignUploadAll";
+import moment from "moment/moment";
 
 const Upload = (props) => {
     const [options, setOptions] = useState([]);
@@ -164,6 +165,21 @@ const Upload = (props) => {
                     title: 'SystemCreateDate',
                     dataIndex: 'SystemCreateDate',
                     key: 'SystemCreateDate',
+                    render: (_, r) => {
+                        return (
+                            <span>{r.SystemCreateDate === "" || r.SystemCreateDate === undefined ? "" : moment(r.SystemCreateDate).format('M/D/Y, hh:mm A')}</span>
+                        )
+                    }
+                },
+                {
+                    title: 'LastUploadDate',
+                    dataIndex: 'lastUploadDateTime',
+                    key: 'lastUploadDateTime',
+                    render: (_, r) => {
+                        return (
+                            <span>{r.lastUploadDateTime === "" || r.lastUploadDateTime === undefined ? "" : moment(r.lastUploadDateTime).format('M/D/Y, hh:mm A')}</span>
+                        )
+                    }
                 },
                 {
                     title: 'Preview',

@@ -1,6 +1,7 @@
 import {Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {LoadingOutlined, CheckCircleTwoTone} from "@ant-design/icons";
+import moment from "moment";
 
 const GroupCampaignUploadStatusList = (props) => {
     const columns = [
@@ -57,7 +58,12 @@ const GroupCampaignUploadStatusList = (props) => {
             title: 'SystemCreateDate',
             dataIndex: 'SystemCreateDate',
             key: 'SystemCreateDate',
-        }
+            render: (_, r) => {
+                return (
+                    <span>{r.SystemCreateDate === "" || r.SystemCreateDate === undefined ? "" : moment(r.SystemCreateDate).format('M/D/Y, hh:mm A')}</span>
+                )
+            }
+        },
     ]
 
     useEffect(function() {

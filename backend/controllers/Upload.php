@@ -230,6 +230,7 @@ class Upload
             $this->campaigns[$c_i]->isManually = true;
         }
         $this->campaigns[$c_i]->isGetLastPhone = false;
+        $this->campaigns[$c_i]->lastUploadDateTime = date("m/d/Y h:i A");
 
 	    $this->campaign_obj->save_datas($this->campaigns);
 

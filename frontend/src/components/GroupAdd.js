@@ -8,6 +8,7 @@ import MDBPath from "./MDBPath";
 import { SettingOutlined } from '@ant-design/icons';
 import {useNavigate} from "react-router-dom";
 import MenuList from "./MenuList";
+import moment from "moment";
 
 function GroupAdd(props) {
     const [tableParams, setTableParams] = useState({
@@ -148,6 +149,21 @@ function GroupAdd(props) {
                 title: 'SystemCreateDate',
                 dataIndex: 'SystemCreateDate',
                 key: 'SystemCreateDate',
+                render: (_, r) => {
+                    return (
+                        <span>{r.SystemCreateDate === "" || r.SystemCreateDate === undefined ? "" : moment(r.SystemCreateDate).format('M/D/Y, hh:mm A')}</span>
+                    )
+                }
+            },
+            {
+                title: 'LastUploadDate',
+                dataIndex: 'lastUploadDateTime',
+                key: 'lastUploadDateTime',
+                render: (_, r) => {
+                    return (
+                        <span>{r.lastUploadDateTime === "" || r.lastUploadDateTime === undefined ? "" : moment(r.lastUploadDateTime).format('M/D/Y, hh:mm A')}</span>
+                    )
+                }
             },
             {
                 title: 'Setting',

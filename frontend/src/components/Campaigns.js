@@ -5,6 +5,7 @@ import {PlusCircleOutlined, EditOutlined} from '@ant-design/icons';
 import {getCampaigns} from "../redux/actions";
 import MDBPath from "./MDBPath";
 import MenuList from "./MenuList";
+import moment from "moment";
 
 function Campaigns(props) {
     const [tableParams, setTableParams] = useState({
@@ -82,6 +83,21 @@ function Campaigns(props) {
                 title: 'SystemCreateDate',
                 dataIndex: 'SystemCreateDate',
                 key: 'SystemCreateDate',
+                render: (_, r) => {
+                    return (
+                        <span>{r.SystemCreateDate === "" || r.SystemCreateDate === undefined ? "" : moment(r.SystemCreateDate).format('M/D/Y, hh:mm A')}</span>
+                    )
+                }
+            },
+            {
+                title: 'LastUploadDate',
+                dataIndex: 'lastUploadDateTime',
+                key: 'lastUploadDateTime',
+                render: (_, r) => {
+                    return (
+                        <span>{r.lastUploadDateTime === "" || r.lastUploadDateTime === undefined ? "" : moment(r.lastUploadDateTime).format('M/D/Y, hh:mm A')}</span>
+                    )
+                }
             },
             {
                 title: 'Action',

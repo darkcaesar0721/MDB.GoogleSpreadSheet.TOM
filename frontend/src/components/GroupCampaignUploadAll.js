@@ -6,6 +6,7 @@ import GroupCampaignUploadStatusList from "./GroupCampaignUploadStatusList";
 import axios from "axios";
 import {APP_API_URL} from "../constants";
 import qs from "qs";
+import moment from "moment/moment";
 
 const GroupCampaignUploadAll = (props) => {
     const [tableParams, setTableParams] = useState({
@@ -166,10 +167,21 @@ const GroupCampaignUploadAll = (props) => {
                 title: 'SystemCreateDate',
                 dataIndex: 'SystemCreateDate',
                 key: 'SystemCreateDate',
-                width: 100,
+                width: 130,
                 render: (_, r) => {
                     return (
-                        <span style={{color: r.isGetLastPhone  ? 'red' : 'black'}}>{r.SystemCreateDate}</span>
+                        <span style={{color: r.isGetLastPhone  ? 'red' : 'black'}}>{r.SystemCreateDate === "" || r.SystemCreateDate === undefined ? "" : moment(r.SystemCreateDate).format('M/D/Y, hh:mm A')}</span>
+                    )
+                }
+            },
+            {
+                title: 'LastUploadDate',
+                dataIndex: 'lastUploadDateTime',
+                key: 'lastUploadDateTime',
+                width: 130,
+                render: (_, r) => {
+                    return (
+                        <span>{r.lastUploadDateTime === "" || r.lastUploadDateTime === undefined ? "" : moment(r.lastUploadDateTime).format('M/D/Y, hh:mm A')}</span>
                     )
                 }
             },

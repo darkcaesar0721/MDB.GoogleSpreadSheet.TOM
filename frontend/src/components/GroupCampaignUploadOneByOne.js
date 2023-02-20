@@ -4,6 +4,7 @@ import {UploadOutlined, MediumOutlined, EyeOutlined} from "@ant-design/icons";
 import {Link} from "react-router-dom";
 import {Input} from "antd/lib";
 import CampaignUploadManually from "./CampaignUploadManually";
+import moment from "moment";
 
 const GroupCampaignUploadOneByOne = (props) => {
     const [tableParams, setTableParams] = useState({
@@ -155,10 +156,10 @@ const GroupCampaignUploadOneByOne = (props) => {
                     title: 'SystemCreateDate',
                     dataIndex: 'SystemCreateDate',
                     key: 'SystemCreateDate',
-                    width: 100,
+                    width: 130,
                     render: (_, r) => {
                         return (
-                            <span style={{color: r.isGetLastPhone  ? 'red' : 'black'}}>{r.SystemCreateDate}</span>
+                            <span style={{color: r.isGetLastPhone  ? 'red' : 'black'}}>{r.SystemCreateDate === "" || r.SystemCreateDate === undefined ? "" : moment(r.SystemCreateDate).format('M/D/Y, hh:mm A')}</span>
                         )
                     }
                 },
@@ -194,6 +195,17 @@ const GroupCampaignUploadOneByOne = (props) => {
                                     (record.isManually == "true" || record.isManually == true) ? <Button onClick={(e) => {handleShowResult(record)}} icon={<EyeOutlined /> } style={{marginRight: 1}}/> : ''
                                 }
                             </>
+                        )
+                    }
+                },
+                {
+                    title: 'LastUploadDate',
+                    dataIndex: 'lastUploadDateTime',
+                    key: 'lastUploadDateTime',
+                    width: 130,
+                    render: (_, r) => {
+                        return (
+                            <span>{r.lastUploadDateTime === "" || r.lastUploadDateTime === undefined ? "" : moment(r.lastUploadDateTime).format('M/D/Y, hh:mm A')}</span>
                         )
                     }
                 },

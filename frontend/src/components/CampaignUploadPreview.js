@@ -5,6 +5,7 @@ import {getCampaigns, getGroups} from "../redux/actions";
 import React, {useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
 import MenuList from "./MenuList";
+import moment from "moment";
 
 const layout = {
     labelCol: {
@@ -90,7 +91,16 @@ const CampaignUploadPreview = (props) => {
                     tbl_columns.push({title: c.field, dataIndex: c.name, key: c.name});
                 }
             });
-            tbl_columns.push({title: 'SystemCreateDate', dataIndex: 'SystemCreateDate', key: 'SystemCreateDate'});
+            tbl_columns.push({
+                title: 'SystemCreateDate',
+                dataIndex: 'SystemCreateDate',
+                key: 'SystemCreateDate',
+                render: (_, r) => {
+                    return (
+                        <span>{r.SystemCreateDate === "" || r.SystemCreateDate === undefined ? "" : moment(r.SystemCreateDate).format('M/D/Y, hh:mm A')}</span>
+                    )
+                }
+            });
             setTableColumns(tbl_columns);
         }
     }, [props.groups.data, props.campaigns.data]);
