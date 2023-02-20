@@ -1,5 +1,5 @@
 import {Button, Checkbox, Col, Form, Input, message, Modal, Radio, Row, Select, Spin} from "antd";
-import MDBPath from "./MDBPath";
+import Path from "./Path/Path";
 import {connect} from "react-redux";
 import {getCampaigns, getGroups, updateCampaign} from "../redux/actions";
 import React, {useEffect, useState} from "react";
@@ -267,7 +267,7 @@ const GroupEditSetting = (props) => {
             <MenuList
                 currentPage="group"
             />
-            <MDBPath/>
+            <Path/>
             <Row>
                 <Col span={20} offset={2} style={{marginTop: 20}}>
                     {

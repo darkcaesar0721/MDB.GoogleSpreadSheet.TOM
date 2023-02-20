@@ -1,5 +1,5 @@
 import {Button, Checkbox, Col, Form, Input, InputNumber, Radio, Row, Select, Table} from "antd";
-import MDBPath from "./MDBPath";
+import Path from "./Path/Path";
 import {connect} from "react-redux";
 import {getCampaigns, getGroups} from "../redux/actions";
 import React, {useEffect, useState} from "react";
@@ -118,7 +118,7 @@ const CampaignUploadPreview = (props) => {
             <MenuList
                 currentPage="upload"
             />
-            <MDBPath/>
+            <Path/>
             <Row>
                 <Col span={20} offset={2} style={{marginTop: 20}}>
                     {

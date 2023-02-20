@@ -4,7 +4,7 @@ import {connect} from "react-redux";
 import {
     getCampaigns, getGroups, getTempGroup, setGroupEditData, updateCampaign, updateGroup, updateTempGroup,
 } from "../redux/actions";
-import MDBPath from "./MDBPath";
+import Path from "./Path/Path";
 import { SettingOutlined } from '@ant-design/icons';
 import {useNavigate, useParams} from "react-router-dom";
 import MenuList from "./MenuList";
@@ -310,7 +310,7 @@ function GroupEdit(props) {
             <MenuList
                 currentPage="group"
             />
-            <MDBPath/>
+            <Path/>
             <Divider>CAMPAIGN ACTION GROUP EDIT FORM</Divider>
             <Row style={{marginBottom: 5}}>
                 <Col span={2} offset={7}>

@@ -359,6 +359,10 @@ const GroupCampaignUploadAll = (props) => {
             messageApi.warning('Please select campaign list.');
             return;
         }
+        if (props.schedule.path == "") {
+            messageApi.warning('Please input schedule sheet url.');
+            return;
+        }
 
         initUploadStatusList();
         handleUploadOne(selectedCampaignKeys[0], 0);

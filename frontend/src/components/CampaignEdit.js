@@ -13,7 +13,7 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {getCampaigns, updateCampaign} from "../redux/actions";
 import {useNavigate, useParams} from 'react-router-dom';
-import MDBPath from "./MDBPath";
+import Path from "./Path/Path";
 import MenuList from "./MenuList";
 import {MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
 import axios from "axios";
@@ -191,7 +191,7 @@ function CampaignEdit(props) {
             <MenuList
                 currentPage="campaign"
             />
-            <MDBPath/>
+            <Path/>
             <Row style={{marginTop: '2rem'}}>
                 <Col span={20} offset={2}>
                     <Divider>CAMPAIGN EDIT FORM</Divider>

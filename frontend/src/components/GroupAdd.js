@@ -4,7 +4,7 @@ import {connect} from "react-redux";
 import {
     getCampaigns, getGroups, getTempGroup, updateCampaign, updateTempGroup,createGroup,
 } from "../redux/actions";
-import MDBPath from "./MDBPath";
+import Path from "./Path/Path";
 import { SettingOutlined } from '@ant-design/icons';
 import {useNavigate} from "react-router-dom";
 import MenuList from "./MenuList";
@@ -286,7 +286,7 @@ function GroupAdd(props) {
             <MenuList
                 currentPage="group"
             />
-            <MDBPath/>
+            <Path/>
             <Divider>CAMPAIGN ACTION GROUP ADD FORM</Divider>
             <Row style={{marginBottom: 5}}>
                 <Col span={2} offset={7}>

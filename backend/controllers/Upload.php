@@ -20,12 +20,14 @@ use PDOException;
 class Upload
 {
 	public $mdb_obj;
+	public $schedule_obj;
 	public $campaign_obj;
 	public $group_obj;
 	public $upload_config_obj;
 	public $backup_obj;
 
 	public $mdb;
+	public $schedule;
 	public $campaigns;
 	public $groups;
 	public $upload_config;
@@ -40,6 +42,7 @@ class Upload
 	public function init()
 	{
 		$this->init_mdb();
+		$this->init_schedule();
 		$this->init_campaigns();
 		$this->init_groups();
 		$this->init_upload_config();
@@ -47,9 +50,7 @@ class Upload
 
         $this->init_google_sheet_service();
 
-        $this->init_schedule_data();
-
-        date_default_timezone_set('America/Los_Angeles');
+        $this->schedule_obj->set_data_by_date(date("m/d/Y"));
 	}
 
 	public function init_mdb()
@@ -58,6 +59,13 @@ class Upload
         $this->mdb_obj->init();
         $this->mdb = $this->mdb_obj->get_mdb();
 	}
+
+    public function init_schedule()
+    {
+        $this->schedule_obj = new \controllers\Schedule();
+        $this->schedule_obj->init();
+        $this->schedule = $this->schedule_obj->get_schedule();
+    }
 
 	public function init_campaigns()
 	{
@@ -98,8 +106,6 @@ class Upload
 
 	public function init_schedule_data()
 	{
-		date_default_timezone_set('America/Los_Angeles');
-
 		$response = $this->service->spreadsheets_values->get('16fiKZjpWZ3ZCY69JpRrTBAYLS4GnjqEKp8tj2G65EAI', 'Sheet1');
 
 		$this->schedules = $response->getValues();
@@ -168,45 +174,12 @@ class Upload
 
         $this->campaign_obj->save_datas($this->campaigns);
 
-        $this->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i);
+        $this->schedule_obj->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i, $this->groups, $this->campaigns);
 
         $this->backup_obj->run(false);
         echo json_encode($this->campaigns);
         exit;
     }
-
-	public function upload_all()
-	{
-		$g_i = $_REQUEST['groupIndex'];
-
-		foreach ($this->groups[$g_i]->campaigns as $g_c_i => $g_c) {
-	        foreach ($this->upload_config->selectedCampaignKeys as $key) {
-	            if ($key == $g_c->key) {
-	                $this->upload_data($g_i, $g_c_i, $this->groups[$g_i]->campaigns[$g_c_i]->index);
-	                $this->campaigns[$this->groups[$g_i]->campaigns[$g_c_i]->index]->isLast = true;
-	            }
-	        }
-	    }
-
-	    foreach ($this->campaigns as $c_i => $c) {
-	    	$isExist = false;
-	        foreach ($this->upload_config->selectedCampaignKeys as $key) {
-	            if ($key == $c->key) {
-	                $isExist = true;
-	            }
-	        }
-	        if (!$isExist)
-	        	$this->campaigns[$c_i]->scheduleIndex = -1;
-	    }
-
-	    $this->campaign_obj->save_datas($this->campaigns);
-
-	    $this->upload_count_by_schedule("upload_all", $g_i, -1);
-
-	    $this->backup_obj->run();
-	    echo json_encode("success");
-	    exit;
-	}
 
 	public function upload_one_by_one()
 	{
@@ -235,7 +208,7 @@ class Upload
 	    $this->campaign_obj->save_datas($this->campaigns);
 
         if ($manually == "false") {
-            $this->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i);
+            $this->schedule_obj->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i, $this->groups, $this->campaigns);
         }
 
 	    $this->backup_obj->run(false);
@@ -302,15 +275,7 @@ class Upload
             }
         }
 
-        $index = -1;
-        foreach($this->schedules as $i => $v) {
-            foreach($v as $j => $r) {
-                if ($r == $c->schedule) {
-                    $index = $j;
-                }
-            }
-        }
-        $this->campaigns[$c_i]->scheduleIndex = $index;
+        $this->campaigns[$c_i]->scheduleIndex = $this->schedule_obj->get_schedule_column_index($c->schedule);
     }
 
 	public function upload_data($g_i, $g_c_i, $c_i, $manually = false)
@@ -585,162 +550,7 @@ class Upload
 	    }
 
         if ($manually == "false") {
-            $index = -1;
-            foreach($this->schedules as $i => $v) {
-                foreach($v as $j => $r) {
-                    if ($r == $c->schedule) {
-                        $index = $j;
-                    }
-                }
-            }
-            $this->campaigns[$c_i]->scheduleIndex = $index;
+            $this->campaigns[$c_i]->scheduleIndex = $this->schedule_obj->get_schedule_column_index($c->schedule);
         }
-	}
-
-	public function upload_count_by_schedule($action, $g_i, $c_i)
-	{
-		$cur_schedule = $this->cur_schedule;
-		$cur_schedule_index = $this->cur_schedule_index;
-
-		if (date('w') == 4) {
-		    $name = date('l') . ' ' . $this->groups[$g_i]->name;
-		    $cur_schedule = [];
-		    $cur_schedule_index = -1;
-		    foreach($this->schedules as $i => $v) {
-		        $cur_date_index = -1;
-		        $cur_name_index = -1;
-		        foreach($v as $j => $r) {
-		            if (strtotime(date('Y-m-d')) == strtotime(date($r))) {
-		                $cur_date_index = $i;
-		            }
-		            if ($name == $r) {
-		                $cur_name_index = $i;
-		            }
-		        }
-
-		        if ($cur_date_index != -1 && $cur_date_index == $cur_name_index) {
-		            $cur_schedule = $v;
-		            $cur_schedule_index = $i;
-		        }
-		    }
-
-		    $row = ['', date('m/d/Y'), $name];
-
-		    for ($i = 3; $i < 100; $i++) {
-		        $ext = false;
-		        foreach($this->campaigns as $c_index => $c){
-		            if ($i == $c->scheduleIndex) {
-		                if ($action == 'upload_all' || ($action != 'upload_all' && $c_index == $c_i)) {
-		                    if ($cur_schedule_index !== -1) {
-		                        if ($cur_schedule[$i]) {
-		                            if (strpos($cur_schedule[$i], '+') !== false) {
-		                                array_push($row, $cur_schedule[$i] . '+' . $c->less_qty);
-		                            } else {
-		                                $exp = explode(" ", $cur_schedule[$i]);
-		                                if (count($exp) > 2) {
-		                                    array_push($row, $cur_schedule[$i] . ' ' . $c->less_qty);
-		                                } else {
-		                                    if ((int)$exp[0] < 13) {
-		                                        array_push($row, $cur_schedule[$i] . '+' . $c->less_qty);
-		                                    } else {
-		                                        array_push($row, $cur_schedule[$i] . ' ' . $c->less_qty);
-		                                    }
-		                                }
-		                            }
-		                        } else {
-		                            array_push($row, $c->less_qty);
-		                        }
-
-		                    } else {
-		                        array_push($row, $c->less_qty);
-		                    }
-		                } else {
-		                    if ($cur_schedule_index !== -1) {
-		                        if ($cur_schedule[$i]) {
-		                            array_push($row, $cur_schedule[$i]);
-		                        } else {
-		                            array_push($row, ' ');
-		                        }
-
-		                    } else {
-		                        array_push($row, ' ');
-		                    }
-		                }
-		                $ext = true;
-		            }
-		        }
-
-		        if (!$ext) {
-		            if (!$cur_schedule[$i]) array_push($row, ' ');
-		            else array_push($row, $cur_schedule[$i]);
-		        }
-		    }
-		} else {
-		    $row = ['', date('m/d/Y'), date('l')];
-		    for ($i = 3; $i < 100; $i++) {
-		        $ext = false;
-		        foreach($this->campaigns as $c_index => $c){
-		            if ($i == $c->scheduleIndex) {
-		                if ($action == 'upload_all' || ($action != 'upload_all' && $c_index == $c_i)) {
-		                    if ($cur_schedule_index !== -1) {
-		                        if ($cur_schedule[$i]) {
-		                            if (strpos($cur_schedule[$i], '+') !== false) {
-		                                array_push($row, $cur_schedule[$i] . '+' . $c->less_qty);
-		                            } else {
-		                                $exp = explode(" ", $cur_schedule[$i]);
-		                                if (count($exp) > 2) {
-		                                    array_push($row, $cur_schedule[$i] . ' ' . $c->less_qty);
-		                                } else {
-		                                    if ((int)$exp[0] < 13) {
-		                                        array_push($row, $cur_schedule[$i] . '+' . $c->less_qty);
-		                                    } else {
-		                                        array_push($row, $cur_schedule[$i] . ' ' . $c->less_qty);
-		                                    }
-		                                }
-		                            }
-		                        } else {
-		                            array_push($row, $c->less_qty);
-		                        }
-
-		                    } else {
-		                        array_push($row, $c->less_qty);
-		                    }
-		                } else {
-		                    if ($cur_schedule_index !== -1) {
-		                        if ($cur_schedule[$i]) {
-		                            array_push($row, $cur_schedule[$i]);
-		                        } else {
-		                            array_push($row, ' ');
-		                        }
-
-		                    } else {
-		                        array_push($row, ' ');
-		                    }
-		                }
-		                $ext = true;
-		            }
-		        }
-
-		        if (!$ext) {
-		            if (!$cur_schedule[$i]) array_push($row, ' ');
-		            else array_push($row, $cur_schedule[$i]);
-		        }
-		    }
-		}
-
-		$body = new Google_Service_Sheets_ValueRange([
-		    'values' => [$row]
-		]);
-		$params = [
-		    'valueInputOption' => 'USER_ENTERED'
-		];
-
-		if ($cur_schedule_index == -1) {
-		    $update_range = 'Sheet1!' . 'A' . (count($this->schedules) + 1) . ':' . 'ZZ' . (count($this->schedules) + 1);
-		} else {
-		    $update_range = 'Sheet1!' . 'A' . ($cur_schedule_index + 1) . ':' . 'ZZ' . ($cur_schedule_index + 1);
-		}
-
-		$update_sheet = $this->service->spreadsheets_values->update('16fiKZjpWZ3ZCY69JpRrTBAYLS4GnjqEKp8tj2G65EAI', $update_range, $body, $params);
 	}
 }

@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {PlusCircleOutlined, EditOutlined} from '@ant-design/icons';
 import {getCampaigns} from "../redux/actions";
-import MDBPath from "./MDBPath";
+import Path from "./Path/Path";
 import MenuList from "./MenuList";
 import moment from "moment";
 
@@ -128,7 +128,7 @@ function Campaigns(props) {
             <MenuList
                 currentPage="campaign"
             />
-            <MDBPath/>
+            <Path/>
             <Divider>MDB QUERY CAMPAIGN LIST</Divider>
             <Row>
                 <Col span={2} offset={21}>

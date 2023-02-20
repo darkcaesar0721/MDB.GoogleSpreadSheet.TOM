@@ -1,7 +1,7 @@
 import { Input, Col, Row } from 'antd';
 import {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {getMDBPath, setMDBPath} from "../redux/actions";
+import {getMDBPath, setMDBPath} from "../../redux/actions";
 
 function MDBPath(props) {
     const [path, setPath] = useState('');

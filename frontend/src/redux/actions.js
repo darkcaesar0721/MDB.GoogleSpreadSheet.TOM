@@ -5,7 +5,7 @@ import {
     INIT_GROUP_DATA,
     INIT_TEMP_GROUP_DATA,
     INIT_UPLOAD_DATA,
-    INIT_MDB_DATA, INIT_BACKUP_DATA
+    INIT_MDB_DATA, INIT_BACKUP_DATA, INIT_SCHEDULE_DATA
 } from "./actionTypes";
 import { APP_API_URL } from "../constants";
 
@@ -25,6 +25,26 @@ export const setMDBPath = (rows) => async (dispatch) => {
 
     dispatch({
         type: INIT_MDB_DATA,
+        data: result.data
+    });
+}
+
+export const getSchedulePath = () => async (dispatch) => {
+    const result = await axios.get(APP_API_URL + 'api.php?class=Schedule&fn=get_data');
+
+    dispatch({
+        type: INIT_SCHEDULE_DATA,
+        data: result.data
+    });
+}
+
+export const setSchedulePath = (rows) => async (dispatch) => {
+    const result = await axios.post(APP_API_URL + 'api.php?class=Schedule&fn=set_data', qs.stringify({
+        rows
+    }));
+
+    dispatch({
+        type: INIT_SCHEDULE_DATA,
         data: result.data
     });
 }

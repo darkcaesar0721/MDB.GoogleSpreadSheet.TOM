@@ -15,7 +15,7 @@ import React, {useEffect, useState} from "react";
 import axios from "axios";
 import {APP_API_URL} from "../constants";
 import qs from "qs";
-import MDBPath from "./MDBPath";
+import Path from "./Path/Path";
 import {connect} from "react-redux";
 import { useNavigate } from 'react-router-dom';
 import MenuList from "./MenuList";
@@ -203,7 +203,7 @@ function CampaignAdd(props) {
             <MenuList
                 currentPage="campaign"
             />
-            <MDBPath/>
+            <Path/>
             <Row style={{marginTop: '1rem'}}>
                 <Col span={20} offset={2}>
                     <Divider>CAMPAIGN ADD FORM</Divider>

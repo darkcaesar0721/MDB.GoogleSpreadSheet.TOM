@@ -1,6 +1,7 @@
 <?php
 
 require_once('controllers/Mdb.php');
+require_once('controllers/Schedule.php');
 require_once('controllers/Campaign.php');
 require_once('controllers/Group.php');
 require_once('controllers/UploadConfig.php');

@@ -1,10 +1,10 @@
 import {Button, Col, Divider, message, Radio, Row, Select, Spin, Table} from "antd";
-import MDBPath from "./MDBPath";
+import Path from "./Path/Path";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {
     getCampaigns,
-    getGroups, getLastPhone,
+    getGroups, getLastPhone, getSchedulePath,
     getUpload,
     updateCampaign,
     updateGroupCampaign,
@@ -36,6 +36,7 @@ const Upload = (props) => {
     const [campaigns, setCampaigns] = useState([]);
 
     useEffect(function() {
+        props.getSchedulePath();
         props.getUpload();
         props.getCampaigns();
         props.getGroups();
@@ -251,23 +252,33 @@ const Upload = (props) => {
         })
     }
     const handleUploadOneByOne = (data, callback = function() {}) => {
-        setLoading(true);
-        if (data.manually)
-            setTip("Wait for getting data....");
-        else
-            setTip("Wait for uploading....");
-        axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_one_by_one', qs.stringify(data)).then(function(resp) {
-            setLoading(false);
-            props.getCampaigns();
-            props.getGroups();
-
+        if (validation()) {
+            setLoading(true);
             if (data.manually)
-                messageApi.success('Get data success');
+                setTip("Wait for getting data....");
             else
-                messageApi.success('Upload success');
+                setTip("Wait for uploading....");
+            axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_one_by_one', qs.stringify(data)).then(function(resp) {
+                setLoading(false);
+                props.getCampaigns();
+                props.getGroups();
 
-            callback();
-        })
+                if (data.manually)
+                    messageApi.success('Get data success');
+                else
+                    messageApi.success('Upload success');
+
+                callback();
+            })
+        }
+    }
+
+    const validation = function() {
+        if (props.schedule.path == "") {
+            messageApi.warning("Please input schedule sheet url");
+            return false;
+        }
+        return true;
     }
 
     const getLastPhone = (campaign) => {
@@ -289,7 +300,7 @@ const Upload = (props) => {
             <MenuList
                 currentPage="upload"
             />
-            <MDBPath/>
+            <Path/>
             <Divider>MDB QUERY UPLOAD</Divider>
             <Row>
                 <Col span={3} offset={4} style={{textAlign: 'right', lineHeight: '2rem', marginRight: '1rem'}}>
@@ -318,6 +329,7 @@ const Upload = (props) => {
             {
                 props.groups.data.length > 0 && props.campaigns.data.length > 0 && way === 'all' ?
                     <GroupCampaignUploadAll
+                        schedule={props.schedule}
                         campaigns={campaigns}
                         groupIndex={group}
                         globalCampaigns={props.campaigns.data}
@@ -367,10 +379,10 @@ const Upload = (props) => {
 }
 
 const mapStateToProps = state => {
-    return { campaigns: state.campaigns, groups: state.groups, upload: state.upload };
+    return { campaigns: state.campaigns, groups: state.groups, upload: state.upload, schedule: state.schedule };
 };
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign, getLastPhone, uploadAfterPreview, uploadOne }
+    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign, getLastPhone, uploadAfterPreview, uploadOne, getSchedulePath }
 )(Upload);

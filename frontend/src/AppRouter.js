@@ -1,6 +1,7 @@
 import React, {Fragment} from 'react';
-import {BrowserRouter, Routes, Route, HashRouter} from 'react-router-dom';
-import MDBPath from "./components/MDBPath";
+import {Routes, Route, HashRouter} from 'react-router-dom';
+import MDBPath from "./components/Path/MDBPath";
+import SchedulePath from "./components/Path/SchedulePath";
 import Campaigns from "./components/Campaigns";
 import CampaignAdd from "./components/CampaignAdd";
 import CampaignEdit from "./components/CampaignEdit";
@@ -27,6 +28,7 @@ export const AppRouter = () => {
                             <Route index path="/" element={<Upload />} />
                             <Route path="/backup" element={<Backup />} />
                             <Route path="/mdb" element={<MDBPath />} />
+                            <Route path="/schedule" element={<SchedulePath />} />
                             <Route path="/campaigns" element={<Campaigns />} />
                             <Route path="/campaigns/add" element={<CampaignAdd />} />
                             <Route path="/campaigns/:index" element={<CampaignEdit />} />
