@@ -142,32 +142,12 @@ const GroupCampaignUploadOneByOne = (props) => {
                     width: 25
                 },
                 {
-                    title: 'Edit Phone',
-                    key: 'edit_phone',
-                    width: 30,
-                    render: (_, r) => {
-                        return (
-                            <Checkbox checked={r.isEditPhone == "true" ? true: false} onChange={(e) => {handlePhoneEditCheck(e, r)}}/>
-                        )
-                    }
-                },
-                {
                     title: 'Last Phone',
                     key: 'last_phone',
                     width: 110,
                     render: (_, r) => {
                         return (
-                            <Input onBlur={() => {handlePhoneSave(r)}} style={{color: '#000000'}} disabled={!(r.isEditPhone == "true")} value={r.last_phone} onChange={(e) => {handlePhoneChange(e, r)}}/>
-                        )
-                    }
-                },
-                {
-                    title: 'Get Phone',
-                    key: 'get_phone',
-                    width: 80,
-                    render: (_, r) => {
-                        return (
-                            <Button type="primary" onClick={(e) => {props.getLastPhone(r)}}>Get Phone</Button>
+                            <Input onBlur={() => {handlePhoneSave(r)}} style={{color: '#000000'}} value={r.last_phone} onChange={(e) => {handlePhoneChange(e, r)}}/>
                         )
                     }
                 },
@@ -211,6 +191,16 @@ const GroupCampaignUploadOneByOne = (props) => {
                             </>
                         )
                     }
+                },
+                {
+                    title: 'Get Phone',
+                    key: 'get_phone',
+                    width: 80,
+                    render: (_, r) => {
+                        return (
+                            <Button type="primary" onClick={(e) => {props.getLastPhone(r)}}>Get Phone</Button>
+                        )
+                    }
                 }
             ];
             setColumns(_columns);
@@ -242,10 +232,6 @@ const GroupCampaignUploadOneByOne = (props) => {
     const handleIsLastCheck = (e, r) => {
         let campaign = props.globalCampaigns[r.index];
         props.updateCampaign(r.file_name, {isLast: (campaign.isLast == true || campaign.isLast == "true") ? false : true});
-    }
-
-    const handlePhoneEditCheck = (e, r) => {
-        props.updateGroupCampaign(props.groupIndex, r.groupCampaignIndex, {isEditPhone: e.target.checked});
     }
 
     const handleTableChange = (pagination, filters, sorter) => {

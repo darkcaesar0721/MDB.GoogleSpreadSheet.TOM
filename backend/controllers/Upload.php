@@ -119,48 +119,24 @@ class Upload
 		$c_i = $_REQUEST['campaignIndex'];
 		$c = $this->campaigns[$c_i];
 
-		$url = $c->urls[0];
+        $mdb_path = $this->mdb->path;
 
-        $url_array = parse_url($url);
-        $path_array = explode("/", $url_array["path"]);
+        $db = new PDO("odbc:Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBq=$mdb_path;Uid=;Pwd=;");
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        $spreadsheetId = $path_array[3];
+        $query = $c->query;
+        $sth = $db->prepare("select * from [$query]");
+        $sth->execute();
 
-        $spreadSheet = $this->service->spreadsheets->get($spreadsheetId);
-        $sheets = $spreadSheet->getSheets();
-
-        $cur_sheet = [];
-        foreach($sheets as $sheet) {
-            $sheetId = $sheet['properties']['sheetId'];
-
-            $pos = strpos($url, "gid=" . $sheetId);
-
-            if($pos) {
-                $cur_sheet = $sheet;
-                break;
-            }
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+            $c->last_phone = $row['Phone'];
+            $c->SystemCreateDate = $row['SystemCreateDate'];
+            $c->isGetLastPhone = true;
+            $this->campaign_obj->save_data($c);
+            $this->campaigns[$c_i] = $c;
+            echo json_encode($this->campaigns);
+            exit;
         }
-
-        $response = $this->service->spreadsheets_values->get($spreadsheetId, $cur_sheet['properties']['title']);
-        $values = $response->getValues();
-
-        $last_phone = '';
-
-        $is_last_phone = false;
-        for ($i = count($values) - 1; $i >= 0; $i--) {
-            if ($is_last_phone) break;
-
-            for ($j = 0; $j < count($values[$i]); $j++) {
-                if ($values[$i][$j] === 'Phone') {
-                    $last_phone = $values[$i + 1][$j];
-                    $is_last_phone = true;
-                    break;
-                }
-            }
-        }
-
-        $this->campaigns[$c_i]->last_phone = $last_phone;
-        $this->campaign_obj->save_data($this->campaigns[$c_i]);
         echo json_encode($this->campaigns);
         exit;
 	}
@@ -387,7 +363,7 @@ class Upload
 	                $is_last_phone = false;
 	                $last_phone = '';
 
-	                if ($g_c->isEditPhone == 'true') {
+	                if ($c->last_phone != "") {
 	                    $last_phone = $c->last_phone;
 	                } else {
                         $response = $this->service->spreadsheets_values->get($spreadsheetId, $cur_sheet['properties']['title']);
@@ -459,7 +435,7 @@ class Upload
 	                        array_push($up_rows, $up_row);
 	                    }
 	                } else if ($g_c->way === 'random') {
-	                    $count = rand($g_c->randomStart, $g_c->randomEnd);
+	                    $count = rand($g_c->randomStart, $g_c->randomEnd * 1 - 1);
 	                    if ($count >= count($rows)) {
                             foreach ($rows as $row) {
                                 $up_row = array();
@@ -493,7 +469,7 @@ class Upload
 	                        }
 	                    }
 	                } else if ($g_c->way === 'random_first') {
-                        $count = rand($g_c->randomStart, $g_c->randomEnd);
+                        $count = rand($g_c->randomStart, $g_c->randomEnd * 1 - 1);
                         if ($count >= count($rows)) {
                             foreach ($rows as $row) {
                                 $up_row = array();

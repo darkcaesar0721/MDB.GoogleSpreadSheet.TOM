@@ -257,9 +257,14 @@ const Upload = (props) => {
     const getLastPhone = (campaign) => {
         setLoading(true);
         setTip("Wait for get last phone....");
-        props.getLastPhone(campaign.index, function() {
-            setLoading(false);
-        })
+        const campaignIndex = campaign.index;
+        axios.post(APP_API_URL + 'api.php?class=Upload&fn=get_last_phone', qs.stringify({
+            campaignIndex
+        })).then(function(resp) {
+            props.getCampaigns(function() {
+                setLoading(false);
+            });
+        });
     }
 
     return (

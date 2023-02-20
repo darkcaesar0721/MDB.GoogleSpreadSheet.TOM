@@ -144,25 +144,6 @@ const GroupCampaignUploadAll = (props) => {
                 width: 25
             },
             {
-                title: 'Edit Phone',
-                key: 'edit_phone',
-                width: 30,
-                render: (_, r) => {
-                    let selectedIndex = -1;
-                    if (selectedCampaignKeys) {
-                        selectedCampaignKeys.forEach((key, i) => {
-                            if (key == r.key) {
-                                selectedIndex = i;
-                            }
-                        })
-                    }
-
-                    return (
-                        <Checkbox disabled={selectedIndex == -1 ? true: false} checked={r.isEditPhone == "true" ? true: false} onChange={(e) => {handlePhoneEditCheck(e, r)}}/>
-                    )
-                }
-            },
-            {
                 title: 'Last Phone',
                 key: 'last_phone',
                 width: 110,
@@ -177,9 +158,15 @@ const GroupCampaignUploadAll = (props) => {
                     }
 
                     return (
-                        <Input onBlur={() => {handlePhoneSave(r)}} style={{color: '#000000'}} disabled={!(r.isEditPhone == "true" && selectedIndex !== -1)} value={r.last_phone} onChange={(e) => {handlePhoneChange(e, r)}}/>
+                        <Input onBlur={() => {handlePhoneSave(r)}} style={{color: '#000000'}} value={r.last_phone} onChange={(e) => {handlePhoneChange(e, r)}}/>
                     )
                 }
+            },
+            {
+                title: 'SystemCreateDate',
+                dataIndex: 'SystemCreateDate',
+                key: 'SystemCreateDate',
+                width: 100,
             },
             {
                 title: 'Get Phone',
@@ -190,19 +177,13 @@ const GroupCampaignUploadAll = (props) => {
                         <Button type="primary" onClick={(e) => {props.getLastPhone(r)}}>Get Phone</Button>
                     )
                 }
-            },
-            {
-                title: 'SystemCreateDate',
-                dataIndex: 'SystemCreateDate',
-                key: 'SystemCreateDate',
-                width: 100,
             }
         ];
         setColumns(_columns);
     }
 
     useEffect(function() {
-        if (props.uploadInfo.selectedCampaignKeys !== undefined && props.uploadInfo.selectedCampaignKeys !== "") {
+        if (props.uploadInfo.selectedCampaignKeys !== undefined && props.uploadInfo.selectedCampaignKeys !== "" && props.group !== undefined && props.groups !== "") {
             if (props.uploadInfo.selectedCampaignKeys == undefined) setSelectedCampaignKeys([]);
             else {
                 let _selectedCampaignKeys = [];
@@ -268,10 +249,6 @@ const GroupCampaignUploadAll = (props) => {
         setUploadStatusList(_uploadStatusList);
     }
 
-    const handlePhoneEditCheck = (e, r) => {
-        props.updateGroupCampaign(props.groupIndex, r.groupCampaignIndex, {isEditPhone: e.target.checked});
-    }
-
     const handleIsLastCheck = (e, r) => {
         let campaign = props.globalCampaigns[r.index];
         const isLast = (campaign.isLast == true || campaign.isLast == "true") ? false : true;
@@ -294,6 +271,7 @@ const GroupCampaignUploadAll = (props) => {
     }
 
     const handleCommentSave = (r) => {
+        if (r.comment === undefined) r.comment = "";
         props.updateGroupCampaign(props.groupIndex, r.groupCampaignIndex, {comment: r.comment});
     }
 
@@ -301,6 +279,8 @@ const GroupCampaignUploadAll = (props) => {
         r.last_phone = e.target.value;
         setCampaigns([...props.campaigns].map(c => {
             return (c.index == r.index ? r : c);
+
+
         }));
     };
 

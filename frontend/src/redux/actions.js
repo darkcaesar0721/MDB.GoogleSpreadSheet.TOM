@@ -29,13 +29,14 @@ export const setMDBPath = (rows) => async (dispatch) => {
     });
 }
 
-export const getCampaigns = () => async (dispatch) => {
+export const getCampaigns = (callback = function() {}) => async (dispatch) => {
     const result = await axios.get(APP_API_URL + 'api.php?class=Campaign&fn=get_data');
 
     dispatch({
         type: INIT_CAMPAIGN_DATA,
         data: result.data
     });
+    callback();
 }
 
 export const createCampaign = (data, callback = function() {}) => async (dispatch) => {
@@ -151,17 +152,21 @@ export const updateUpload = (rows, callback = function() {}) => async (dispatch)
     callback();
 }
 
-export const updateGroupCampaign = (groupIndex, groupCampaignIndex, rows, callback = function() {}) => async (dispatch) => {
-    const result = await axios.post(APP_API_URL + 'api.php?class=Group&fn=update_group_campaign', qs.stringify({
+export const updateGroupCampaign = (groupIndex, groupCampaignIndex, rows = {}, callback = function() {}) => async (dispatch) => {
+    axios.post(APP_API_URL + 'api.php?class=Group&fn=update_group_campaign', qs.stringify({
         groupIndex,
         groupCampaignIndex,
         rows
-    }));
-    dispatch({
-        type: INIT_GROUP_DATA,
-        data: result.data
-    });
-    callback();
+    })).then(function(resp) {
+        axios.get(APP_API_URL + 'api.php?class=Group&fn=get_data')
+            .then(function(resp) {
+                dispatch({
+                    type: INIT_GROUP_DATA,
+                    data: resp.data
+                });
+                callback();
+            })
+    })
 }
 
 export const getBackup = (callback = function() {}) => async (dispatch) => {
