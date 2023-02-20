@@ -188,7 +188,7 @@ const GroupCampaignUploadOneByOne = (props) => {
                                     okText="Yes"
                                     cancelText="No"
                                 >
-                                    <Button disabled={(record.isManually == "true" || record.isManually == true)} icon={<MediumOutlined /> } style={{marginRight: 1}}/>
+                                    <Button disabled={(record.isManually == "true" || record.isManually == true)} style={{marginRight: 1}}><span style={{fontSize: '1rem'}}>D</span></Button>
                                 </Popconfirm>
                                 {
                                     (record.isManually == "true" || record.isManually == true) ? <Button onClick={(e) => {handleShowResult(record)}} icon={<EyeOutlined /> } style={{marginRight: 1}}/> : ''
