@@ -55,23 +55,17 @@ const GroupCampaignUploadOneByOne = (props) => {
                     }
                 },
                 {
-                    title: 'color',
+                    title: 'N G Y P',
                     key: 'color',
-                    width: 100,
+                    width: 130,
                     render: (_, r) => {
                         const color = r.color === undefined || r.color === "" ? "none" : r.color;
                         return (
-                            <Radio.Group defaultValue="none" value={color} onChange={(e) => {handleColorChange(e, r)}}>
-                                <Row>
-                                    <Col span={12}>
-                                        <Radio value="none">n</Radio>
-                                        <Radio value="green">g</Radio>
-                                    </Col>
-                                    <Col span={12}>
-                                        <Radio value="yellow">y</Radio>
-                                        <Radio value="pink">p</Radio>
-                                    </Col>
-                                </Row>
+                            <Radio.Group onChange={(e) => {handleColorChange(e, r)}} defaultValue="none" value={color}>
+                                <Radio.Button value="none">N</Radio.Button>
+                                <Radio.Button value="green">G</Radio.Button>
+                                <Radio.Button value="yellow">Y</Radio.Button>
+                                <Radio.Button value="pink">P</Radio.Button>
                             </Radio.Group>
                         )
                     }
@@ -315,6 +309,7 @@ const GroupCampaignUploadOneByOne = (props) => {
                         dataSource={campaigns}
                         pagination={tableParams.pagination}
                         onChange={handleTableChange}
+                        className="campaign-table"
                         rowClassName={(record, index) => ((record.color === undefined || record.color == "" || record.color === "none") ? "" : "campaign_" + record.color) }
                     />
                 </Col>

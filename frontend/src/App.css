@@ -198,3 +198,19 @@ label, span, div, input {
 .ant-table-wrapper .ant-table-tbody >tr.ant-table-row-selected.campaign_pink >td {
   background-color: pink !important;
 }
+
+.campaign-table .ant-radio-button-wrapper {
+  border-radius: 50%;
+  padding-inline: 10px;
+  font-size: 12px;
+}
+
+.campaign-table .ant-radio-button-wrapper::before {
+  width: 0;
+}
+
+.campaign-table .ant-radio-button-wrapper-checked {
+  border-color: white;
+  color: white;
+  background: #1677ff;
+}
