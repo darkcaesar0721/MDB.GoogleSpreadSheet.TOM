@@ -193,6 +193,15 @@ const GroupCampaignUploadOneByOne = (props) => {
                     render: (_, record) => {
                         return (
                             <>
+                                <Popconfirm
+                                    title="Manually Upload data"
+                                    description="Are you gonna get data to upload the row of this campaign?"
+                                    onConfirm={(e) => {handleUpload(record, true)}}
+                                    okText="Yes"
+                                    cancelText="No"
+                                >
+                                    <Button disabled={(record.isManually == "true" || record.isManually == true)} style={{marginRight: 1}}><span style={{fontSize: '1rem'}}>D</span></Button>
+                                </Popconfirm>
                                 {
                                     (record.isManually != "true" && record.isManually != true) ?
                                         <Popconfirm
@@ -205,15 +214,6 @@ const GroupCampaignUploadOneByOne = (props) => {
                                             <Button icon={<UploadOutlined /> } style={{marginRight: 1}}/>
                                         </Popconfirm> : ''
                                 }
-                                <Popconfirm
-                                    title="Manually Upload data"
-                                    description="Are you gonna get data to upload the row of this campaign?"
-                                    onConfirm={(e) => {handleUpload(record, true)}}
-                                    okText="Yes"
-                                    cancelText="No"
-                                >
-                                    <Button disabled={(record.isManually == "true" || record.isManually == true)} style={{marginRight: 1}}><span style={{fontSize: '1rem'}}>D</span></Button>
-                                </Popconfirm>
                                 {
                                     (record.isManually == "true" || record.isManually == true) ? <Button onClick={(e) => {handleShowResult(record)}} icon={<EyeOutlined /> } style={{marginRight: 1}}/> : ''
                                 }
