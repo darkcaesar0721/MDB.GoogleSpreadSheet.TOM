@@ -157,6 +157,17 @@ const GroupCampaignUploadAll = (props) => {
                 width: 25
             },
             {
+                title: 'LastUploadDate',
+                dataIndex: 'lastUploadDateTime',
+                key: 'lastUploadDateTime',
+                width: 130,
+                render: (_, r) => {
+                    return (
+                        <span>{r.lastUploadDateTime === "" || r.lastUploadDateTime === undefined ? "" : moment(r.lastUploadDateTime).format('M/D/Y, hh:mm A')}</span>
+                    )
+                }
+            },
+            {
                 title: 'Last Phone',
                 key: 'last_phone',
                 width: 110,
@@ -183,17 +194,6 @@ const GroupCampaignUploadAll = (props) => {
                 render: (_, r) => {
                     return (
                         <span style={{color: r.isGetLastPhone  ? 'red' : 'black'}}>{r.SystemCreateDate === "" || r.SystemCreateDate === undefined ? "" : moment(r.SystemCreateDate).format('M/D/Y, hh:mm A')}</span>
-                    )
-                }
-            },
-            {
-                title: 'LastUploadDate',
-                dataIndex: 'lastUploadDateTime',
-                key: 'lastUploadDateTime',
-                width: 130,
-                render: (_, r) => {
-                    return (
-                        <span>{r.lastUploadDateTime === "" || r.lastUploadDateTime === undefined ? "" : moment(r.lastUploadDateTime).format('M/D/Y, hh:mm A')}</span>
                     )
                 }
             },

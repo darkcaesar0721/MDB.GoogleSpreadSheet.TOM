@@ -140,6 +140,16 @@ function GroupAdd(props) {
                 key: 'less_qty'
             },
             {
+                title: 'LastUploadDate',
+                dataIndex: 'lastUploadDateTime',
+                key: 'lastUploadDateTime',
+                render: (_, r) => {
+                    return (
+                        <span>{r.lastUploadDateTime === "" || r.lastUploadDateTime === undefined ? "" : moment(r.lastUploadDateTime).format('M/D/Y, hh:mm A')}</span>
+                    )
+                }
+            },
+            {
                 title: 'Last Phone',
                 dataIndex: 'last_phone',
                 key: 'last_phone',
@@ -152,16 +162,6 @@ function GroupAdd(props) {
                 render: (_, r) => {
                     return (
                         <span>{r.SystemCreateDate === "" || r.SystemCreateDate === undefined ? "" : moment(r.SystemCreateDate).format('M/D/Y, hh:mm A')}</span>
-                    )
-                }
-            },
-            {
-                title: 'LastUploadDate',
-                dataIndex: 'lastUploadDateTime',
-                key: 'lastUploadDateTime',
-                render: (_, r) => {
-                    return (
-                        <span>{r.lastUploadDateTime === "" || r.lastUploadDateTime === undefined ? "" : moment(r.lastUploadDateTime).format('M/D/Y, hh:mm A')}</span>
                     )
                 }
             },

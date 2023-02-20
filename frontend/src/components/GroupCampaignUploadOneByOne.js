@@ -155,6 +155,17 @@ const GroupCampaignUploadOneByOne = (props) => {
                     width: 25
                 },
                 {
+                    title: 'LastUploadDate',
+                    dataIndex: 'lastUploadDateTime',
+                    key: 'lastUploadDateTime',
+                    width: 130,
+                    render: (_, r) => {
+                        return (
+                            <span>{r.lastUploadDateTime === "" || r.lastUploadDateTime === undefined ? "" : moment(r.lastUploadDateTime).format('M/D/Y, hh:mm A')}</span>
+                        )
+                    }
+                },
+                {
                     title: 'Last Phone',
                     key: 'last_phone',
                     width: 110,
@@ -207,17 +218,6 @@ const GroupCampaignUploadOneByOne = (props) => {
                                     (record.isManually == "true" || record.isManually == true) ? <Button onClick={(e) => {handleShowResult(record)}} icon={<EyeOutlined /> } style={{marginRight: 1}}/> : ''
                                 }
                             </>
-                        )
-                    }
-                },
-                {
-                    title: 'LastUploadDate',
-                    dataIndex: 'lastUploadDateTime',
-                    key: 'lastUploadDateTime',
-                    width: 130,
-                    render: (_, r) => {
-                        return (
-                            <span>{r.lastUploadDateTime === "" || r.lastUploadDateTime === undefined ? "" : moment(r.lastUploadDateTime).format('M/D/Y, hh:mm A')}</span>
                         )
                     }
                 },
