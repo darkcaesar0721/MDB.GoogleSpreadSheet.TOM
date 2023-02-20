@@ -227,7 +227,7 @@ const GroupCampaignUploadAll = (props) => {
     }, [props.group, props.uploadInfo]);
 
     const handleColorChange = function(e, r) {
-        props.updateCampaign(r.file_name, {color: e.target.value});
+        props.updateGroupCampaign(props.groupIndex, r.groupCampaignIndex, {color: e.target.value});
     }
 
     const customUploadAmount = function(r) {
