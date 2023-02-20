@@ -228,6 +228,7 @@ class Upload
         } else {
             $this->campaigns[$c_i]->isManually = true;
         }
+        $this->campaigns[$c_i]->isGetLastPhone = false;
 
 	    $this->campaign_obj->save_datas($this->campaigns);
 

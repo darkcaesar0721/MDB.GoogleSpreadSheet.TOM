@@ -147,7 +147,7 @@ const GroupCampaignUploadOneByOne = (props) => {
                     width: 110,
                     render: (_, r) => {
                         return (
-                            <Input onBlur={() => {handlePhoneSave(r)}} style={{color: '#000000'}} value={r.last_phone} onChange={(e) => {handlePhoneChange(e, r)}}/>
+                            <Input style={{color: r.isGetLastPhone  ? 'red' : 'black'}} onBlur={() => {handlePhoneSave(r)}} value={r.last_phone} onChange={(e) => {handlePhoneChange(e, r)}}/>
                         )
                     }
                 },
@@ -156,6 +156,11 @@ const GroupCampaignUploadOneByOne = (props) => {
                     dataIndex: 'SystemCreateDate',
                     key: 'SystemCreateDate',
                     width: 100,
+                    render: (_, r) => {
+                        return (
+                            <span style={{color: r.isGetLastPhone  ? 'red' : 'black'}}>{r.SystemCreateDate}</span>
+                        )
+                    }
                 },
                 {
                     title: 'Upload',

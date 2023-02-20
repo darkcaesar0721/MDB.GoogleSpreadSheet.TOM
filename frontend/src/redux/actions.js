@@ -52,17 +52,20 @@ export const createCampaign = (data, callback = function() {}) => async (dispatc
 }
 
 export const updateCampaign = (file_name, campaign = {}, group = {}, callback = function() {}) => async (dispatch) => {
-    const json = await axios.post(APP_API_URL + 'api.php?class=Campaign&fn=update', qs.stringify({
+    axios.post(APP_API_URL + 'api.php?class=Campaign&fn=update', qs.stringify({
         file_name,
         campaign,
         group,
-    }));
-
-    dispatch({
-        type: INIT_CAMPAIGN_DATA,
-        data: json.data
+    })).then(function() {
+        axios.get(APP_API_URL + 'api.php?class=Campaign&fn=get_data')
+            .then(function(resp) {
+                dispatch({
+                    type: INIT_CAMPAIGN_DATA,
+                    data: resp.data
+                });
+                callback();
+            });
     });
-    callback();
 }
 
 export const getGroups = () => async (dispatch) => {
@@ -203,17 +206,20 @@ export const getLastPhone = (campaignIndex, callback) => async (dispatch) => {
 }
 
 export const uploadAfterPreview = (groupIndex, groupCampaignIndex, campaignIndex, callback) => async (dispatch) => {
-    const result = await axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_after_preview', qs.stringify({
+    axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_after_preview', qs.stringify({
         groupIndex,
         groupCampaignIndex,
         campaignIndex
-    }));
-
-    dispatch({
-        type: INIT_CAMPAIGN_DATA,
-        data: result.data
-    });
-    callback();
+    })).then(function(resp) {
+        axios.get(APP_API_URL + 'api.php?class=Campaign&fn=get_data')
+            .then(function(resp) {
+                dispatch({
+                    type: INIT_CAMPAIGN_DATA,
+                    data: resp.data
+                });
+                callback();
+            });
+    })
 }
 
 export const uploadOne = (groupIndex, groupCampaignIndex, campaignIndex, manually = false, callback = function() {}) => async (dispatch) => {
