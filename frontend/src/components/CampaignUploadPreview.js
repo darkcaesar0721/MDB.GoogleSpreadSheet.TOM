@@ -38,7 +38,7 @@ const CampaignUploadPreview = (props) => {
     const [tableParams, setTableParams] = useState({
         pagination: {
             current: 1,
-            pageSize: 10,
+            pageSize: 200,
         },
     });
     const {groupIndex, groupCampaignIndex, campaignIndex} = useParams();

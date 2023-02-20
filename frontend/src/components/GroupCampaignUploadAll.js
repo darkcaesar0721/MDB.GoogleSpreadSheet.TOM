@@ -12,7 +12,7 @@ const GroupCampaignUploadAll = (props) => {
     const [tableParams, setTableParams] = useState({
         pagination: {
             current: 1,
-            pageSize: 10,
+            pageSize: 200,
         },
     });
     const [columns, setColumns] = useState([]);

@@ -47,7 +47,7 @@ const CampaignUploadManually = (props) => {
     const [tableParams, setTableParams] = useState({
         pagination: {
             current: 1,
-            pageSize: 10,
+            pageSize: 200,
         },
     });
     const [isTime, setIsTime] = useState(false);
@@ -102,6 +102,7 @@ const CampaignUploadManually = (props) => {
             title: 'SystemCreateDate',
             dataIndex: 'SystemCreateDate',
             key: 'SystemCreateDate',
+            width: 130,
             render: (_, r) => {
                 return (
                     <span>{r.SystemCreateDate === "" || r.SystemCreateDate === undefined ? "" : moment(r.SystemCreateDate).format('M/D/Y, hh:mm A')}</span>
