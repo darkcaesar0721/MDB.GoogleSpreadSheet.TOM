@@ -76,7 +76,7 @@ const GroupCampaignUploadStatusList = (props) => {
                 size="small"
                 columns={columns}
                 dataSource={props.uploadStatusList}
-                className="upload-status-list"
+                className="antd-custom-table upload-status-list"
             />
         </>
     )

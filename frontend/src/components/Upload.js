@@ -372,6 +372,7 @@ const Upload = (props) => {
                         dataSource={props.campaigns.data}
                         pagination={tableParams.pagination}
                         onChange={handleTableChange}
+                        className="antd-custom-table"
                     />
                 </Col>
             </Row>

@@ -410,7 +410,7 @@ const GroupCampaignUploadAll = (props) => {
                             selectedRowKeys: selectedCampaignKeys,
                             ...rowSelection,
                         }}
-                        className="campaign-table"
+                        className="antd-custom-table campaign-table"
                         rowClassName={(record, index) => ((record.color === undefined || record.color == "" || record.color === "none") ? "" : "campaign_" + record.color) }
                     />
                 </Col>

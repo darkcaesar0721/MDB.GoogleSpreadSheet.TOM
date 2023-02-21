@@ -114,6 +114,7 @@ function Groups(props) {
                         dataSource={props.groups.data}
                         pagination={tableParams.pagination}
                         onChange={handleTableChange}
+                        className="antd-custom-table"
                     />
                 </Col>
             </Row>

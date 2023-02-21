@@ -357,6 +357,7 @@ const CampaignUploadManually = (props) => {
                                 dataSource={props.campaigns[props.campaignIndex]._upRows}
                                 pagination={tableParams.pagination}
                                 onChange={handleTableChange}
+                                className="antd-custom-table"
                             /> : ''
                     }
                 </Col>

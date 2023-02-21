@@ -309,7 +309,7 @@ const GroupCampaignUploadOneByOne = (props) => {
                         dataSource={campaigns}
                         pagination={tableParams.pagination}
                         onChange={handleTableChange}
-                        className="campaign-table"
+                        className="antd-custom-table campaign-table"
                         rowClassName={(record, index) => ((record.color === undefined || record.color == "" || record.color === "none") ? "" : "campaign_" + record.color) }
                     />
                 </Col>

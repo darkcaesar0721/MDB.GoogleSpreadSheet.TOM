@@ -37,6 +37,14 @@
   }
 }
 
+label, span, div, input {
+  font-family: math !important;
+}
+
+.upload-preview label, .upload-preview span{
+  font-size: 0.8rem !important;
+}
+
 .upload-status-list .ant-table-tbody{
   padding-left: 0.3rem !important;
   padding-top: 0 !important;
@@ -67,7 +75,7 @@
   border-right: solid 1px #d1d1d1 !important;
 }
 
-.ant-table-tbody{
+.antd-custom-table .ant-table-tbody{
   padding-left: 0.3rem !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
@@ -75,7 +83,7 @@
   border-bottom: solid 2px #d1d1d1 !important;
   border-right: solid 1px #d1d1d1 !important;
 }
-.ant-table-tbody > tr > td{
+.antd-custom-table .ant-table-tbody > tr > td{
   padding-left: 0.3rem !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
@@ -83,25 +91,24 @@
   border-bottom: solid 1px #d1d1d1 !important;
   border-right: solid 1px #d1d1d1 !important;
 }
-.ant-table-tbody > tr > td > input{
+.antd-custom-table .ant-table-tbody > tr > td > input{
   font-size: 0.7rem;
 }
 
-.ant-table-tbody > tr > td > span[role=img]{
+.antd-custom-table .ant-table-tbody > tr > td > span[role=img]{
   padding-top: 0.3rem;
   font-size: 1.5rem;
 }
 
-.ant-table-tbody > tr > td > button span{
+.antd-custom-table .ant-table-tbody > tr > td > button span{
   font-size: 0.7rem;
 }
 
-.ant-table-tbody > tr > td > button span{
+.antd-custom-table .ant-table-tbody > tr > td > button span{
   font-size: 0.7rem;
 }
 
-
-.ant-table-thead > tr > th{
+.antd-custom-table .ant-table-thead > tr > th{
   padding-left: 0.3rem !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
@@ -110,7 +117,7 @@
   border-right: solid 1px #d1d1d1 !important;
 }
 
-.ant-table-tbody > tr > td button{
+.antd-custom-table .ant-table-tbody > tr > td button{
   padding: 0.3rem !important;
 }
 
@@ -139,32 +146,12 @@
   background-color: yellow !important;
 }
 
-/*.ant-table-tbody >tr.campaign_yellow >td .ant-checkbox-checked .ant-checkbox-inner {*/
-/*  background-color: #b5b54b !important;*/
-/*  border-color: #b5b54b !important;*/
-/*  outline: 2px solid #d5d570 !important;*/
-/*}*/
-
-/*.ant-table-tbody >tr.campaign_active >td.ant-table-cell-row-hover .ant-checkbox-checked .ant-checkbox-inner {*/
-/*  background-color: #b5b54b !important;*/
-/*  border-color: #b5b54b !important;*/
-/*  outline: 2px solid #d5d570 !important;*/
-/*}*/
-
 .ant-table-tbody >tr.campaign_yellow >td.ant-table-cell-row-hover {
   background-color: yellow !important;
 }
 
 .ant-table-wrapper .ant-table-tbody >tr.ant-table-row-selected.campaign_yellow >td {
   background-color: yellow !important;
-}
-
-label, span, div, input {
-  font-family: math !important;
-}
-
-.upload-preview label, .upload-preview span{
-  font-size: 0.8rem !important;
 }
 
 .campaign_green {
@@ -199,17 +186,17 @@ label, span, div, input {
   background-color: pink !important;
 }
 
-.campaign-table .ant-radio-button-wrapper {
+.antd-custom-table .ant-radio-button-wrapper {
   border-radius: 50%;
   padding-inline: 10px;
   font-size: 12px;
 }
 
-.campaign-table .ant-radio-button-wrapper::before {
+.antd-custom-table .ant-radio-button-wrapper::before {
   width: 0;
 }
 
-.campaign-table .ant-radio-button-wrapper-checked {
+.antd-custom-table .ant-radio-button-wrapper-checked {
   border-color: white;
   color: white;
   background: #1677ff;

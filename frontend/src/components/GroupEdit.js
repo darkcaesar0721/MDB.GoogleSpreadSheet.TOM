@@ -294,6 +294,7 @@ function GroupEdit(props) {
                 dataSource={campaigns}
                 pagination={tableParams.pagination}
                 onChange={handleTableChange}
+                className="antd-custom-table"
             />
             <Row>
                 <Col offset={20} span={4}>

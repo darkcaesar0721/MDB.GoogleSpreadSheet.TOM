@@ -8,7 +8,7 @@ import {
     message,
     Modal,
     Row,
-    Spin,
+    Spin, Table,
 } from "antd";
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import React, {useEffect, useState} from "react";
@@ -20,6 +20,8 @@ import {connect} from "react-redux";
 import { useNavigate } from 'react-router-dom';
 import MenuList from "./MenuList";
 import {createCampaign} from "../redux/actions";
+import dragula from "dragula";
+import "dragula/dist/dragula.css";
 
 const layout = {
     labelCol: {
@@ -30,31 +32,12 @@ const layout = {
     },
 };
 
-const columnLayout = {
-    labelCol: {
-        span: 13,
-    },
-    wrapperCol: {
-        span: 11,
-    },
-}
-
 const formItemLayout = {
     labelCol: {
-        xs: {
-            span: 3,
-        },
-        sm: {
-            span: 3,
-        },
+        span: 3,
     },
     wrapperCol: {
-        xs: {
-            span: 21,
-        },
-        sm: {
-            span: 21,
-        },
+        span: 21,
     },
 };
 
@@ -64,23 +47,40 @@ const formItemLayoutWithOutLabel = {
             span: 21,
             offset: 3,
         },
-        sm: {
-            span: 21,
-            offset: 3,
-        },
     },
 };
 
+const getIndexInParent = (el) => Array.from(el.parentNode.children).indexOf(el);
+
 function CampaignAdd(props) {
-    const [columnForm] = Form.useForm();
     const [mainForm] = Form.useForm();
     const [messageApi, contextHolder] = message.useMessage();
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [columns, setColumns] = useState([]);
     const [buttonState, setButtonState] = useState('column');
+    const [tblColumns, setTblColumns] = useState([]);
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        if (buttonState === 'campaign') {
+            let start;
+            let end;
+            const container = document.querySelector(".ant-table-tbody");
+            const drake = dragula([container], {
+                moves: (el) => {
+                    start = getIndexInParent(el);
+                    return true;
+                },
+            });
+
+            drake.on("drop", (el) => {
+                end = getIndexInParent(el);
+                handleReorder(start, end);
+            });
+        }
+    }, [buttonState]);
 
     useEffect(function() {
         let data = {};
@@ -89,12 +89,42 @@ function CampaignAdd(props) {
     }, []);
 
     useEffect(function() {
-        let data = {};
-        columns.forEach((c, i) =>{
-            data[c.name + '_order'] = c.order;
-            data[c.name + '_name'] = c.field;
-        });
-        columnForm.setFieldsValue(data);
+        setTblColumns([
+            {
+                title: 'no',
+                key: 'no',
+                width: 30,
+                render: (_, r) => {
+                    return (
+                        <>
+                            <span>{(r.index + 1)}</span>
+                        </>
+                    )
+                }
+            },
+            {
+                title: 'Display',
+                key: 'display',
+                width: 50,
+                render: (_, c) => {
+                    return <Checkbox checked={c.display} onChange={(e) => {handleColumnCheck(e, c)}}/>
+                }
+            },
+            {
+                title: 'MDB Column Name',
+                dataIndex: 'name',
+                key: 'mdb',
+            },
+            {
+                title: 'Sheet Column Name',
+                dataIndex: 'field',
+                key: 'sheet',
+                render: (_, c) => {
+                    return c.name === 'Phone' ? c.name : ((c.isInputDate == "true" || c.isInputDate == true)
+                        ? c.field : <Input disabled={!c.display} onChange={(e) => {handleColumnFieldChange(e, c)}} value={c.field}/>)
+                }
+            },
+        ])
     }, [columns]);
 
     const getQueryColumns = function(query) {
@@ -114,7 +144,7 @@ function CampaignAdd(props) {
                         status = true;
 
                     if (!status)
-                        _columns.push({name: c.name, field: c.field, display: true, order: (i + 1), isInputDate: c.isInputDate});
+                        _columns.push({index: i, key: c.name, name: c.name, field: c.field, display: true, isInputDate: c.isInputDate});
                 });
                 setColumns(_columns);
                 setOpen(true);
@@ -130,13 +160,7 @@ function CampaignAdd(props) {
         }
 
         if (validation()) {
-            let _columns = columns;
-            _columns = _columns.sort((a, b) => {
-                if (parseInt(a.order) < parseInt(b.order)) return -1;
-
-                return 0;
-            });
-            form.columns = _columns;
+            form.columns = columns;
 
             props.createCampaign(form, function() {
                 messageApi.success('create success');
@@ -163,39 +187,31 @@ function CampaignAdd(props) {
     const handleColumnCheck = function(e, column) {
         if (column.name === 'Phone') return;
 
-        let _columns = columns;
-        _columns = _columns.map((c, i) => c === column ? Object.assign({...c}, {display: e.target.checked}) : c);
-        setColumns(_columns);
-    }
-
-    const handleColumnOrderChange = function(e, column) {
-        let _columns = columns;
-        _columns = _columns.map((c, i) => c === column ? Object.assign({...c}, {order: e.target.value}) : c);
-        _columns = _columns.sort((a, b) => {
-            if (parseInt(a.order) < parseInt(b.order)) return -1;
-
-            return 0;
+        setColumns((oldState) => {
+            const newState = [...oldState];
+            return newState.map((c, i) => c === column ? Object.assign({...c}, {display: e.target.checked}) : c);
         });
-        setColumns(_columns);
     }
 
     const handleColumnFieldChange = function(e, column) {
-        let _columns = columns;
-        _columns = _columns.map((c, i) => c === column ? Object.assign({...c}, {field: e.target.value}) : c);
-        setColumns(_columns);
+        setColumns((oldState) => {
+            const newState = [...oldState];
+            return newState.map((c, i) => c === column ? Object.assign({...c}, {field: e.target.value}) : c);
+        });
     }
 
     const handleViewColumnClick = function() {
-        let _columns = columns;
-        _columns = _columns.sort((a, b) => {
-            if (parseInt(a.order) < parseInt(b.order)) return -1;
-
-            return 0;
-        });
-        setColumns(_columns);
-
         setOpen(true);
     }
+
+    const handleReorder = (dragIndex, draggedIndex) => {
+        setColumns((oldState) => {
+            const newState = [...oldState];
+            const item = newState.splice(dragIndex, 1)[0];
+            newState.splice(draggedIndex, 0, item);
+            return newState.map((s, i) => {return Object.assign(s, {index: i})});
+        });
+    };
 
     return (
         <Spin spinning={loading} tip="CHECKING QUERY AND GET COLUMN LIST BASED ON QUERY ..." delay={300}>
@@ -331,46 +347,15 @@ function CampaignAdd(props) {
                         open={open}
                         onOk={() => setOpen(false)}
                         onCancel={() => setOpen(false)}
-                        width={500}
+                        width={700}
                     >
-                        <Form
-                            {...columnLayout}
-                            name="campaign_add_form"
-                            form={columnForm}
-                        >
-                            {
-                                columns.map((c, i) => {
-                                    return (
-                                        <div key={i}>
-                                            <br/>
-                                            <Checkbox style={{position: 'absolute', marginTop: '0.3rem'}} checked={c.display} onChange={(e) => {handleColumnCheck(e, c)}}/>
-                                            <Form.Item
-                                                name={[c.name + '_name']}
-                                                label={c.name}
-                                                style={{
-                                                    display: 'inline-block',
-                                                    width: 'calc(70% - 5px)',
-                                                }}
-                                            >
-                                                {
-                                                    c.name === 'Phone' ? c.name : ((c.isInputDate == "true" || c.isInputDate == true) ? c.field : <Input disabled={!c.display} onChange={(e) => {handleColumnFieldChange(e, c)}} value={c.field}/>)
-                                                }
-                                            </Form.Item>
-                                            <Form.Item
-                                                name={[c.name + '_order']}
-                                                style={{
-                                                    display: 'inline-block',
-                                                    width: 'calc(30% - 5px)',
-                                                    margin: '0 5px',
-                                                }}
-                                            >
-                                                <Input disabled={!c.display} onChange={(e) => {handleColumnOrderChange(e, c)}} value={c.order}/>
-                                            </Form.Item>
-                                        </div>
-                                    )
-                                })
-                            }
-                        </Form>
+                        <Table
+                            bordered={true}
+                            size="small"
+                            columns={tblColumns}
+                            dataSource={columns}
+                            pagination={false}
+                        />
                     </Modal>
                 </Col>
             </Row>

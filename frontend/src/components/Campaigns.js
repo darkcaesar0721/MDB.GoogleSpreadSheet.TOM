@@ -144,6 +144,7 @@ function Campaigns(props) {
                 dataSource={props.campaigns.data}
                 pagination={tableParams.pagination}
                 onChange={handleTableChange}
+                className="antd-custom-table"
             />
         </>
     );
