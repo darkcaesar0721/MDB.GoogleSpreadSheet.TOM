@@ -41,6 +41,8 @@ class Upload
 
 	public function init()
 	{
+        date_default_timezone_set('America/Los_Angeles');
+
 		$this->init_mdb();
 		$this->init_schedule();
 		$this->init_campaigns();
@@ -106,6 +108,8 @@ class Upload
 
 	public function init_schedule_data()
 	{
+        date_default_timezone_set('America/Los_Angeles');
+
 		$response = $this->service->spreadsheets_values->get('16fiKZjpWZ3ZCY69JpRrTBAYLS4GnjqEKp8tj2G65EAI', 'Sheet1');
 
 		$this->schedules = $response->getValues();
@@ -183,6 +187,8 @@ class Upload
 
 	public function upload_one_by_one()
 	{
+        date_default_timezone_set('America/Los_Angeles');
+
 		$g_i = $_REQUEST['groupIndex'];
 	    $g_c_i = $_REQUEST['groupCampaignIndex'];
 	    $c_i = $_REQUEST['campaignIndex'];
@@ -477,6 +483,8 @@ class Upload
                             }
                         }
                     } else {
+                        date_default_timezone_set('America/Los_Angeles');
+
 	                    foreach ($rows as $row) {
 	                        if ($g_c->isTime) {
 	                            $date = strtotime(date("m/d/Y h:i A", strtotime($g_c->date . ' ' . $g_c->time . ':00 '. $g_c->meridiem)));
