@@ -128,6 +128,8 @@ class Campaign
             $campaign = json_decode(file_get_contents($file));
             array_push($this->campaign_lists, $campaign);
         }
+
+        usort($this->campaign_lists, function($a, $b) { return $a->index - $b->index; });
     }
 
     public function save_data($data)

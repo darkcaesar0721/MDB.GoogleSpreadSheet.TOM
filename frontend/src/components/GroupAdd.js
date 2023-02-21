@@ -53,19 +53,21 @@ function GroupAdd(props) {
     }, []);
 
     useEffect(function() {
-        let _campaigns = props.campaigns.data;
-        _campaigns = _campaigns.sort((a, b) => {
-            if (parseInt(a.group.order) < parseInt(b.group.order)) return -1;
-
-            return 0;
+        setCampaigns((oldState) => {
+            const data = [...props.campaigns.data];
+            return data.sort((a, b) => {
+                if (parseInt(a.group.order) < parseInt(b.group.order)) return -1;
+                return 0;
+            });
         });
-        setCampaigns(_campaigns);
+    }, [props.campaigns, selectedCampaignKeys]);
 
+    useEffect(function() {
         setTableParams({
             ...tableParams,
             pagination: {
                 ...tableParams.pagination,
-                total: _campaigns.length,
+                total: campaigns.length,
             },
         });
 
@@ -76,8 +78,8 @@ function GroupAdd(props) {
             width: 30,
             render: (_, record) => {
                 let number = 0;
-                _campaigns.forEach((c, i) => {
-                    if (c['query'] === record['query']) {
+                campaigns.forEach((c, i) => {
+                    if (c['key'] === record['key']) {
                         number = i + 1;
                         return;
                     }
@@ -163,7 +165,15 @@ function GroupAdd(props) {
                         })
                     }
 
-                    const settingUrl = "#/groups/add/" + record.index;
+                    let campaignIndex = 0;
+                    props.campaigns.data.forEach((c, i) => {
+                        if (c['key'] === record['key']) {
+                            campaignIndex = i;
+                            return;
+                        }
+                    })
+
+                    const settingUrl = "#/groups/add/" + campaignIndex;
                     return (
                         <>
                             <Button disabled={selectedIndex === -1 ? true: false} icon={<SettingOutlined /> } href={settingUrl} style={{marginRight: 1}}/>
@@ -172,8 +182,7 @@ function GroupAdd(props) {
                 }
             },
         ]);
-
-    }, [props.campaigns, selectedCampaignKeys]);
+    }, [campaigns]);
 
     useEffect(function() {
         setName(props.temp.name);

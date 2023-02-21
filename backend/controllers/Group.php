@@ -227,6 +227,8 @@ class Group
             $group = json_decode(file_get_contents($file));
             array_push($this->group_lists, $group);
         }
+
+        usort($this->group_lists, function($a, $b) { return $a->index - $b->index; });
     }
 
     public function is_name_duplicated($name)

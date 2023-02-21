@@ -82,6 +82,9 @@ class Backup
         $mdb = file_get_contents("db/mdb.json");
         file_put_contents($path . "\\" . $date . "\\" . "mdb.json", $mdb);
 
+        $mdb = file_get_contents("db/schedule.json");
+        file_put_contents($path . "\\" . $date . "\\" . "schedule.json", $mdb);
+
         $temp_group = file_get_contents("db/temp_group.json");
         file_put_contents($path . "\\" . $date . "\\" . "temp_group.json", $temp_group);
 
