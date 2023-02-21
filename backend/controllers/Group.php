@@ -5,6 +5,7 @@ namespace controllers;
 require_once('TempGroup.php');
 require_once('Campaign.php');
 
+
 class Group
 {
     public $folder_path = "db/groups";
@@ -56,6 +57,7 @@ class Group
 
         $campaignObj = new \controllers\Campaign();
         $campaignObj->init();
+        $campaigns = $campaignObj->get_campaigns();
 
         $group = $this->group_lists[$_REQUEST['index']];
 
@@ -63,6 +65,12 @@ class Group
         foreach($group->campaigns as $k => $c) {
             $campaignObj->save_data_by_rows($c->index, ["group" => $c]);
             array_push($selectedCampaignKeys, $c->key);
+        }
+        if ($group->orderCampaigns != "") {
+            foreach($group->orderCampaigns as $o_c) {
+                $campaigns[$o_c->campaignIndex]->group->order = $o_c->order;
+                $campaignObj->save_data_by_rows($o_c->campaignIndex, ["group" => $campaigns[$o_c->campaignIndex]->group]);
+            }
         }
 
         $tempGroupObj->save_data_by_rows(["selectedCampaignKeys" => $selectedCampaignKeys, "name" => $group->name]);
@@ -88,7 +96,14 @@ class Group
         $group['name'] = $temp_group->name;
         $group['order'] = $group['index'] + 1;
         $group['campaigns'] = array();
-        
+        $group['orderCampaigns'] = array();
+
+        foreach($campaigns as $i => $c) {
+            $orderCampaign = array();
+            $orderCampaign['campaignIndex'] = $i;
+            $orderCampaign['order'] = $c->group->order;
+            array_push($group['orderCampaigns'], $orderCampaign);
+        }
 
         foreach($temp_group->selectedCampaignKeys as $key) {
             foreach($campaigns as $i => $c) {
@@ -132,7 +147,15 @@ class Group
         $group->key = $temp_group->name;
         $group->name = $temp_group->name;
         $group->campaigns = array();
-        
+
+        $group->orderCampaigns = array();
+
+        foreach($campaigns as $i => $c) {
+            $orderCampaign = array();
+            $orderCampaign['campaignIndex'] = $i;
+            $orderCampaign['order'] = $c->group->order;
+            array_push($group->orderCampaigns, $orderCampaign);
+        }
 
         foreach($temp_group->selectedCampaignKeys as $key) {
             foreach($campaigns as $i => $c) {

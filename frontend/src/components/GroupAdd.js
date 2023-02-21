@@ -2,13 +2,17 @@ import {Button, Col, Divider, Input, message, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {
-    getCampaigns, getGroups, getTempGroup, updateCampaign, updateTempGroup,createGroup,
+    getCampaigns, getGroups, getTempGroup, updateCampaign, updateTempGroup, createGroup, updateCampaignGroupOrder,
 } from "../redux/actions";
 import Path from "./Path/Path";
 import { SettingOutlined } from '@ant-design/icons';
 import {useNavigate} from "react-router-dom";
 import MenuList from "./MenuList";
 import moment from "moment";
+import dragula from "dragula";
+import "dragula/dist/dragula.css";
+
+const getIndexInParent = (el) => Array.from(el.parentNode.children).indexOf(el);
 
 function GroupAdd(props) {
     const [tableParams, setTableParams] = useState({
@@ -24,6 +28,23 @@ function GroupAdd(props) {
     const [messageApi, contextHolder] = message.useMessage();
 
     const navigate = useNavigate();
+
+    useEffect(() => {
+        let start;
+        let end;
+        const container = document.querySelector(".ant-table-tbody");
+        const drake = dragula([container], {
+            moves: (el) => {
+                start = getIndexInParent(el);
+                return true;
+            },
+        });
+
+        drake.on("drop", (el) => {
+            end = getIndexInParent(el);
+            handleReorder(start, end);
+        });
+    }, []);
 
     useEffect(function() {
         props.getCampaigns();
@@ -48,43 +69,6 @@ function GroupAdd(props) {
             },
         });
 
-        const order_column = {
-            title: 'order',
-            key: 'order',
-            fixed: 'left',
-            width: 60,
-            render: (_, record) => {
-                let number = -1;
-                _campaigns.forEach((c, i) => {
-                    if (c['query'] === record['query']) {
-                        number = i + 1;
-                        return;
-                    }
-                });
-
-                let order = 0;
-                if (record.group.order) {
-                    order = record.group.order;
-                } else {
-                    order = number;
-                }
-
-                let selectedIndex = -1;
-                if (selectedCampaignKeys) {
-                    selectedCampaignKeys.forEach((key, i) => {
-                        if (key === record.key) {
-                            selectedIndex = i;
-                            return;
-                        }
-                    })
-                }
-
-                return (
-                    <Input disabled={selectedIndex === -1 ? true: false} value={order} onChange={(e) => {handleOrderChange(e, record)}}/>
-                )
-            }
-        }
-
         let no_column = {
             title: 'no',
             key: 'no',
@@ -106,7 +90,7 @@ function GroupAdd(props) {
             }
         }
 
-        setColumns([order_column, no_column,
+        setColumns([no_column,
             {
                 title: 'Query Name',
                 dataIndex: 'query',
@@ -196,30 +180,6 @@ function GroupAdd(props) {
         setSelectedCampaignKeys(props.temp.selectedCampaignKeys);
     }, [props.temp]);
 
-    const handleOrderChange = function(e, r) {
-        r.group.order = e.target.value;
-
-        let _campaigns = campaigns;
-        _campaigns = _campaigns.map(c => (c.key === r.key ? r : c));
-        _campaigns = _campaigns.sort((a, b) => {
-            if (parseInt(a.group.order) < parseInt(b.group.order)) return -1;
-
-            return 0;
-        });
-
-        let _selectedCampaignKeys = [];
-        _campaigns.forEach(c => {
-            selectedCampaignKeys.forEach(k => {
-                if (c.key === k) _selectedCampaignKeys.push(k);
-            });
-        });
-        setSelectedCampaignKeys(_selectedCampaignKeys);
-
-        if (_selectedCampaignKeys.length === 0) _selectedCampaignKeys = "";
-        props.updateTempGroup({selectedCampaignKeys: _selectedCampaignKeys});
-        props.updateCampaign(r.file_name, {}, {order: e.target.value});
-    }
-
     const handleSubmit = function() {
         if (validation()) {
             props.createGroup();
@@ -280,6 +240,16 @@ function GroupAdd(props) {
         props.updateTempGroup({name: name});
     }
 
+    const handleReorder = (dragIndex, draggedIndex) => {
+        setCampaigns((oldState) => {
+            const newState = [...oldState];
+            const item = newState.splice(dragIndex, 1)[0];
+            newState.splice(draggedIndex, 0, item);
+            props.updateCampaignGroupOrder(newState);
+            return newState;
+        });
+    };
+
     return (
         <>
             {contextHolder}
@@ -329,5 +299,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, updateCampaign, getTempGroup, updateTempGroup, createGroup, getGroups }
+    { getCampaigns, updateCampaign, getTempGroup, updateTempGroup, createGroup, getGroups, updateCampaignGroupOrder }
 )(GroupAdd);

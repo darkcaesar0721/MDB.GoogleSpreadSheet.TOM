@@ -62,13 +62,28 @@ class TempGroup
         file_put_contents($this->file_path, json_encode($this->temp_group));
     }
 
-    public function get_data()
+    public function get_data($return = false)
     {
-        echo json_encode($this->temp_group);
-        exit;
+        if (!$return) {
+            echo json_encode($this->temp_group);
+            exit;
+        } else {
+            return $this->temp_group;
+        }
+    }
+
+    public function update_data_by_keys($rows)
+    {
+        $this->set_temp_group();
+        foreach($rows as $key => $value) {
+            $this->temp_group->$key = $value;
+        }
+
+        $this->save_data();
     }
 
     public function get_data_by_key($key) {
+        $this->set_temp_group();
         return $this->temp_group->$key;
     }
 

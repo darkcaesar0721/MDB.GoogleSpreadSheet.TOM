@@ -256,3 +256,26 @@ export const uploadOne = (groupIndex, groupCampaignIndex, campaignIndex, manuall
     });
     callback();
 }
+
+export const updateCampaignGroupOrder = (campaigns, callback = function() {}) => async(dispatch) => {
+    axios.post(APP_API_URL + 'api.php?class=Campaign&fn=update_group_order', qs.stringify({
+        campaigns
+    })).then(function(resp){
+        axios.get(APP_API_URL + 'api.php?class=Campaign&fn=get_data')
+            .then(function(resp) {
+                dispatch({
+                    type: INIT_CAMPAIGN_DATA,
+                    data: resp.data
+                });
+            });
+
+        axios.get(APP_API_URL + 'api.php?class=TempGroup&fn=get_data')
+            .then(function(resp) {
+                dispatch({
+                    type: INIT_TEMP_GROUP_DATA,
+                    data: resp.data
+                });
+                callback();
+            })
+    })
+}

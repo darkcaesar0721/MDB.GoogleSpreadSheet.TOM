@@ -2,6 +2,8 @@
 
 namespace controllers;
 
+require_once('TempGroup.php');
+
 class Campaign
 {
     public $folder_path = "db/campaigns";
@@ -138,6 +140,32 @@ class Campaign
         foreach ($datas as $data) {
             file_put_contents($this->folder_path . '/' . $data->file_name, json_encode($data));
         }
+    }
+
+    public function update_group_order()
+    {
+        $campaigns = $_REQUEST['campaigns'];
+        foreach($campaigns as $i => $n_c) {
+            foreach($this->campaign_lists as $j => $o_c) {
+                if ($n_c['key'] === $o_c->key) {
+                    $o_c->group->order = $i + 1;
+                    $this->save_data($o_c);
+                }
+            }
+        }
+
+        $tempGroupObj = new \controllers\TempGroup();
+        $selectedCampaignKeys = [];
+        foreach($campaigns as $i => $c) {
+            foreach($tempGroupObj->get_data_by_key("selectedCampaignKeys") as $j => $s_c_key) {
+                if ($c['key'] === $s_c_key) {
+                    array_push($selectedCampaignKeys, $s_c_key);
+                }
+            }
+        }
+        $tempGroupObj->update_data_by_keys(["selectedCampaignKeys" => $selectedCampaignKeys]);
+
+        echo json_encode("success");
     }
 
     public function is_duplicated($query)
