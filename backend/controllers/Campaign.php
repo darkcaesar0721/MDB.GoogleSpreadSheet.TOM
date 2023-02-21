@@ -32,6 +32,14 @@ class Campaign
         }
 
         $this->set_campaign_lists();
+        $this->init_data();
+    }
+
+    public function init_data()
+    {
+        foreach($this->campaign_lists as $i => $c) {
+            file_put_contents($this->folder_path . '/' . $c->file_name, json_encode($this->campaign_lists[$i]));
+        }
     }
 
     public function get_campaigns()
