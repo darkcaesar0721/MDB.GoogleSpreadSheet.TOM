@@ -342,7 +342,7 @@ class Upload
 
 	                if ($c->last_phone != "") {
 	                    $last_phone = $c->last_phone;
-	                } else {
+	                } /*else {
                         $response = $this->service->spreadsheets_values->get($spreadsheetId, $cur_sheet['properties']['title']);
                         $values = $response->getValues();
 
@@ -357,7 +357,7 @@ class Upload
 	                            }
 	                        }
 	                    }
-	                }
+	                }*/
 
 	                $mdb_path = $this->mdb->path;
 
