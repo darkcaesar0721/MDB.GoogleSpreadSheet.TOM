@@ -66,7 +66,7 @@ class Backup
         date_default_timezone_set('America/Los_Angeles');
 
         $path = $this->backup->path;
-        $date = date("Y") . "" . date("m") . "" . date("d") . " " . date("h") . "_" . date("m") . "_" . date("s") . " " . date("A");
+        $date = date("Y") . "" . date("m") . "" . date("d") . " " . date("h") . "_" . date("i") . "_" . date("s") . " " . date("A");
         
         $campaign_path = $path . "\\" . $date . "\\Campaigns";
         $group_path = $path . "\\" . $date . "\\Groups";
