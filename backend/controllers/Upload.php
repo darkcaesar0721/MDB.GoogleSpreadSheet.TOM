@@ -412,7 +412,7 @@ class Upload
 	                        array_push($up_rows, $up_row);
 	                    }
 	                } else if ($g_c->way === 'random') {
-	                    $count = rand($g_c->randomStart, $g_c->randomEnd * 1 - 1);
+	                    $count = rand($g_c->randomStart * 1, $g_c->randomEnd * 1);
 	                    if ($count >= count($rows)) {
                             foreach ($rows as $row) {
                                 $up_row = array();
@@ -426,7 +426,7 @@ class Upload
                             }
                         } else {
 	                        $first = 0;
-	                        $arrs = $this->randomGen(1, count($rows) - 1, $count);
+	                        $arrs = $this->randomGen(1, count($rows) - 1, $count * 1 - 1);
 	                        array_push($arrs, $first);
 	                        sort($arrs);
 
@@ -446,7 +446,7 @@ class Upload
 	                        }
 	                    }
 	                } else if ($g_c->way === 'random_first') {
-                        $count = rand($g_c->randomStart, $g_c->randomEnd * 1 - 1);
+                        $count = rand($g_c->randomStart * 1, $g_c->randomEnd * 1);
                         if ($count >= count($rows)) {
                             foreach ($rows as $row) {
                                 $up_row = array();
@@ -463,7 +463,7 @@ class Upload
                             if (count($rows) < $end * 1) $end = count($rows);
 
                             $first = 0;
-                            $arrs = $this->randomGen(1, $end * 1 - 1, $count);
+                            $arrs = $this->randomGen(1, $end * 1 - 1, $count * 1 - 1);
                             array_push($arrs, $first);
                             sort($arrs);
 

@@ -7,7 +7,7 @@ import {
     getGroups, getLastPhone, getSchedulePath,
     getUpload,
     updateCampaign,
-    updateGroupCampaign,
+    updateGroupCampaign, updateGroupCampaignWeekday,
     updateUpload, uploadAfterPreview, uploadOne
 } from "../redux/actions";
 import axios from "axios";
@@ -77,6 +77,7 @@ const Upload = (props) => {
                 campaign.meridiem = c.meridiem;
                 campaign.comment = c.comment;
                 campaign.color = c.color;
+                campaign.weekday = c.weekday;
                 _campaigns.push(campaign);
             });
         }
@@ -343,6 +344,7 @@ const Upload = (props) => {
                         uploadOne={props.uploadOne}
                         getLastPhone={getLastPhone}
                         getCampaigns={props.getCampaigns}
+                        updateGroupCampaignWeekday={props.updateGroupCampaignWeekday}
                     /> : ''
             }
             {
@@ -360,6 +362,7 @@ const Upload = (props) => {
                         getLastPhone={getLastPhone}
                         uploadAfterPreview={props.uploadAfterPreview}
                         getCampaigns={props.getCampaigns}
+                        updateGroupCampaignWeekday={props.updateGroupCampaignWeekday}
                     /> : ''
             }
             <Row style={{marginTop: 10}}>
@@ -386,5 +389,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign, getLastPhone, uploadAfterPreview, uploadOne, getSchedulePath }
+    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign, getLastPhone, uploadAfterPreview, uploadOne, getSchedulePath, updateGroupCampaignWeekday }
 )(Upload);

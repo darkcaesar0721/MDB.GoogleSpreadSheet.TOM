@@ -7,6 +7,13 @@ import axios from "axios";
 import {APP_API_URL} from "../constants";
 import qs from "qs";
 import moment from "moment/moment";
+import StyledCheckBox from "../shared/StyledCheckBox";
+
+let current_date = new Date()
+let pstDate = current_date.toLocaleString("en-US", {
+    timeZone: "America/Los_Angeles"
+});
+const wday = moment(pstDate).format('dddd');
 
 const GroupCampaignUploadAll = (props) => {
     const [tableParams, setTableParams] = useState({
@@ -55,6 +62,10 @@ const GroupCampaignUploadAll = (props) => {
         setUploadStatusList(_uploadStatusList);
     }, [props.globalCampaigns]);
 
+    useEffect(function() {
+        props.updateUpload({'selectedCampaignKeys': selectedCampaignKeys.length > 0 ? selectedCampaignKeys : ''});
+    }, [selectedCampaignKeys]);
+
     const setColumnInfo = () => {
         let _columns = [
             {
@@ -78,9 +89,50 @@ const GroupCampaignUploadAll = (props) => {
                 }
             },
             {
+                title: 'Weekday',
+                key: 'weekday',
+                width: 200,
+                render: (_, r) => {
+                    let weekday = [];
+
+                    const _weekday = (r.weekday === undefined ? {} : r.weekday);
+                    Object.keys(_weekday).forEach((k) => {
+                        if (_weekday[k] === 'true' || _weekday[k] === true) weekday.push(k);
+                    });
+
+                    return (
+                        <Checkbox.Group style={{width: '100%'}} value={weekday}>
+                            <Row>
+                                <Col flex={1}>
+                                    <StyledCheckBox onChange={(v) => {handleWeekdayChange(v, r)}} value="Sunday">S</StyledCheckBox>
+                                </Col>
+                                <Col flex={1}>
+                                    <StyledCheckBox onChange={(v) => {handleWeekdayChange(v, r)}} value="Monday">M</StyledCheckBox>
+                                </Col>
+                                <Col flex={1}>
+                                    <StyledCheckBox onChange={(v) => {handleWeekdayChange(v, r)}} value="Tuesday">T</StyledCheckBox>
+                                </Col>
+                                <Col flex={1}>
+                                    <StyledCheckBox onChange={(v) => {handleWeekdayChange(v, r)}} value="Wednesday">W</StyledCheckBox>
+                                </Col>
+                                <Col flex={1}>
+                                    <StyledCheckBox onChange={(v) => {handleWeekdayChange(v, r)}} value="Thursday">Th</StyledCheckBox>
+                                </Col>
+                                <Col flex={1}>
+                                    <StyledCheckBox onChange={(v) => {handleWeekdayChange(v, r)}} value="Friday">F</StyledCheckBox>
+                                </Col>
+                                <Col flex={1}>
+                                    <StyledCheckBox onChange={(v) => {handleWeekdayChange(v, r)}} value="Saturday">S</StyledCheckBox>
+                                </Col>
+                            </Row>
+                        </Checkbox.Group>
+                    )
+                }
+            },
+            {
                 title: 'N G Y P',
                 key: 'color',
-                width: 130,
+                width: 140,
                 render: (_, r) => {
                     const color = r.color === undefined || r.color === "" ? "none" : r.color;
                     return (
@@ -206,19 +258,20 @@ const GroupCampaignUploadAll = (props) => {
     }
 
     useEffect(function() {
-        if (props.uploadInfo.selectedCampaignKeys !== undefined && props.uploadInfo.selectedCampaignKeys !== "" && props.group !== undefined && props.groups !== "") {
-            if (props.uploadInfo.selectedCampaignKeys == undefined) setSelectedCampaignKeys([]);
-            else {
-                let _selectedCampaignKeys = [];
-                props.group.campaigns.forEach(c => {
-                    props.uploadInfo.selectedCampaignKeys.forEach(key => {
-                        if (key == c.key) _selectedCampaignKeys.push(key);
-                    })
-                })
-                setSelectedCampaignKeys(_selectedCampaignKeys);
-            }
-        }
-    }, [props.group, props.uploadInfo]);
+        setSelectedCampaignKeys((oldState) => {
+            let newState = [];
+            props.group.campaigns.forEach(c => {
+                if (c.weekday[wday] === 'true' || c.weekday[wday] === true) newState.push(c.key);
+            });
+            return newState;
+        })
+    }, [props.group]);
+
+    const handleWeekdayChange = function(e, r) {
+        const weekday = {};
+        weekday[e.target.value] = e.target.checked;
+        props.updateGroupCampaignWeekday(props.groupIndex, r.groupCampaignIndex, weekday);
+    }
 
     const handleColorChange = function(e, r) {
         props.updateGroupCampaign(props.groupIndex, r.groupCampaignIndex, {color: e.target.value});
@@ -276,12 +329,6 @@ const GroupCampaignUploadAll = (props) => {
         setUploadStatusList(_uploadStatusList);
     }
 
-    const handleIsLastCheck = (e, r) => {
-        let campaign = props.globalCampaigns[r.index];
-        const isLast = (campaign.isLast == true || campaign.isLast == "true") ? false : true;
-        props.updateCampaign(r.file_name, {isLast: isLast});
-    }
-
     const handleTableChange = (pagination, filters, sorter) => {
         setTableParams({
             pagination,
@@ -315,18 +362,9 @@ const GroupCampaignUploadAll = (props) => {
 
     // rowSelection object indicates the need for row selection
     const rowSelection = {
-        onChange: (selectedRowKeys, selectedRows) => {
-            let _selectedCampaignKeys = [];
-            props.group.campaigns.forEach(c => {
-                selectedRowKeys.forEach(key => {
-                    if (key == c.key) _selectedCampaignKeys.push(key);
-                })
-            })
-            setSelectedCampaignKeys(_selectedCampaignKeys);
-
-            if (selectedRowKeys.length == 0) _selectedCampaignKeys = '';
-            props.updateUpload({'selectedCampaignKeys': _selectedCampaignKeys});
-        }
+        getCheckboxProps: r => ({
+            disabled: true
+        })
     };
 
     const changeUploadStatus = function(index, key) {
@@ -381,7 +419,7 @@ const GroupCampaignUploadAll = (props) => {
         <>
             {contextHolder}
             <Row style={{marginTop: 10}}>
-                <Col span={22} offset={1}>
+                <Col span={24}>
                     <Divider style={{fontSize: '0.8rem'}}>GROUP CAMPAIGN LIST</Divider>
                     <Row style={{marginBottom: '0.5rem'}}>
                         <Col span={1} offset={11} style={{paddingLeft: '1rem'}}>
@@ -410,7 +448,7 @@ const GroupCampaignUploadAll = (props) => {
                             selectedRowKeys: selectedCampaignKeys,
                             ...rowSelection,
                         }}
-                        className="antd-custom-table campaign-table"
+                        className="antd-custom-table campaign-table antd-checked-custom-table"
                         rowClassName={(record, index) => ((record.color === undefined || record.color == "" || record.color === "none") ? "" : "campaign_" + record.color) }
                     />
                 </Col>

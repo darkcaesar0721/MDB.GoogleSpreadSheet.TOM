@@ -201,3 +201,11 @@ label, span, div, input {
   color: white;
   background: #1677ff;
 }
+
+.antd-checked-custom-table .ant-checkbox-checked.ant-checkbox-disabled .ant-checkbox-inner {
+  background-color: #1677ff;
+}
+
+.antd-checked-custom-table .ant-checkbox-checked.ant-checkbox-disabled .ant-checkbox-inner:after {
+  background-color: white;
+}

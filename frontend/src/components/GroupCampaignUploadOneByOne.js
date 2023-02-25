@@ -1,10 +1,11 @@
 import {Button, Checkbox, Col, Divider, Modal, Popconfirm, Radio, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
-import {UploadOutlined, MediumOutlined, EyeOutlined} from "@ant-design/icons";
+import {UploadOutlined, EyeOutlined} from "@ant-design/icons";
 import {Link} from "react-router-dom";
 import {Input} from "antd/lib";
 import CampaignUploadManually from "./CampaignUploadManually";
 import moment from "moment";
+import StyledCheckBox from "../shared/StyledCheckBox";
 
 const GroupCampaignUploadOneByOne = (props) => {
     const [tableParams, setTableParams] = useState({
@@ -55,9 +56,50 @@ const GroupCampaignUploadOneByOne = (props) => {
                     }
                 },
                 {
+                    title: 'Weekday',
+                    key: 'weekday',
+                    width: 200,
+                    render: (_, r) => {
+                        let weekday = [];
+
+                        const _weekday = (r.weekday === undefined ? {} : r.weekday);
+                        Object.keys(_weekday).forEach((k) => {
+                            if (_weekday[k] === 'true' || _weekday[k] === true) weekday.push(k);
+                        });
+
+                        return (
+                            <Checkbox.Group style={{width: '100%'}} value={weekday}>
+                                <Row>
+                                    <Col flex={1}>
+                                        <StyledCheckBox onChange={(v) => {handleWeekdayChange(v, r)}} value="Sunday">S</StyledCheckBox>
+                                    </Col>
+                                    <Col flex={1}>
+                                        <StyledCheckBox onChange={(v) => {handleWeekdayChange(v, r)}} value="Monday">M</StyledCheckBox>
+                                    </Col>
+                                    <Col flex={1}>
+                                        <StyledCheckBox onChange={(v) => {handleWeekdayChange(v, r)}} value="Tuesday">T</StyledCheckBox>
+                                    </Col>
+                                    <Col flex={1}>
+                                        <StyledCheckBox onChange={(v) => {handleWeekdayChange(v, r)}} value="Wednesday">W</StyledCheckBox>
+                                    </Col>
+                                    <Col flex={1}>
+                                        <StyledCheckBox onChange={(v) => {handleWeekdayChange(v, r)}} value="Thursday">Th</StyledCheckBox>
+                                    </Col>
+                                    <Col flex={1}>
+                                        <StyledCheckBox onChange={(v) => {handleWeekdayChange(v, r)}} value="Friday">F</StyledCheckBox>
+                                    </Col>
+                                    <Col flex={1}>
+                                        <StyledCheckBox onChange={(v) => {handleWeekdayChange(v, r)}} value="Saturday">S</StyledCheckBox>
+                                    </Col>
+                                </Row>
+                            </Checkbox.Group>
+                        )
+                    }
+                },
+                {
                     title: 'N G Y P',
                     key: 'color',
-                    width: 130,
+                    width: 140,
                     render: (_, r) => {
                         const color = r.color === undefined || r.color === "" ? "none" : r.color;
                         return (
@@ -230,6 +272,12 @@ const GroupCampaignUploadOneByOne = (props) => {
         }
     }, [props.campaigns]);
 
+    const handleWeekdayChange = function(e, r) {
+        const weekday = {};
+        weekday[e.target.value] = e.target.checked;
+        props.updateGroupCampaignWeekday(props.groupIndex, r.groupCampaignIndex, weekday);
+    }
+
     const handleColorChange = function(e, r) {
         props.updateGroupCampaign(props.groupIndex, r.groupCampaignIndex, {color: e.target.value});
     }
@@ -254,11 +302,6 @@ const GroupCampaignUploadOneByOne = (props) => {
 
     const handlePhoneSave = (r) => {
         props.updateCampaign(r.file_name, {last_phone: r.last_phone});
-    }
-
-    const handleIsLastCheck = (e, r) => {
-        let campaign = props.globalCampaigns[r.index];
-        props.updateCampaign(r.file_name, {isLast: (campaign.isLast == true || campaign.isLast == "true") ? false : true});
     }
 
     const handleTableChange = (pagination, filters, sorter) => {
@@ -300,7 +343,7 @@ const GroupCampaignUploadOneByOne = (props) => {
     return (
         <>
             <Row style={{marginTop: 10}}>
-                <Col span={22} offset={1}>
+                <Col span={24}>
                     <Divider style={{fontSize: '0.8rem'}}>GROUP CAMPAIGN LIST</Divider>
                     <Table
                         bordered={true}

@@ -4,6 +4,13 @@ import {LoadingOutlined, CheckCircleTwoTone} from "@ant-design/icons";
 import moment from "moment";
 
 const GroupCampaignUploadStatusList = (props) => {
+    const [tableParams, setTableParams] = useState({
+        pagination: {
+            current: 1,
+            pageSize: 200,
+        },
+    });
+
     const columns = [
         {
             title: 'no',
@@ -69,6 +76,14 @@ const GroupCampaignUploadStatusList = (props) => {
     useEffect(function() {
     }, []);
 
+    const handleTableChange = (pagination, filters, sorter) => {
+        setTableParams({
+            pagination,
+            filters,
+            ...sorter,
+        });
+    };
+
     return (
         <>
             <Table
@@ -76,6 +91,8 @@ const GroupCampaignUploadStatusList = (props) => {
                 size="small"
                 columns={columns}
                 dataSource={props.uploadStatusList}
+                pagination={tableParams.pagination}
+                onChange={handleTableChange}
                 className="antd-custom-table upload-status-list"
             />
         </>

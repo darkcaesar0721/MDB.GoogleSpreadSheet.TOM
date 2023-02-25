@@ -207,6 +207,32 @@ class Group
         exit;
     }
 
+    public function update_group_campaign_weekday()
+    {
+        $g_i = $_REQUEST['groupIndex'];
+        $g_c_i = $_REQUEST['groupCampaignIndex'];
+
+        $weekday = $_REQUEST['weekday'];
+
+        foreach($weekday as $key => $value) {
+            if ($this->group_lists[$g_i]->campaigns[$g_c_i]->weekday == '') {
+                $this->group_lists[$g_i]->campaigns[$g_c_i]->weekday = [];
+                $this->group_lists[$g_i]->campaigns[$g_c_i]->weekday[$key] = $value;
+            } else {
+                $this->group_lists[$g_i]->campaigns[$g_c_i]->weekday->$key = $value;
+            }
+        }
+
+        $group =$this->group_lists[$g_i];
+
+        $fp = fopen($this->folder_path . '/' . $group->file_name, 'w');
+        fwrite($fp, json_encode($group));
+        fclose($fp);
+
+        echo json_encode($this->group_lists);
+        exit;
+    }
+
     public function get_data()
     {
         echo json_encode($this->group_lists);
@@ -224,11 +250,22 @@ class Group
 
         $files = glob($this->folder_path . "\\" . "*.json");
         foreach($files as $index => $file) {
+            $_group = json_decode(file_get_contents($file));
+            $group = json_decode(json_encode($_group), true);
+
+            foreach ($group['campaigns'] as $i => $c) {
+                if (!array_key_exists('weekday', $c)) {
+                    $c['weekday'] = ['Sunday' => true, 'Monday' => true, 'Tuesday' => true, 'Wednesday' => true, 'Thursday' => true, 'Friday' => true, 'Saturday' => true];
+                }
+                $group['campaigns'][$i] = $c;
+            }
+            file_put_contents($file, json_encode($group));
             $group = json_decode(file_get_contents($file));
+
             array_push($this->group_lists, $group);
         }
 
-        usort($this->group_lists, function($a, $b) { return $a->index - $b->index; });
+//        usort($this->group_lists, function($a, $b) { return $a->index - $b->index; });
     }
 
     public function is_name_duplicated($name)
