@@ -1,4 +1,7 @@
 export const INIT_MDB_DATA = "INIT_MDB_DATA";
+
+export const INIT_WHATSAPP_DATA = "INIT_WHATSAPP_DATA";
+
 export const INIT_SCHEDULE_DATA = "INIT_SCHEDULE_DATA";
 
 export const INIT_BACKUP_DATA = "INIT_BACKUP_DATA";

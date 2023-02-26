@@ -10,6 +10,9 @@ const MenuList = function(props) {
                         <a className={props.currentPage === "backup" ? "selected" : ""} href="#/backup">Backup</a>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>
+                        <a className={props.currentPage === "whatsapp" ? "selected" : ""} href="#/whatsapp">WhatsApp</a>
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item>
                         <a className={props.currentPage === "campaign" ? "selected" : ""} href="#/campaigns">Add Campaigns</a>
                     </Breadcrumb.Item>
                     <Breadcrumb.Item>

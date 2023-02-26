@@ -253,16 +253,22 @@ class Group
             $_group = json_decode(file_get_contents($file));
             $group = json_decode(json_encode($_group), true);
 
+            $change = false;
             foreach ($group['campaigns'] as $i => $c) {
                 if (!array_key_exists('weekday', $c)) {
+                    $change = true;
                     $c['weekday'] = ['Sunday' => true, 'Monday' => true, 'Tuesday' => true, 'Wednesday' => true, 'Thursday' => true, 'Friday' => true, 'Saturday' => true];
                 }
                 $group['campaigns'][$i] = $c;
             }
-            file_put_contents($file, json_encode($group));
-            $group = json_decode(file_get_contents($file));
 
-            array_push($this->group_lists, $group);
+            if ($change) {
+                file_put_contents($file, json_encode($group));
+                $group = json_decode(file_get_contents($file));
+                array_push($this->group_lists, $group);
+            } else {
+                array_push($this->group_lists, $_group);
+            }
         }
 
 //        usort($this->group_lists, function($a, $b) { return $a->index - $b->index; });

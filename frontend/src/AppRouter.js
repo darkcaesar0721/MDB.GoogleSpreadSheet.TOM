@@ -15,6 +15,7 @@ import UploadPreview from "./components/CampaignUploadPreview";
 import GroupCampaignUpload from "./components/GroupCampaignUpload";
 import GroupCampaignSetting from "./components/GroupCampaignSetting";
 import Backup from "./components/Backup";
+import WhatsApp from "./components/WhatsApp";
 
 export const DASHBOARD = '/';
 
@@ -27,6 +28,7 @@ export const AppRouter = () => {
                         <Route path={DASHBOARD}>
                             <Route index path="/" element={<Upload />} />
                             <Route path="/backup" element={<Backup />} />
+                            <Route path="/whatsapp" element={<WhatsApp />} />
                             <Route path="/mdb" element={<MDBPath />} />
                             <Route path="/schedule" element={<SchedulePath />} />
                             <Route path="/campaigns" element={<Campaigns />} />

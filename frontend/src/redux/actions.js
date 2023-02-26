@@ -5,7 +5,7 @@ import {
     INIT_GROUP_DATA,
     INIT_TEMP_GROUP_DATA,
     INIT_UPLOAD_DATA,
-    INIT_MDB_DATA, INIT_BACKUP_DATA, INIT_SCHEDULE_DATA
+    INIT_MDB_DATA, INIT_BACKUP_DATA, INIT_SCHEDULE_DATA, INIT_WHATSAPP_DATA
 } from "./actionTypes";
 import { APP_API_URL } from "../constants";
 
@@ -47,6 +47,28 @@ export const setSchedulePath = (rows) => async (dispatch) => {
         type: INIT_SCHEDULE_DATA,
         data: result.data
     });
+}
+
+export const getWhatsApp = () => async (dispatch) => {
+    const result = await axios.get(APP_API_URL + 'api.php?class=WhatsApp&fn=get_data');
+
+    dispatch({
+        type: INIT_WHATSAPP_DATA,
+        data: result.data
+    });
+}
+
+export const updateWhatsApp = (rows, callback = function() {}) => async (dispatch) => {
+    const result = await axios.post(APP_API_URL + 'api.php?class=WhatsApp&fn=update', qs.stringify({
+        rows
+    }));
+
+    dispatch({
+        type: INIT_WHATSAPP_DATA,
+        data: result.data
+    });
+
+    callback();
 }
 
 export const getCampaigns = (callback = function() {}) => async (dispatch) => {
