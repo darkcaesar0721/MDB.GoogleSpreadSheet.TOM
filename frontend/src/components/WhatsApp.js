@@ -1,5 +1,5 @@
 import {Input, Col, Row, Divider, Form} from 'antd';
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {connect} from "react-redux";
 import {getWhatsApp, updateWhatsApp} from "../redux/actions";
 import MenuList from "./MenuList";
@@ -26,9 +26,6 @@ const formItemLayout = {
 
 function WhatsApp(props) {
     const [form] = Form.useForm();
-    const [defaultMessage, setDefaultMessage] = useState('');
-    const [instanceId, setInstanceId] = useState('');
-    const [token, setToken] = useState('');
 
     useEffect(function() {
         props.getWhatsApp();
@@ -39,27 +36,27 @@ function WhatsApp(props) {
     }, [props.whatsapp]);
 
     const handleDefaultMessageChange = function(e) {
-        setDefaultMessage(e.target.value);
+        form.setFieldsValue(Object.assign({...form.getFieldsValue()}, {default_message: e.target.value}));
     }
 
     const saveDefaultMessage = function() {
-        props.updateWhatsApp({default_message: defaultMessage});
+        props.updateWhatsApp({default_message: form.getFieldsValue().default_message});
     }
 
     const handleInstanceIdChange = function(e) {
-        setInstanceId(e.target.value);
+        form.setFieldsValue(Object.assign({...form.getFieldsValue()}, {instance_id: e.target.value}));
     }
 
     const saveInstanceId = function() {
-        props.updateWhatsApp({instance_id: instanceId,});
+        props.updateWhatsApp({instance_id: form.getFieldsValue().instance_id,});
     }
 
     const handleTokenChange = function(e) {
-        setToken(e.target.value);
+        form.setFieldsValue(Object.assign({...form.getFieldsValue()}, {token: e.target.value}));
     }
 
     const saveToken = function() {
-        props.updateWhatsApp({token: token});
+        props.updateWhatsApp({token: form.getFieldsValue().token});
     }
 
     return (
@@ -87,7 +84,7 @@ function WhatsApp(props) {
                                 },
                             ]}
                         >
-                            <Input.TextArea showCount autoSize={{ minRows: 3, maxRows: 10 }} value={defaultMessage} onBlur={saveDefaultMessage} onChange={handleDefaultMessageChange}/>
+                            <Input.TextArea showCount autoSize={{ minRows: 3, maxRows: 10 }} onBlur={saveDefaultMessage} onChange={handleDefaultMessageChange}/>
                         </Form.Item>
                         <Form.Item
                             name="instance_id"
@@ -99,7 +96,7 @@ function WhatsApp(props) {
                                 },
                             ]}
                         >
-                            <Input value={instanceId} onBlur={saveInstanceId} onChange={handleInstanceIdChange}/>
+                            <Input onBlur={saveInstanceId} onChange={handleInstanceIdChange}/>
                         </Form.Item>
                         <Form.Item
                             name="token"
@@ -111,7 +108,7 @@ function WhatsApp(props) {
                                 },
                             ]}
                         >
-                            <Input value={token} onBlur={saveToken} onChange={handleTokenChange}/>
+                            <Input onBlur={saveToken} onChange={handleTokenChange}/>
                         </Form.Item>
                     </Form>
                 </Col>

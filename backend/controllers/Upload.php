@@ -25,6 +25,7 @@ class Upload
 	public $group_obj;
 	public $upload_config_obj;
 	public $backup_obj;
+    public $whatsapp_obj;
 
 	public $mdb;
 	public $schedule;
@@ -49,6 +50,7 @@ class Upload
 		$this->init_groups();
 		$this->init_upload_config();
 		$this->init_backup();
+        $this->init_whatsapp();
 
         $this->init_google_sheet_service();
 
@@ -95,6 +97,12 @@ class Upload
 		$this->backup_obj = new \controllers\Backup();
         $this->backup_obj->init();
 	}
+
+    public function init_whatsapp()
+    {
+        $this->whatsapp_obj = new \controllers\WhatsApp();
+        $this->whatsapp_obj->init();
+    }
 
 	public function init_google_sheet_service()
 	{
@@ -178,7 +186,9 @@ class Upload
 
         $this->campaign_obj->save_datas($this->campaigns);
 
-        $this->schedule_obj->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i, $this->groups, $this->campaigns);
+//        $this->schedule_obj->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i, $this->groups, $this->campaigns);
+
+        $this->whatsapp_obj->send($this->campaigns[$c_i]);
 
         $this->backup_obj->run(false);
         echo json_encode($this->campaigns);
@@ -214,7 +224,8 @@ class Upload
 	    $this->campaign_obj->save_datas($this->campaigns);
 
         if ($manually == "false") {
-            $this->schedule_obj->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i, $this->groups, $this->campaigns);
+//            $this->schedule_obj->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i, $this->groups, $this->campaigns);
+            $this->whatsapp_obj->send($this->campaigns[$c_i]);
         }
 
 	    $this->backup_obj->run(false);

@@ -375,14 +375,15 @@ const GroupCampaignUploadAll = (props) => {
         }))
     }
 
-    const handleUploadOne = function(key, index) {
+    const handleUploadOne = function(key, index, groups) {
         props.campaigns.forEach(c => {
             if (c.key == key) {
                 axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_one_by_one', qs.stringify({
                     groupIndex: props.groupIndex,
                     groupCampaignIndex: c.groupCampaignIndex,
                     campaignIndex: c.campaignIndex,
-                    manually: false
+                    manually: false,
+                    groups: groups,
                 })).then((resp) => {
                     props.getCampaigns();
                     changeUploadStatus(index + 1, key);
@@ -393,7 +394,7 @@ const GroupCampaignUploadAll = (props) => {
                             setOpen(false);
                         }, 1000)
                     } else {
-                        handleUploadOne(selectedCampaignKeys[index + 1], index + 1);
+                        handleUploadOne(selectedCampaignKeys[index + 1], index + 1, groups);
                     }
                 });
             }
@@ -409,10 +410,28 @@ const GroupCampaignUploadAll = (props) => {
             messageApi.warning('Please input schedule sheet url.');
             return;
         }
+        if (props.whatsapp.instance_id == "") {
+            messageApi.warning("Please input whatsapp instance id");
+            return false;
+        }
+        if (props.whatsapp.token == "") {
+            messageApi.warning("Please input whatsapp token");
+            return false;
+        }
 
-        initUploadStatusList();
-        handleUploadOne(selectedCampaignKeys[0], 0);
-        setOpen(true);
+        axios.post(APP_API_URL + 'api.php?class=WhatsApp&fn=get_groups').then((resp) => {
+            if (typeof resp.data === "string") {
+                messageApi.error("Please confirm whatsapp setting");
+                return;
+            } else if (resp.data.error) {
+                messageApi.error(resp.data.error);
+                return;
+            }
+
+            initUploadStatusList();
+            handleUploadOne(selectedCampaignKeys[0], 0, resp.data);
+            setOpen(true);
+        });
     }
 
     return (

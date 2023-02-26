@@ -102,7 +102,7 @@ const CampaignUploadManually = (props) => {
             title: 'SystemCreateDate',
             dataIndex: 'SystemCreateDate',
             key: 'SystemCreateDate',
-            width: 130,
+            width: 160,
             render: (_, r) => {
                 return (
                     <span>{r.SystemCreateDate === "" || r.SystemCreateDate === undefined ? "" : moment(r.SystemCreateDate).format('M/D/Y, hh:mm A')}</span>

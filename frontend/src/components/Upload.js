@@ -5,7 +5,7 @@ import {connect} from "react-redux";
 import {
     getCampaigns,
     getGroups, getLastPhone, getSchedulePath,
-    getUpload,
+    getUpload, getWhatsApp,
     updateCampaign,
     updateGroupCampaign, updateGroupCampaignWeekday,
     updateUpload, uploadAfterPreview, uploadOne
@@ -40,6 +40,7 @@ const Upload = (props) => {
         props.getUpload();
         props.getCampaigns();
         props.getGroups();
+        props.getWhatsApp();
     }, []);
 
     useEffect(function() {
@@ -260,24 +261,46 @@ const Upload = (props) => {
                 setTip("Wait for getting data....");
             else
                 setTip("Wait for uploading....");
-            axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_one_by_one', qs.stringify(data)).then(function(resp) {
-                setLoading(false);
-                props.getCampaigns();
-                props.getGroups();
 
-                if (data.manually)
-                    messageApi.success('Get data success');
-                else
-                    messageApi.success('Upload success');
+            axios.post(APP_API_URL + 'api.php?class=WhatsApp&fn=get_groups').then((resp) => {
+                if (typeof resp.data === "string") {
+                    setLoading(false);
+                    messageApi.error("Please confirm whatsapp setting");
+                    return;
+                } else if (resp.data.error) {
+                    setLoading(false);
+                    messageApi.error(resp.data.error);
+                    return;
+                }
 
-                callback();
-            })
+                data.groups = resp.data;
+                axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_one_by_one', qs.stringify(data)).then(function(resp) {
+                    setLoading(false);
+                    props.getCampaigns();
+                    props.getGroups();
+
+                    if (data.manually)
+                        messageApi.success('Get data success');
+                    else
+                        messageApi.success('Upload success');
+
+                    callback();
+                })
+            });
         }
     }
 
     const validation = function() {
         if (props.schedule.path == "") {
             messageApi.warning("Please input schedule sheet url");
+            return false;
+        }
+        if (props.whatsapp.instance_id == "") {
+            messageApi.warning("Please input whatsapp instance id");
+            return false;
+        }
+        if (props.whatsapp.token == "") {
+            messageApi.warning("Please input whatsapp token");
             return false;
         }
         return true;
@@ -332,6 +355,7 @@ const Upload = (props) => {
                 props.groups.data.length > 0 && props.campaigns.data.length > 0 && way === 'all' ?
                     <GroupCampaignUploadAll
                         schedule={props.schedule}
+                        whatsapp={props.whatsapp}
                         campaigns={campaigns}
                         groupIndex={group}
                         globalCampaigns={props.campaigns.data}
@@ -384,10 +408,10 @@ const Upload = (props) => {
 }
 
 const mapStateToProps = state => {
-    return { campaigns: state.campaigns, groups: state.groups, upload: state.upload, schedule: state.schedule };
+    return { campaigns: state.campaigns, groups: state.groups, upload: state.upload, schedule: state.schedule, whatsapp: state.whatsapp };
 };
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign, getLastPhone, uploadAfterPreview, uploadOne, getSchedulePath, updateGroupCampaignWeekday }
+    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign, getLastPhone, uploadAfterPreview, uploadOne, getSchedulePath, updateGroupCampaignWeekday, getWhatsApp }
 )(Upload);
