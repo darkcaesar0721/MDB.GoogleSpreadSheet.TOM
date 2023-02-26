@@ -99,9 +99,8 @@ class WhatsApp
                 if ($person !== '') {
                     $to = $person;
                     $body = $message;
-                    print_r($to);
-//                     $api = $client->sendChatMessage($to,$body);
-//                     print_r($api);
+                    $api = $client->sendChatMessage($to, $body);
+                    print_r($api);
                 }
             }
         }
@@ -112,9 +111,8 @@ class WhatsApp
                         if (strpos($g['name'], $group) !== false) {
                             $to = $g['id'];
                             $body = $message;
-                            print_r($to);
-//                            $api = $client->sendChatMessage($to,$body);
-//                            print_r($api);
+                            $api = $client->sendChatMessage($to, $body);
+                            print_r($api);
                         }
                     }
                 }

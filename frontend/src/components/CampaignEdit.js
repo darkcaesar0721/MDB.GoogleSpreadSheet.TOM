@@ -11,7 +11,7 @@ import {
 } from "antd";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
-import {getCampaigns, updateCampaign} from "../redux/actions";
+import {getCampaigns, getWhatsApp, updateCampaign} from "../redux/actions";
 import {useNavigate, useParams} from 'react-router-dom';
 import Path from "./Path/Path";
 import MenuList from "./MenuList";
@@ -83,6 +83,7 @@ function CampaignEdit(props) {
 
     useEffect(function() {
         props.getCampaigns();
+        props.getWhatsApp();
     }, []);
 
     useEffect(function() {
@@ -140,9 +141,14 @@ function CampaignEdit(props) {
             }));
 
             setIsWhatsApp(selectedCampaign.isWhatsApp === 'true' || selectedCampaign.isWhatsApp === true);
+
+            if (selectedCampaign.whatsapp_message === undefined) selectedCampaign.whatsapp_message = props.whatsapp.default_message;
+            if (selectedCampaign.whatsapp_people === undefined) selectedCampaign.whatsapp_people = [''];
+            if (selectedCampaign.whatsapp_groups === undefined) selectedCampaign.whatsapp_groups = [''];
+
             form.setFieldsValue(selectedCampaign);
         }
-    }, [props.campaigns.data]);
+    }, [props.campaigns.data, props.whatsapp]);
 
     const handleSubmit = function(form) {
         if (validation()) {
@@ -497,10 +503,10 @@ function CampaignEdit(props) {
 }
 
 const mapStateToProps = state => {
-    return { campaigns: state.campaigns };
+    return { campaigns: state.campaigns, whatsapp: state.whatsapp };
 };
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, updateCampaign }
+    { getCampaigns, updateCampaign, getWhatsApp }
 )(CampaignEdit);

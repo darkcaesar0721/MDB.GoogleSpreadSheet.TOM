@@ -175,6 +175,7 @@ class Upload
         $this->campaigns[$c_i]->_up_rows = [];
         $this->campaigns[$c_i]->isManually = false;
         $this->campaigns[$c_i]->isGetLastPhone = false;
+        $this->campaigns[$c_i]->lastUploadDateTime = date("m/d/Y h:i A");
 
         $this->campaigns[$c_i]->isLast = true;
 
@@ -186,9 +187,9 @@ class Upload
 
         $this->campaign_obj->save_datas($this->campaigns);
 
-//        $this->schedule_obj->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i, $this->groups, $this->campaigns);
+        $this->schedule_obj->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i, $this->groups, $this->campaigns);
 
-        $this->whatsapp_obj->send($this->campaigns[$c_i]);
+        $this->whatsapp_obj->send($this->groups[$g_i]->campaigns[$g_c_i]);
 
         $this->backup_obj->run(false);
         echo json_encode($this->campaigns);
@@ -215,17 +216,17 @@ class Upload
                     $this->campaigns[$_c_i]->scheduleIndex = -1;
                 }
             }
+            $this->campaigns[$c_i]->isGetLastPhone = false;
+            $this->campaigns[$c_i]->lastUploadDateTime = date("m/d/Y h:i A");
         } else {
             $this->campaigns[$c_i]->isManually = true;
         }
-        $this->campaigns[$c_i]->isGetLastPhone = false;
-        $this->campaigns[$c_i]->lastUploadDateTime = date("m/d/Y h:i A");
 
 	    $this->campaign_obj->save_datas($this->campaigns);
 
         if ($manually == "false") {
-//            $this->schedule_obj->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i, $this->groups, $this->campaigns);
-            $this->whatsapp_obj->send($this->campaigns[$c_i]);
+            $this->schedule_obj->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i, $this->groups, $this->campaigns);
+            $this->whatsapp_obj->send($this->groups[$g_i]->campaigns[$g_c_i]);
         }
 
 	    $this->backup_obj->run(false);
