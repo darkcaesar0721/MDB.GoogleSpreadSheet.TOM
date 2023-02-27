@@ -38,7 +38,7 @@
 }
 
 label, span, div, input {
-  font-family: math !important;
+  font-family: Arial !important;
 }
 
 .upload-preview label, .upload-preview span{
