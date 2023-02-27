@@ -1,4 +1,4 @@
-import {Button, Checkbox, Col, Divider, message, Modal, Popconfirm, Radio, Row, Table} from "antd";
+import {Button, Checkbox, Col, Divider, message, Modal, Popconfirm, Radio, Row, Switch, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import {Input} from "antd/lib";
@@ -8,6 +8,7 @@ import {APP_API_URL} from "../constants";
 import qs from "qs";
 import moment from "moment/moment";
 import StyledCheckBox from "../shared/StyledCheckBox";
+import {CheckOutlined, CloseOutlined} from "@ant-design/icons";
 
 let current_date = new Date()
 let pstDate = current_date.toLocaleString("en-US", {
@@ -126,6 +127,22 @@ const GroupCampaignUploadAll = (props) => {
                                 </Col>
                             </Row>
                         </Checkbox.Group>
+                    )
+                }
+            },
+            {
+                title: 'WhatsApp',
+                key: 'whatsapp',
+                width: 70,
+                render: (_, r) => {
+                    return (
+                        <Switch
+                            checkedChildren={<CheckOutlined />}
+                            unCheckedChildren={<CloseOutlined />}
+                            size="large"
+                            checked={r.isWhatsApp === "true" || r.isWhatsApp === true}
+                            onChange={(e) => handleIsWhatsAppChange(e, r)}
+                        />
                     )
                 }
             },
@@ -266,6 +283,10 @@ const GroupCampaignUploadAll = (props) => {
             return newState;
         })
     }, [props.group]);
+
+    const handleIsWhatsAppChange = function(v, r) {
+        props.updateGroupCampaign(props.groupIndex, r.groupCampaignIndex, {isWhatsApp: v})
+    }
 
     const handleWeekdayChange = function(e, r) {
         const weekday = {};

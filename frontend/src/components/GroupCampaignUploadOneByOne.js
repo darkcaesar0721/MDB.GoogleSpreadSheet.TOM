@@ -1,6 +1,6 @@
-import {Button, Checkbox, Col, Divider, Modal, Popconfirm, Radio, Row, Table} from "antd";
+import {Button, Checkbox, Col, Divider, Modal, Popconfirm, Radio, Row, Switch, Table} from "antd";
 import React, {useEffect, useState} from "react";
-import {UploadOutlined, EyeOutlined} from "@ant-design/icons";
+import {UploadOutlined, EyeOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons";
 import {Link} from "react-router-dom";
 import {Input} from "antd/lib";
 import CampaignUploadManually from "./CampaignUploadManually";
@@ -93,6 +93,22 @@ const GroupCampaignUploadOneByOne = (props) => {
                                     </Col>
                                 </Row>
                             </Checkbox.Group>
+                        )
+                    }
+                },
+                {
+                    title: 'WhatsApp',
+                    key: 'whatsapp',
+                    width: 70,
+                    render: (_, r) => {
+                        return (
+                            <Switch
+                                checkedChildren={<CheckOutlined />}
+                                unCheckedChildren={<CloseOutlined />}
+                                size="large"
+                                checked={r.isWhatsApp === "true" || r.isWhatsApp === true}
+                                onChange={(e) => handleIsWhatsAppChange(e, r)}
+                            />
                         )
                     }
                 },
@@ -271,6 +287,10 @@ const GroupCampaignUploadOneByOne = (props) => {
             setColumns(_columns);
         }
     }, [props.campaigns]);
+
+    const handleIsWhatsAppChange = function(v, r) {
+        props.updateGroupCampaign(props.groupIndex, r.groupCampaignIndex, {isWhatsApp: v})
+    }
 
     const handleWeekdayChange = function(e, r) {
         const weekday = {};

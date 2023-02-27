@@ -189,7 +189,9 @@ class Upload
 
         $this->schedule_obj->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i, $this->groups, $this->campaigns);
 
-        $this->whatsapp_obj->send($this->groups[$g_i]->campaigns[$g_c_i]);
+        if ($this->campaigns[$c_i]->last_qty !== '0' && $this->campaigns[$c_i]->last_qty !== 0) {
+            $this->whatsapp_obj->send($this->groups[$g_i]->campaigns[$g_c_i]);
+        }
 
         $this->backup_obj->run(false);
         echo json_encode($this->campaigns);
@@ -226,7 +228,9 @@ class Upload
 
         if ($manually == "false") {
             $this->schedule_obj->upload_count_by_schedule("upload_one_by_one", $g_i, $c_i, $this->groups, $this->campaigns);
-            $this->whatsapp_obj->send($this->groups[$g_i]->campaigns[$g_c_i]);
+            if ($this->campaigns[$c_i]->last_qty !== '0' && $this->campaigns[$c_i]->last_qty !== 0) {
+                $this->whatsapp_obj->send($this->groups[$g_i]->campaigns[$g_c_i]);
+            }
         }
 
 	    $this->backup_obj->run(false);

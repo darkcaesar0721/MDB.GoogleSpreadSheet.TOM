@@ -122,10 +122,10 @@ label, span, div, input {
   padding: 0.3rem !important;
 }
 
-.antd-custom-table .ljEMAt.ant-checkbox-wrapper {
-  width: 20px;
-  height: 20px;
-  font-size: 10px;
+.antd-custom-table .ant-checkbox-wrapper {
+  width: 20px !important;
+  height: 20px !important;
+  font-size: 10px !important;
 }
 
 .antd-custom-table .ant-radio-button-wrapper {

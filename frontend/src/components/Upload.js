@@ -79,6 +79,7 @@ const Upload = (props) => {
                 campaign.comment = c.comment;
                 campaign.color = c.color;
                 campaign.weekday = c.weekday;
+                campaign.isWhatsApp = c.isWhatsApp;
                 _campaigns.push(campaign);
             });
         }
