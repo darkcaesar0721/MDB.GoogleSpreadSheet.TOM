@@ -14,7 +14,10 @@ let current_date = new Date()
 let pstDate = current_date.toLocaleString("en-US", {
     timeZone: "America/Los_Angeles"
 });
+const date = moment(pstDate).format('M/D/Y');
 const wday = moment(pstDate).format('dddd');
+
+console.log(date);
 
 const GroupCampaignUploadAll = (props) => {
     const [tableParams, setTableParams] = useState({
@@ -137,9 +140,7 @@ const GroupCampaignUploadAll = (props) => {
                 render: (_, r) => {
                     return (
                         <Switch
-                            checkedChildren={<CheckOutlined />}
-                            unCheckedChildren={<CloseOutlined />}
-                            size="large"
+                            size="small"
                             checked={r.isWhatsApp === "true" || r.isWhatsApp === true}
                             onChange={(e) => handleIsWhatsAppChange(e, r)}
                         />

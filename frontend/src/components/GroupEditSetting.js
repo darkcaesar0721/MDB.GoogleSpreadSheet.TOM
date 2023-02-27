@@ -12,6 +12,11 @@ import dragula from "dragula";
 import "dragula/dist/dragula.css";
 import {CheckOutlined, CloseOutlined, MinusCircleOutlined, PlusOutlined} from "@ant-design/icons";
 
+let current_date = new Date()
+let pstDate = current_date.toLocaleString("en-US", {
+    timeZone: "America/Los_Angeles"
+});
+
 const layout = {
     labelCol: {
         span: 4,
@@ -186,9 +191,9 @@ const GroupEditSetting = (props) => {
                     group['time'] = time;
                     group['meridiem'] = meridiem;
                     if (isTime) {
-                        group['date'] = moment(Date.now()).add(0 - dayOld, 'day').format('MM/DD/YYYY');
+                        group['date'] = moment(pstDate).add(0 - dayOld, 'day').format('MM/DD/YYYY');
                     } else {
-                        group['date'] = moment(Date.now()).add(0 - (parseInt(dayOld) + 1), 'day').format('MM/DD/YYYY');
+                        group['date'] = moment(pstDate).add(0 - (parseInt(dayOld) + 1), 'day').format('MM/DD/YYYY');
                     }
                     break;
             }

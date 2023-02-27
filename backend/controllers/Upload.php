@@ -502,7 +502,7 @@ class Upload
                         date_default_timezone_set('America/Los_Angeles');
 
 	                    foreach ($rows as $row) {
-	                        if ($g_c->isTime) {
+	                        if ($g_c->isTime == "true" || $g_c->isTime === true) {
 	                            $date = strtotime(date("m/d/Y h:i A", strtotime($g_c->date . ' ' . $g_c->time . ':00 '. $g_c->meridiem)));
 	                            $r_date = strtotime(date("m/d/Y h:i A", strtotime($row['SystemCreateDate'])));
 

@@ -93,6 +93,9 @@ class Backup
         $upload_config = file_get_contents("db/upload_config.json");
         file_put_contents($path . "\\" . $date . "\\" . "upload_config.json", $upload_config);
 
+        $whatsapp_config = file_get_contents("db/WhatsApp.json");
+        file_put_contents($path . "\\" . $date . "\\" . "WhatsApp.json", $whatsapp_config);
+
         $campaigns = glob("db\\campaigns" . "\\" . "*.json");
         foreach($campaigns as $index => $file) {
             $campaign = file_get_contents($file);

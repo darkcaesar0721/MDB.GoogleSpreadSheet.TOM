@@ -103,9 +103,7 @@ const GroupCampaignUploadOneByOne = (props) => {
                     render: (_, r) => {
                         return (
                             <Switch
-                                checkedChildren={<CheckOutlined />}
-                                unCheckedChildren={<CloseOutlined />}
-                                size="large"
+                                size="small"
                                 checked={r.isWhatsApp === "true" || r.isWhatsApp === true}
                                 onChange={(e) => handleIsWhatsAppChange(e, r)}
                             />
