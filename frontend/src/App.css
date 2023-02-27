@@ -90,6 +90,7 @@ label, span, div, input {
   font-size: 0.7rem;
   border-bottom: solid 1px #d1d1d1 !important;
   border-right: solid 1px #d1d1d1 !important;
+  font-weight: bolder;
 }
 .antd-custom-table .ant-table-tbody > tr > td > input{
   font-size: 0.7rem;
@@ -119,6 +120,17 @@ label, span, div, input {
 
 .antd-custom-table .ant-table-tbody > tr > td button{
   padding: 0.3rem !important;
+}
+
+.antd-custom-table .ljEMAt.ant-checkbox-wrapper {
+  width: 20px;
+  height: 20px;
+  font-size: 10px;
+}
+
+.antd-custom-table .ant-radio-button-wrapper {
+  height: 20px;
+  line-height: 20px;
 }
 
 .ant-modal-content .ant-form-item {
@@ -188,8 +200,8 @@ label, span, div, input {
 
 .antd-custom-table .ant-radio-button-wrapper {
   border-radius: 50%;
-  padding-inline: 10px;
-  font-size: 12px;
+  padding-inline: 5px;
+  font-size: 10px;
 }
 
 .antd-custom-table .ant-radio-button-wrapper::before {

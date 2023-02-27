@@ -91,7 +91,7 @@ const GroupCampaignUploadAll = (props) => {
             {
                 title: 'Weekday',
                 key: 'weekday',
-                width: 200,
+                width: 160,
                 render: (_, r) => {
                     let weekday = [];
 
@@ -132,7 +132,7 @@ const GroupCampaignUploadAll = (props) => {
             {
                 title: 'N G Y P',
                 key: 'color',
-                width: 140,
+                width: 90,
                 render: (_, r) => {
                     const color = r.color === undefined || r.color === "" ? "none" : r.color;
                     return (
