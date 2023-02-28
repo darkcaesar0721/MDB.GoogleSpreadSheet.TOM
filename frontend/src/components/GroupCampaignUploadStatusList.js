@@ -1,6 +1,6 @@
-import {Table} from "antd";
+import {Button, Col, Row, Table} from "antd";
 import React, {useEffect, useState} from "react";
-import {LoadingOutlined, CheckCircleTwoTone} from "@ant-design/icons";
+import {LoadingOutlined, CheckCircleTwoTone, Loading3QuartersOutlined} from "@ant-design/icons";
 import moment from "moment";
 
 const GroupCampaignUploadStatusList = (props) => {
@@ -25,6 +25,10 @@ const GroupCampaignUploadStatusList = (props) => {
             render: (_, r) => {
                 return (
                     <>
+                        {
+                            r.status === 'pause' ?
+                                <Loading3QuartersOutlined /> : ''
+                        }
                         {
                             r.status === 'loading' ?
                                 <LoadingOutlined /> : ''
@@ -86,15 +90,30 @@ const GroupCampaignUploadStatusList = (props) => {
 
     return (
         <>
-            <Table
-                bordered={true}
-                size="small"
-                columns={columns}
-                dataSource={props.uploadStatusList}
-                pagination={tableParams.pagination}
-                onChange={handleTableChange}
-                className="antd-custom-table upload-status-list"
-            />
+            <Row>
+                <Col span={2}>
+                    <Button type="primary">Close Window</Button>
+                </Col>
+                <Col span={6} offset={16}>
+                    <Button type="primary" disabled={props.isPaused} onClick={props.onPause}>Pause</Button>
+                    <Button type="primary" disabled={props.isResumed} onClick={props.onResume} style={{marginLeft: '0.4rem'}}>Resume</Button>
+                    <Button type="primary" disabled={props.isCanceled} onClick={props.onCancel} style={{marginLeft: '0.4rem'}}>Cancel</Button>
+                </Col>
+            </Row>
+            <Row style={{marginTop: '0.4rem'}}>
+                <Col span={24}>
+                    <Table
+                        bordered={true}
+                        size="small"
+                        columns={columns}
+                        dataSource={props.uploadStatusList}
+                        pagination={tableParams.pagination}
+                        onChange={handleTableChange}
+                        className="antd-custom-table upload-status-list"
+                    />
+                </Col>
+            </Row>
+
         </>
     )
 }

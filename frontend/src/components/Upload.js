@@ -370,6 +370,7 @@ const Upload = (props) => {
                         getLastPhone={getLastPhone}
                         getCampaigns={props.getCampaigns}
                         updateGroupCampaignWeekday={props.updateGroupCampaignWeekday}
+                        getUpload={props.getUpload}
                     /> : ''
             }
             {

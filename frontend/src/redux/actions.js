@@ -78,7 +78,7 @@ export const getCampaigns = (callback = function() {}) => async (dispatch) => {
         type: INIT_CAMPAIGN_DATA,
         data: result.data
     });
-    callback();
+    callback(result.data);
 }
 
 export const createCampaign = (data, callback = function() {}) => async (dispatch) => {
@@ -175,13 +175,15 @@ export const updateGroup = (index, callback = function() {}) => async (dispatch)
     callback();
 }
 
-export const getUpload = () => async (dispatch) => {
+export const getUpload = (callback = function() {}) => async (dispatch) => {
     const result = await axios.get(APP_API_URL + 'api.php?class=UploadConfig&fn=get_data');
 
     dispatch({
         type: INIT_UPLOAD_DATA,
         data: result.data
     });
+
+    callback(result.data);
 }
 
 export const updateUpload = (rows, callback = function() {}) => async (dispatch) => {
