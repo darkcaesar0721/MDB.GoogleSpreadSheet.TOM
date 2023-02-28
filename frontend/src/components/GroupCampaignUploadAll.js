@@ -32,6 +32,7 @@ const GroupCampaignUploadAll = (props) => {
     const [isPaused, setIsPaused] = useState(false);
     const [isResumed, setIsResumed] = useState(true);
     const [isCanceled, setIsCanceled] = useState(false);
+    const [isClose, setIsClose] = useState(false);
     const [currentController, setCurrentController] = useState('');
 
     useEffect(function() {
@@ -419,6 +420,7 @@ const GroupCampaignUploadAll = (props) => {
                             initCampaignInfo(resp.data);
                             props.getCampaigns();
                             if (selectedCampaignKeys.length == (index + 1)) {
+                                setIsClose(true);
                                 setTimeout(function() {
                                     messageApi.success('Upload success');
                                 }, 1000)
@@ -462,7 +464,8 @@ const GroupCampaignUploadAll = (props) => {
         //     }
 
         initUploadStatusList();
-        // handleUploadOne(selectedCampaignKeys[0], 0);
+        handleUploadOne(selectedCampaignKeys[0], 0);
+        setIsClose(false);
         setOpen(true);
         // });
     }
@@ -495,6 +498,7 @@ const GroupCampaignUploadAll = (props) => {
                     initCampaignInfo(data);
                     if (selectedCampaignKeys.length == (parseInt(config.resume_index) + 1)) {
                         setTimeout(function () {
+                            setIsClose(true);
                             messageApi.success('Upload success');
                         }, 1000)
                     } else {
@@ -520,7 +524,6 @@ const GroupCampaignUploadAll = (props) => {
 
         currentController.abort();
         setOpen(false);
-
     }
 
     return (
@@ -576,6 +579,8 @@ const GroupCampaignUploadAll = (props) => {
                     isResumed={isResumed}
                     onCancel={cancel}
                     isCanceled={isCanceled}
+                    isClose={isClose}
+                    setOpen={setOpen}
                     uploadStatusList={uploadStatusList}
                 />
             </Modal>

@@ -105,7 +105,7 @@ const GroupCampaignUploadStatusList = (props) => {
         <>
             <Row>
                 <Col span={2}>
-                    <Button type="primary">Close Window</Button>
+                    <Button type="primary" disabled={!props.isClose} onClick={(e) => {props.setOpen(false)}}>Close Window</Button>
                 </Col>
                 <Col span={6} offset={16}>
                     <Button type="primary" disabled={props.isPaused} onClick={props.onPause}>Pause</Button>
