@@ -64,7 +64,7 @@ class WhatsApp
         $this->WhatsApp = json_decode(file_get_contents($this->file_path));
     }
 
-    public function get_groups()
+    public function set_groups()
     {
         $token = $this->WhatsApp->token;
         $instance_id = $this->WhatsApp->instance_id;
@@ -78,10 +78,12 @@ class WhatsApp
                 'token' => $token
             );
             $request = new Request('GET', 'https://api.ultramsg.com/' . $instance_id . '/groups?' . http_build_query($params), $headers);
-            $res = $client->sendAsync($request)->wait();
-            $this->groups = $res->getBody();
-
-            echo $this->groups;
+            $res = $client->sendAsync($request)->then(function ($response) {
+                $this->WhatsApp->groups = $response->getBody()->getcontents();
+                file_put_contents($this->file_path, json_encode($this->WhatsApp));
+                echo $this->WhatsApp->groups;
+            });
+            $res->wait();
         }
     }
 
@@ -90,7 +92,7 @@ class WhatsApp
         $token = $this->WhatsApp->token;
         $instance_id = $this->WhatsApp->instance_id;
         $message = $campaign->whatsapp_message;
-        $groups = $_REQUEST['groups'];
+        $groups = $this->WhatsApp->groups;
 
         if (($campaign->isWhatsApp === true || $campaign->isWhatsApp === 'true') && $campaign->whatsapp_people !== "" && count($campaign->whatsapp_people) > 0 && $message !== '') {
             $class = '\ultramsg\WhatsAppApi';

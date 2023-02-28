@@ -5,9 +5,10 @@ import {Input} from "antd/lib";
 import GroupCampaignUploadStatusList from "./GroupCampaignUploadStatusList";
 import axios from "axios";
 import {APP_API_URL} from "../constants";
-import qs from "qs";
 import moment from "moment/moment";
 import StyledCheckBox from "../shared/StyledCheckBox";
+import { DraggableModal, DraggableModalProvider } from '@cubetiq/antd-modal'
+import '@cubetiq/antd-modal/dist/index.css'
 
 let current_date = new Date()
 let pstDate = current_date.toLocaleString("en-US", {
@@ -454,20 +455,22 @@ const GroupCampaignUploadAll = (props) => {
             return false;
         }
 
-        // axios.post(APP_API_URL + 'api.php?class=WhatsApp&fn=get_groups').then((resp) => {
-        //     if (typeof resp.data === "string") {
-        //         messageApi.error("Please confirm whatsapp setting");
-        //         return;
-        //     } else if (resp.data.error) {
-        //         messageApi.error(resp.data.error);
-        //         return;
-        //     }
-
-        initUploadStatusList();
-        handleUploadOne(selectedCampaignKeys[0], 0);
-        setIsClose(false);
-        setOpen(true);
-        // });
+        props.setLoading(true);
+        props.setTip('Checking WhatsApp Setting');
+        axios.post(APP_API_URL + 'api.php?class=WhatsApp&fn=set_groups').then((resp) => {
+            props.setLoading(false);
+            if (typeof resp.data === "string") {
+                messageApi.error("Please confirm whatsapp setting");
+                return;
+            } else if (resp.data.error) {
+                messageApi.error(resp.data.error);
+                return;
+            }
+            initUploadStatusList();
+            handleUploadOne(selectedCampaignKeys[0], 0);
+            setIsClose(false);
+            setOpen(true);
+        });
     }
 
     const pause = function() {
@@ -564,26 +567,29 @@ const GroupCampaignUploadAll = (props) => {
                     />
                 </Col>
             </Row>
-            <Modal
-                title="UPLOAD STATUS LIST"
-                centered
-                open={open}
-                width={1200}
-                header={null}
-                footer={null}
-            >
-                <GroupCampaignUploadStatusList
-                    onPause={pause}
-                    isPaused={isPaused}
-                    onResume={resume}
-                    isResumed={isResumed}
-                    onCancel={cancel}
-                    isCanceled={isCanceled}
-                    isClose={isClose}
-                    setOpen={setOpen}
-                    uploadStatusList={uploadStatusList}
-                />
-            </Modal>
+
+            <DraggableModalProvider>
+                <DraggableModal
+                    title="UPLOAD STATUS LIST"
+                    open={open}
+                    header={null}
+                    footer={null}
+                    closable={false}
+                >
+                    <GroupCampaignUploadStatusList
+                        onPause={pause}
+                        isPaused={isPaused}
+                        onResume={resume}
+                        isResumed={isResumed}
+                        onCancel={cancel}
+                        isCanceled={isCanceled}
+                        isClose={isClose}
+                        setOpen={setOpen}
+                        uploadStatusList={uploadStatusList}
+
+                    />
+                </DraggableModal>
+            </DraggableModalProvider>
         </>
     )
 }
