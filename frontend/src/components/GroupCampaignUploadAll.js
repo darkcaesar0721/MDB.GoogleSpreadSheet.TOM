@@ -461,7 +461,7 @@ const GroupCampaignUploadAll = (props) => {
         //     }
 
         initUploadStatusList();
-        handleUploadOne(selectedCampaignKeys[0], 0);
+        // handleUploadOne(selectedCampaignKeys[0], 0);
         setOpen(true);
         // });
     }
