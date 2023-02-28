@@ -1,4 +1,4 @@
-import {Button, Col, Row, Table} from "antd";
+import {Button, Col, Row, Switch, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {LoadingOutlined, CheckCircleTwoTone, Loading3QuartersOutlined} from "@ant-design/icons";
 import moment from "moment";
@@ -49,6 +49,19 @@ const GroupCampaignUploadStatusList = (props) => {
             title: 'Query Name',
             dataIndex: 'query',
             key: 'query',
+        },
+        {
+            title: 'WhatsApp',
+            key: 'whatsapp',
+            render: (_, r) => {
+                return (
+                    <Switch
+                        size="small"
+                        checked={r.isWhatsApp === "true" || r.isWhatsApp === true}
+                        disabled={true}
+                    />
+                )
+            }
         },
         {
             title: 'Qty Available',

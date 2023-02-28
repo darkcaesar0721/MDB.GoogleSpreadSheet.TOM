@@ -332,6 +332,7 @@ const GroupCampaignUploadAll = (props) => {
                     uploadStatus.campaignIndex = c.index;
                     uploadStatus.way = c.way;
                     uploadStatus.amount = customUploadAmount(c);
+                    uploadStatus.isWhatsApp = c.isWhatsApp;
                     uploadStatus.status = index == 0 ? 'loading' : 'normal';
                     _uploadStatusList.push(uploadStatus);
                     index++;
