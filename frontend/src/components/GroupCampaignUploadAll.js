@@ -32,6 +32,7 @@ const GroupCampaignUploadAll = (props) => {
     const [isPaused, setIsPaused] = useState(false);
     const [isResumed, setIsResumed] = useState(true);
     const [isCanceled, setIsCanceled] = useState(false);
+    const [currentController, setCurrentController] = useState('');
 
     useEffect(function() {
         initUploadStatusList();
@@ -404,12 +405,13 @@ const GroupCampaignUploadAll = (props) => {
             if (c.key == key) {
                 setUploadIndex(index);
 
-                axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_one_by_one', qs.stringify({
-                    groupIndex: props.groupIndex,
-                    groupCampaignIndex: c.groupCampaignIndex,
-                    campaignIndex: c.campaignIndex,
-                    manually: false
-                })).then((resp) => {
+                const controller = new AbortController();
+                setCurrentController(controller);
+
+                const params = 'groupIndex=' + props.groupIndex + '&groupCampaignIndex=' + c.groupCampaignIndex + '&campaignIndex=' + c.campaignIndex + '&manually=' + false;
+                axios.get(APP_API_URL + 'api.php?class=Upload&fn=upload_one_by_one&' + params, {
+                    signal: controller.signal,
+                }).then((resp) => {
                     props.getUpload(function(config) {
                         if (config.pause_index != index) {
                             changeUploadStatus(index + 1, key);
@@ -511,6 +513,12 @@ const GroupCampaignUploadAll = (props) => {
     }
 
     const cancel = function() {
+        props.getCampaigns(function(data) {
+            initCampaignInfo(data);
+        });
+
+        currentController.abort();
+        setOpen(false);
 
     }
 
