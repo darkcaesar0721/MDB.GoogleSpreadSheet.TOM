@@ -92,11 +92,12 @@ class WhatsApp
         $token = $this->WhatsApp->token;
         $instance_id = $this->WhatsApp->instance_id;
         $message = $campaign->whatsapp_message;
-        $groups = $this->WhatsApp->groups;
+        $groups = json_decode($this->WhatsApp->groups);
+
+        $class = '\ultramsg\WhatsAppApi';
+        $client = new $class($token, $instance_id);
 
         if (($campaign->isWhatsApp === true || $campaign->isWhatsApp === 'true') && $campaign->whatsapp_people !== "" && count($campaign->whatsapp_people) > 0 && $message !== '') {
-            $class = '\ultramsg\WhatsAppApi';
-            $client = new $class($token, $instance_id);
             foreach($campaign->whatsapp_people as $person) {
                 if ($person !== '') {
                     $to = $person;
