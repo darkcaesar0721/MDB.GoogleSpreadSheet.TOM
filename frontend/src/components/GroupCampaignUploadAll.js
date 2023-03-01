@@ -539,7 +539,7 @@ const GroupCampaignUploadAll = (props) => {
                 <Col span={24}>
                     <Divider style={{fontSize: '0.8rem'}}>GROUP CAMPAIGN LIST</Divider>
                     <Row style={{marginBottom: '0.5rem'}}>
-                        <Col span={1} offset={11} style={{paddingLeft: '1rem'}}>
+                        <Col span={1} offset={11} style={{paddingLeft: '2.4rem'}}>
                             <Popconfirm
                                 title="Upload data"
                                 description="Are you sure to upload the row of this campaign?"
