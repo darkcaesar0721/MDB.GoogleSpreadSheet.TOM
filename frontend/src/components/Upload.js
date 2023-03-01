@@ -263,7 +263,7 @@ const Upload = (props) => {
             else
                 setTip("Wait for uploading....");
 
-            axios.post(APP_API_URL + 'api.php?class=WhatsApp&fn=get_groups').then((resp) => {
+            axios.post(APP_API_URL + 'api.php?class=WhatsApp&fn=set_groups').then((resp) => {
                 if (typeof resp.data === "string") {
                     setLoading(false);
                     messageApi.error("Please confirm whatsapp setting");
@@ -273,10 +273,8 @@ const Upload = (props) => {
                     messageApi.error(resp.data.error);
                     return;
                 }
-
-                data.groups = resp.data;
                 axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_one_by_one', qs.stringify(data)).then(function(resp) {
-                    setLoading(false);
+
                     props.getCampaigns();
                     props.getGroups();
 
@@ -284,7 +282,7 @@ const Upload = (props) => {
                         messageApi.success('Get data success');
                     else
                         messageApi.success('Upload success');
-
+                    setLoading(false);
                     callback();
                 })
             });

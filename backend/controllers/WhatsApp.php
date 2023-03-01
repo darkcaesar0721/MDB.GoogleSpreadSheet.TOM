@@ -110,8 +110,8 @@ class WhatsApp
             foreach($campaign->whatsapp_groups as $group) {
                 if ($group !== '') {
                     foreach($groups as $g) {
-                        if (strpos($g['name'], $group) !== false) {
-                            $to = $g['id'];
+                        if (strpos($g->name, $group) !== false) {
+                            $to = $g->id;
                             $body = $message;
                             $api = $client->sendChatMessage($to, $body);
                             print_r($api);

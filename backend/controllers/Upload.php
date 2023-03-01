@@ -503,7 +503,11 @@ class Upload
 
 	                    foreach ($rows as $row) {
 	                        if ($g_c->isTime == "true" || $g_c->isTime === true) {
-	                            $date = strtotime(date("m/d/Y h:i A", strtotime($g_c->date . ' ' . $g_c->time . ':00 '. $g_c->meridiem)));
+                                $g_date = strtotime(date("m/d/Y"));
+                                $g_date = strtotime("-" . $g_c->dayOld * 1 . " day", $g_date);
+                                $g_date = date('m/d/Y', $g_date);
+
+	                            $date = strtotime(date("m/d/Y h:i A", strtotime($g_date . ' ' . $g_c->time . ':00 '. $g_c->meridiem)));
 	                            $r_date = strtotime(date("m/d/Y h:i A", strtotime($row['SystemCreateDate'])));
 
 	                            if ($r_date > $date) {
@@ -517,7 +521,11 @@ class Upload
 	                                array_push($up_rows, $up_row);
 	                            }
 	                        } else {
-	                            $date = strtotime(date("m/d/Y", strtotime($g_c->date . ' ' . $g_c->time . ' '. $g_c->meridiem)));
+                                $g_date = strtotime(date("m/d/Y"));
+                                $g_date = strtotime("-" . ($g_c->dayOld * 1 + 1) . " day", $g_date);
+                                $g_date = date('m/d/Y', $g_date);
+
+	                            $date = strtotime(date("m/d/Y", strtotime($g_date)));
 	                            $r_date = strtotime(date("m/d/Y", strtotime($row['SystemCreateDate'])));
 
 	                            if ($r_date > $date) {

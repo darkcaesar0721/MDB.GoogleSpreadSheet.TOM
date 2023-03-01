@@ -455,6 +455,9 @@ const GroupCampaignUploadAll = (props) => {
             return false;
         }
 
+        setIsPaused(false);
+        setIsResumed(true);
+
         props.setLoading(true);
         props.setTip('Checking WhatsApp Setting');
         axios.post(APP_API_URL + 'api.php?class=WhatsApp&fn=set_groups').then((resp) => {
