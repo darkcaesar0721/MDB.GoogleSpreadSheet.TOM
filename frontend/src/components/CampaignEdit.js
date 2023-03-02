@@ -140,7 +140,7 @@ function CampaignEdit(props) {
                 else return Object.assign({...c}, {display: c.display ==='true'})
             }));
 
-            setIsWhatsApp(selectedCampaign.isWhatsApp === 'true' || selectedCampaign.isWhatsApp === true);
+            setIsWhatsApp((props.whatsapp.isWhatsApp === undefined || props.whatsapp.isWhatsApp === true || props.whatsapp.isWhatsApp === 'true') && (selectedCampaign.isWhatsApp === 'true' || selectedCampaign.isWhatsApp === true));
 
             if (selectedCampaign.whatsapp_message === undefined) selectedCampaign.whatsapp_message = props.whatsapp.default_message;
             if (selectedCampaign.whatsapp_people === undefined) selectedCampaign.whatsapp_people = [''];
@@ -349,6 +349,7 @@ function CampaignEdit(props) {
                                 size="large"
                                 onChange={handleIsWhatsAppChange}
                                 checked={isWhatsApp}
+                                disabled={!(props.whatsapp.isWhatsApp === undefined || props.whatsapp.isWhatsApp === true || props.whatsapp.isWhatsApp === 'true')}
                             />
                         </Form.Item>
                         <Form.Item

@@ -341,6 +341,7 @@ function CampaignAdd(props) {
                                 unCheckedChildren={<CloseOutlined />}
                                 size="large"
                                 onChange={handleIsWhatsAppChange}
+                                disabled={!(props.whatsapp.isWhatsApp === undefined || props.whatsapp.isWhatsApp === true || props.whatsapp.isWhatsApp === 'true')}
                             />
                         </Form.Item>
                         <Form.Item

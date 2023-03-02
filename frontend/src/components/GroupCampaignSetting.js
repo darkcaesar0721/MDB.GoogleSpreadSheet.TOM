@@ -148,7 +148,7 @@ const GroupCampaignSetting = (props) => {
                 else return Object.assign({...c}, {display: c.display ==='true'})
             }));
 
-            setIsWhatsApp(selectedGroupCampaign.isWhatsApp === 'true' || selectedGroupCampaign.isWhatsApp === true);
+            setIsWhatsApp((props.whatsapp.isWhatsApp === undefined || props.whatsapp.isWhatsApp === true || props.whatsapp.isWhatsApp === 'true') && (selectedGroupCampaign.isWhatsApp === 'true' || selectedGroupCampaign.isWhatsApp === true));
 
             if (selectedGroupCampaign.whatsapp_message === undefined) selectedGroupCampaign.whatsapp_message = props.whatsapp.default_message;
             if (selectedGroupCampaign.whatsapp_people === undefined) selectedGroupCampaign.whatsapp_people = [''];
@@ -528,6 +528,7 @@ const GroupCampaignSetting = (props) => {
                                         size="large"
                                         onChange={handleIsWhatsAppChange}
                                         checked={isWhatsApp}
+                                        disabled={!(props.whatsapp.isWhatsApp === undefined || props.whatsapp.isWhatsApp === true || props.whatsapp.isWhatsApp === 'true')}
                                     />
                                 </Form.Item>
                                 <Form.Item

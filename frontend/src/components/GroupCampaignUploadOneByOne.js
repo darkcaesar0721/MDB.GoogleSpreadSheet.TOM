@@ -104,7 +104,8 @@ const GroupCampaignUploadOneByOne = (props) => {
                         return (
                             <Switch
                                 size="small"
-                                checked={r.isWhatsApp === "true" || r.isWhatsApp === true}
+                                disabled={!(props.whatsapp.isWhatsApp === undefined || props.whatsapp.isWhatsApp === true || props.whatsapp.isWhatsApp === 'true')}
+                                checked={(props.whatsapp.isWhatsApp === undefined || props.whatsapp.isWhatsApp === true || props.whatsapp.isWhatsApp === 'true') && (r.isWhatsApp === "true" || r.isWhatsApp === true)}
                                 onChange={(e) => handleIsWhatsAppChange(e, r)}
                             />
                         )

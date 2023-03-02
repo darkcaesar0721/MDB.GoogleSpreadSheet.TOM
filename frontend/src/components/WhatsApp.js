@@ -1,9 +1,10 @@
-import {Input, Col, Row, Divider, Form} from 'antd';
-import React, {useEffect} from "react";
+import {Input, Col, Row, Divider, Form, Switch} from 'antd';
+import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
 import {getWhatsApp, updateWhatsApp} from "../redux/actions";
 import MenuList from "./MenuList";
 import Path from "./Path/Path";
+import {CheckOutlined, CloseOutlined} from "@ant-design/icons";
 
 const formItemLayout = {
     labelCol: {
@@ -26,12 +27,15 @@ const formItemLayout = {
 
 function WhatsApp(props) {
     const [form] = Form.useForm();
+    const [isWhatsApp, setIsWhatsApp] = useState(true);
 
     useEffect(function() {
         props.getWhatsApp();
     }, []);
 
     useEffect(function() {
+        if (props.whatsapp.isWhatsApp !== undefined) setIsWhatsApp(props.whatsapp.isWhatsApp === "true" || props.whatsapp.isWhatsApp === true);
+
         form.setFieldsValue(props.whatsapp);
     }, [props.whatsapp]);
 
@@ -59,6 +63,11 @@ function WhatsApp(props) {
         props.updateWhatsApp({token: form.getFieldsValue().token});
     }
 
+    const handleIsWhatsAppChange = (v) => {
+        setIsWhatsApp(v);
+        props.updateWhatsApp({isWhatsApp: v});
+    }
+
     return (
         <>
             <MenuList
@@ -75,6 +84,18 @@ function WhatsApp(props) {
                         scrollToFirstError
                     >
                         <Form.Item
+                            name={['isWhatsApp']}
+                            label="Global WhatsApp"
+                        >
+                            <Switch
+                                checkedChildren={<CheckOutlined />}
+                                unCheckedChildren={<CloseOutlined />}
+                                size="large"
+                                onChange={handleIsWhatsAppChange}
+                                checked={isWhatsApp}
+                            />
+                        </Form.Item>
+                        <Form.Item
                             name="default_message"
                             label="Default Message"
                             rules={[
@@ -84,7 +105,7 @@ function WhatsApp(props) {
                                 },
                             ]}
                         >
-                            <Input.TextArea showCount autoSize={{ minRows: 3, maxRows: 10 }} onBlur={saveDefaultMessage} onChange={handleDefaultMessageChange}/>
+                            <Input.TextArea disabled={!isWhatsApp} showCount autoSize={{ minRows: 3, maxRows: 10 }} onBlur={saveDefaultMessage} onChange={handleDefaultMessageChange}/>
                         </Form.Item>
                         <Form.Item
                             name="instance_id"
@@ -96,7 +117,7 @@ function WhatsApp(props) {
                                 },
                             ]}
                         >
-                            <Input onBlur={saveInstanceId} onChange={handleInstanceIdChange}/>
+                            <Input disabled={!isWhatsApp} onBlur={saveInstanceId} onChange={handleInstanceIdChange}/>
                         </Form.Item>
                         <Form.Item
                             name="token"
@@ -108,7 +129,7 @@ function WhatsApp(props) {
                                 },
                             ]}
                         >
-                            <Input onBlur={saveToken} onChange={handleTokenChange}/>
+                            <Input disabled={!isWhatsApp} onBlur={saveToken} onChange={handleTokenChange}/>
                         </Form.Item>
                     </Form>
                 </Col>

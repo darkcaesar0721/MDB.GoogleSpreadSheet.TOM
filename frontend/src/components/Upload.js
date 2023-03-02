@@ -376,6 +376,7 @@ const Upload = (props) => {
             {
                 props.groups.data.length > 0 && props.campaigns.data.length > 0 && way === 'one' ?
                     <GroupCampaignUploadOneByOne
+                        whatsapp={props.whatsapp}
                         campaigns={campaigns}
                         groupIndex={group}
                         globalGroups={props.groups.data}
