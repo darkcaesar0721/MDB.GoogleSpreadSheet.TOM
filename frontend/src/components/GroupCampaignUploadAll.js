@@ -32,7 +32,6 @@ const GroupCampaignUploadAll = (props) => {
     const [uploadIndex, setUploadIndex] = useState(0);
     const [isPaused, setIsPaused] = useState(false);
     const [isResumed, setIsResumed] = useState(true);
-    const [isCanceled, setIsCanceled] = useState(false);
     const [isClose, setIsClose] = useState(false);
     const [currentController, setCurrentController] = useState('');
 
@@ -55,8 +54,6 @@ const GroupCampaignUploadAll = (props) => {
             setColumnInfo();
         }
     }, [props.campaigns]);
-
-
 
     useEffect(function() {
         props.updateUpload({'selectedCampaignKeys': selectedCampaignKeys.length > 0 ? selectedCampaignKeys : ''});
@@ -315,35 +312,6 @@ const GroupCampaignUploadAll = (props) => {
         return count;
     }
 
-    const initUploadStatusList = () => {
-        let campaignKeys = selectedCampaignKeys;
-        if (!campaignKeys) campaignKeys = [];
-
-        let index = 0;
-        let _uploadStatusList = [];
-        props.group.campaigns.forEach(c => {
-            campaignKeys.forEach(key => {
-                if (c.key == key) {
-                    const campaign = props.globalCampaigns[c.index];
-
-                    let uploadStatus = {};
-                    uploadStatus.no = index + 1;
-                    uploadStatus.index = index;
-                    uploadStatus.key = key;
-                    uploadStatus.query = campaign.query;
-                    uploadStatus.campaignIndex = c.index;
-                    uploadStatus.way = c.way;
-                    uploadStatus.amount = customUploadAmount(c);
-                    uploadStatus.isWhatsApp = c.isWhatsApp;
-                    uploadStatus.status = index == 0 ? 'loading' : 'normal';
-                    _uploadStatusList.push(uploadStatus);
-                    index++;
-                }
-            });
-        });
-        setUploadStatusList(_uploadStatusList);
-    }
-
     const handleTableChange = (pagination, filters, sorter) => {
         setTableParams({
             pagination,
@@ -382,26 +350,50 @@ const GroupCampaignUploadAll = (props) => {
         })
     };
 
-    const changeUploadStatus = function(index, key) {
-        setUploadStatusList(uploadStatusList.map((u, i) => {
-            if (u.key == key) return Object.assign(u, {status: 'complete'});
-            else if (index == i) return Object.assign(u, {status: 'loading'});
-            else return u;
-        }));
+    const initUploadStatusList = () => {
+        let campaignKeys = selectedCampaignKeys;
+        if (!campaignKeys) campaignKeys = [];
+
+        setUploadStatusList((oldState) => {
+            let newState = [];
+            props.group.campaigns.forEach(c => {
+                campaignKeys.forEach(key => {
+                    if (c.key == key) {
+                        const campaign = props.globalCampaigns[c.index];
+
+                        newState.push({
+                            no: newState.length + 1,
+                            index: newState.length,
+                            key: key,
+                            query: campaign.query,
+                            campaignIndex: c.index,
+                            way: c.way,
+                            amount: customUploadAmount(c),
+                            isWhatsApp: c.isWhatsApp,
+                            status: newState.length == 0 ? 'loading' : 'normal'
+                        });
+                    }
+                });
+            });
+            return newState;
+        });
     }
 
-    const initCampaignInfo = function(campaigns) {
-        let _uploadStatusList = [];
-        uploadStatusList.forEach(s => {
-            let _uploadStatus = s;
-            _uploadStatus.last_phone = s.status  == 'complete' ? campaigns[s.campaignIndex].last_phone : '';
-            _uploadStatus.SystemCreateDate = s.status  == 'complete' ? campaigns[s.campaignIndex].SystemCreateDate : '';
-            _uploadStatus.last_qty = s.status  == 'complete' ? campaigns[s.campaignIndex].last_qty : '';
-            _uploadStatus.less_qty = s.status  == 'complete' ? campaigns[s.campaignIndex].less_qty : '';
-            _uploadStatusList.push(_uploadStatus);
+    const updateUploadStatus = function(index, data) {
+        setUploadStatusList((oldState) => {
+            let newState = [...oldState];
+            return newState.map((u, i) => {
+                if (i === index) {
+                    u.status = 'complete'; u.last_phone = data.last_phone; u.SystemCreateDate = data.SystemCreateDate;
+                    u.last_qty = data.last_qty; u.less_qty = data.less_qty;
+                }
+                if (index + 1 !== newState.length && index + 1 === i) {
+                    u.status = 'loading';
+                }
+                return u;
+            })
         })
-        setUploadStatusList(_uploadStatusList);
-    };
+    }
 
     const handleUploadOne = function(key, index) {
         props.campaigns.forEach(c => {
@@ -415,23 +407,21 @@ const GroupCampaignUploadAll = (props) => {
                 axios.get(APP_API_URL + 'api.php?class=Upload&fn=upload_one_by_one&' + params, {
                     signal: controller.signal,
                 }).then((resp) => {
-                    props.getUpload(function(config) {
-                        if (config.pause_index != index) {
-                            changeUploadStatus(index + 1, key);
-                            initCampaignInfo(resp.data);
-                            props.getCampaigns();
-                            if (selectedCampaignKeys.length == (index + 1)) {
-                                setIsClose(true);
-                                setTimeout(function() {
-                                    messageApi.success('Upload success');
-                                }, 1000)
-                            } else {
-                                handleUploadOne(selectedCampaignKeys[index + 1], index + 1);
-                            }
+                    updateUploadStatus(index, resp.data.campaign);
+                    props.getCampaigns();
+
+                    if (resp.data.config.pause_index != index) {
+                        if (selectedCampaignKeys.length == (index + 1)) {
+                            setIsClose(true);
+                            setTimeout(function() {
+                                messageApi.success('Upload success');
+                            }, 1000);
                         } else {
-                            props.updateUpload({resume_index: index, pause_index: -1})
+                            handleUploadOne(selectedCampaignKeys[index + 1], index + 1);
                         }
-                    })
+                    } else {
+                        props.updateUpload({resume_index: index, pause_index: -1});
+                    }
                 });
             }
         })
@@ -481,11 +471,6 @@ const GroupCampaignUploadAll = (props) => {
         setIsResumed(false);
 
         props.updateUpload({pause_index: uploadIndex, resume_index: -1});
-
-        setUploadStatusList(uploadStatusList.map((u, i) => {
-            if (uploadIndex == i) return Object.assign(u, {status: 'pause'});
-            else return u;
-        }))
     }
 
     const resume = function() {
@@ -493,40 +478,24 @@ const GroupCampaignUploadAll = (props) => {
         setIsResumed(true);
 
         props.getUpload(function(config) {
-            if (config.resume_index !== undefined && config.resume_index != '-1') {
-                setUploadStatusList(uploadStatusList.map((u, i) => {
-                    if (config.resume_index == i) return Object.assign(u, {status: 'complete'});
-                    else if (parseInt(config.resume_index) + 1 == i) return Object.assign(u, {status: 'loading'});
-                    else return u;
-                }))
-
-                props.getCampaigns(function(data) {
-                    initCampaignInfo(data);
-                    if (selectedCampaignKeys.length == (parseInt(config.resume_index) + 1)) {
-                        setTimeout(function () {
-                            setIsClose(true);
-                            messageApi.success('Upload success');
-                        }, 1000)
-                    } else {
-                        handleUploadOne(selectedCampaignKeys[parseInt(config.resume_index) + 1], parseInt(config.resume_index) + 1);
-                    }
-                })
-
-            } else {
-                setUploadStatusList(uploadStatusList.map((u, i) => {
-                    if (uploadIndex == i) return Object.assign(u, {status: 'loading'});
-                    else return u;
-                }))
+            if (config.resume_index !== undefined && parseInt(config.resume_index) !== -1) {
+                if (selectedCampaignKeys.length === (parseInt(config.resume_index) + 1)) {
+                    setTimeout(function () {
+                        setIsClose(true);
+                        messageApi.success('Upload success');
+                    }, 1000)
+                } else {
+                    handleUploadOne(selectedCampaignKeys[parseInt(config.resume_index) + 1], parseInt(config.resume_index) + 1);
+                }
             }
-
-            props.updateUpload({resume_index: -1, pause_index: -1})
+            props.updateUpload({resume_index: -1, pause_index: -1});
         })
     }
 
     const cancel = function() {
-        props.getCampaigns(function(data) {
-            initCampaignInfo(data);
-        });
+        props.updateUpload({resume_index: -1, pause_index: -1});
+
+        props.getCampaigns();
 
         currentController.abort();
         setOpen(false);
@@ -585,11 +554,10 @@ const GroupCampaignUploadAll = (props) => {
                         onResume={resume}
                         isResumed={isResumed}
                         onCancel={cancel}
-                        isCanceled={isCanceled}
                         isClose={isClose}
                         setOpen={setOpen}
                         uploadStatusList={uploadStatusList}
-
+                        uploadIndex={uploadIndex}
                     />
                 </DraggableModal>
             </DraggableModalProvider>

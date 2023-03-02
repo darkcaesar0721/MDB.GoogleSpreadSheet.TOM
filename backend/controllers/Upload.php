@@ -234,7 +234,9 @@ class Upload
         }
 
 	    $this->backup_obj->run(false);
-	    echo json_encode($this->campaigns);
+
+        $this->upload_config = $this->upload_config_obj->get_upload_config();
+	    echo json_encode(array('campaign' => $this->campaigns[$c_i], 'config' => $this->upload_config));
 	    exit;
 	}
 

@@ -23,24 +23,27 @@ const GroupCampaignUploadStatusList = (props) => {
             key: 'status',
             width: 90,
             render: (_, r) => {
+                let element = '';
+                if (props.isPaused === true && r.index === props.uploadIndex) {
+                    element = <Loading3QuartersOutlined />;
+                } else if (props.isPaused === true && r.index > props.uploadIndex) {
+                    element = '';
+                } else {
+                    switch (r.status) {
+                        case 'loading':
+                            element = <LoadingOutlined />;
+                            break;
+                        case 'complete':
+                            element = <CheckCircleTwoTone twoToneColor="#52c41a" />;
+                            break;
+                        case '':
+                            element = '';
+                            break;
+                    }
+                }
                 return (
                     <>
-                        {
-                            r.status === 'pause' ?
-                                <Loading3QuartersOutlined /> : ''
-                        }
-                        {
-                            r.status === 'loading' ?
-                                <LoadingOutlined /> : ''
-                        }
-                        {
-                            r.status === 'complete' ?
-                                <CheckCircleTwoTone twoToneColor="#52c41a" /> : ''
-                        }
-                        {
-                            r.status === 'normal' ?
-                                <span></span> : ''
-                        }
+                        {element}
                     </>
                 )
             }
@@ -65,26 +68,57 @@ const GroupCampaignUploadStatusList = (props) => {
         },
         {
             title: 'Qty Available',
-            dataIndex: 'last_qty',
             key: 'query',
+            render: (_, r) => {
+                return (
+                    <>
+                        {
+                            props.isPaused === true && props.uploadIndex <= r.index ?
+                                <span></span> : <span>{r.last_qty}</span>
+                        }
+                    </>
+                )
+            }
         },
         {
             title: 'Qty Uploaded',
-            dataIndex: 'less_qty',
             key: 'query',
+            render: (_, r) => {
+                return (
+                    <>
+                        {
+                            props.isPaused === true && props.uploadIndex <= r.index ?
+                                <span></span> : <span>{r.less_qty}</span>
+                        }
+                    </>
+                )
+            }
         },
         {
             title: 'Last Phone',
-            dataIndex: 'last_phone',
             key: 'last_phone',
+            render: (_, r) => {
+                return (
+                    <>
+                        {
+                            props.isPaused === true && props.uploadIndex <= r.index ?
+                                <span></span> : <span>{r.last_phone}</span>
+                        }
+                    </>
+                )
+            }
         },
         {
             title: 'SystemCreateDate',
-            dataIndex: 'SystemCreateDate',
             key: 'SystemCreateDate',
             render: (_, r) => {
                 return (
-                    <span>{r.SystemCreateDate === "" || r.SystemCreateDate === undefined ? "" : moment(r.SystemCreateDate).format('M/D/Y, hh:mm A')}</span>
+                    <>
+                        {
+                            props.isPaused === true && props.uploadIndex <= r.index ?
+                                <span></span> : <span>{r.SystemCreateDate === "" || r.SystemCreateDate === undefined ? "" : moment(r.SystemCreateDate).format('M/D/Y, hh:mm A')}</span>
+                        }
+                    </>
                 )
             }
         },
