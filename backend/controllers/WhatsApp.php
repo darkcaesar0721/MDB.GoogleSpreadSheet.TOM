@@ -14,7 +14,7 @@ class WhatsApp
 {
     public $file_path = "db/WhatsApp.json";
 
-    public $init_data = ["default_message" => "", "instance_id" => "", "token" => ""];
+    public $init_data = ["default_message" => "", "instance_id" => "", "token" => "", "isWhatsApp" => true];
 
     public $WhatsApp = [];
 
@@ -103,7 +103,6 @@ class WhatsApp
                     $to = $person;
                     $body = $message;
                     $api = $client->sendChatMessage($to, $body);
-                    print_r($api);
                 }
             }
         }
@@ -115,7 +114,6 @@ class WhatsApp
                             $to = $g->id;
                             $body = $message;
                             $api = $client->sendChatMessage($to, $body);
-                            print_r($api);
                         }
                     }
                 }
