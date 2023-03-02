@@ -449,22 +449,30 @@ const GroupCampaignUploadAll = (props) => {
         setIsPaused(false);
         setIsResumed(true);
 
-        props.setLoading(true);
-        props.setTip('Checking WhatsApp Setting');
-        axios.post(APP_API_URL + 'api.php?class=WhatsApp&fn=set_groups').then((resp) => {
-            props.setLoading(false);
-            if (typeof resp.data === "string") {
-                messageApi.error("Please confirm whatsapp setting");
-                return;
-            } else if (resp.data.error) {
-                messageApi.error(resp.data.error);
-                return;
-            }
+        if (props.whatsapp.isWhatsApp === undefined || props.whatsapp.isWhatsApp === true || props.whatsapp.isWhatsApp === 'true') {
+            props.setLoading(true);
+            props.setTip('Checking WhatsApp Setting');
+            axios.post(APP_API_URL + 'api.php?class=WhatsApp&fn=set_groups').then((resp) => {
+                props.setLoading(false);
+                if (typeof resp.data === "string") {
+                    messageApi.error("Please confirm whatsapp setting");
+                    return;
+                } else if (resp.data.error) {
+                    messageApi.error(resp.data.error);
+                    return;
+                }
+
+                initUploadStatusList();
+                handleUploadOne(selectedCampaignKeys[0], 0);
+                setIsClose(false);
+                setOpen(true);
+            });
+        } else {
             initUploadStatusList();
             handleUploadOne(selectedCampaignKeys[0], 0);
             setIsClose(false);
             setOpen(true);
-        });
+        }
     }
 
     const pause = function() {

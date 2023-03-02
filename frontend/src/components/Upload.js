@@ -263,18 +263,31 @@ const Upload = (props) => {
             else
                 setTip("Wait for uploading....");
 
-            axios.post(APP_API_URL + 'api.php?class=WhatsApp&fn=set_groups').then((resp) => {
-                if (typeof resp.data === "string") {
-                    setLoading(false);
-                    messageApi.error("Please confirm whatsapp setting");
-                    return;
-                } else if (resp.data.error) {
-                    setLoading(false);
-                    messageApi.error(resp.data.error);
-                    return;
-                }
-                axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_one_by_one', qs.stringify(data)).then(function(resp) {
+            if (props.whatsapp.isWhatsApp === undefined || props.whatsapp.isWhatsApp === true || props.whatsapp.isWhatsApp === 'true') {
+                axios.post(APP_API_URL + 'api.php?class=WhatsApp&fn=set_groups').then((resp) => {
+                    if (typeof resp.data === "string") {
+                        setLoading(false);
+                        messageApi.error("Please confirm whatsapp setting");
+                        return;
+                    } else if (resp.data.error) {
+                        setLoading(false);
+                        messageApi.error(resp.data.error);
+                        return;
+                    }
+                    axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_one_by_one', qs.stringify(data)).then(function(resp) {
+                        props.getCampaigns();
+                        props.getGroups();
 
+                        if (data.manually)
+                            messageApi.success('Get data success');
+                        else
+                            messageApi.success('Upload success');
+                        setLoading(false);
+                        callback();
+                    })
+                });
+            } else {
+                axios.post(APP_API_URL + 'api.php?class=Upload&fn=upload_one_by_one', qs.stringify(data)).then(function(resp) {
                     props.getCampaigns();
                     props.getGroups();
 
@@ -285,7 +298,7 @@ const Upload = (props) => {
                     setLoading(false);
                     callback();
                 })
-            });
+            }
         }
     }
 
