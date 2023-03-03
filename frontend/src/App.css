@@ -198,6 +198,22 @@ label, span, div, input {
   background-color: pink !important;
 }
 
+.campaign_red {
+  background-color: indianred !important;
+}
+
+.ant-table-row-selected.campaign_red {
+  background-color: indianred !important;
+}
+
+.ant-table-tbody >tr.campaign_red >td.ant-table-cell-row-hover {
+  background-color: indianred !important;
+}
+
+.ant-table-wrapper .ant-table-tbody >tr.ant-table-row-selected.campaign_red >td {
+  background-color: indianred !important;
+}
+
 .antd-custom-table .ant-radio-button-wrapper {
   border-radius: 50%;
   padding-inline: 5px;

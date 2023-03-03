@@ -1,6 +1,6 @@
 import {Button, Col, Row, Switch, Table} from "antd";
 import React, {useEffect, useState} from "react";
-import {LoadingOutlined, CheckCircleTwoTone, Loading3QuartersOutlined} from "@ant-design/icons";
+import {WarningOutlined, LoadingOutlined, CheckCircleTwoTone, Loading3QuartersOutlined} from "@ant-design/icons";
 import moment from "moment";
 
 const GroupCampaignUploadStatusList = (props) => {
@@ -30,6 +30,9 @@ const GroupCampaignUploadStatusList = (props) => {
                     element = '';
                 } else {
                     switch (r.status) {
+                        case 'error':
+                            element = <WarningOutlined />;
+                            break;
                         case 'loading':
                             element = <LoadingOutlined />;
                             break;
@@ -157,6 +160,7 @@ const GroupCampaignUploadStatusList = (props) => {
                         pagination={tableParams.pagination}
                         onChange={handleTableChange}
                         className="antd-custom-table upload-status-list"
+                        rowClassName={(record, index) => ((record.status === "error") ? "campaign_red" : '') }
                     />
                 </Col>
             </Row>
