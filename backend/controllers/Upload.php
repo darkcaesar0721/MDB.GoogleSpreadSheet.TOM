@@ -290,6 +290,12 @@ class Upload
                 if (count($c->_upRows) > 0) {
                     array_push($c->_up_rows, ['', '', '', '', '', '', '', '', '', '', '', '']);
 
+                    for($i = 1; $i < count($c->_up_rows); $i++) {
+                        for ($j = 0; $j < count($c->_up_rows[$i]); $j++) {
+                            if ($c->_up_rows[$i][$j] == '') $c->_up_rows[$i][$j] = ' ';
+                        }
+                    }
+
                     $valueRange = new \Google_Service_Sheets_ValueRange();
                     $valueRange->setValues($c->_up_rows);
                     $range = $cur_sheet['properties']['title']; // the service will detect the last row of this sheet
@@ -575,6 +581,12 @@ class Upload
                 if ($manually == "false") {
                     if (count($up_rows_with_key) > 0) {
                         array_push($up_rows, ['', '', '', '', '', '', '', '', '', '', '', '']);
+
+                        for($i = 1; $i < count($up_rows); $i++) {
+                            for ($j = 0; $j < count($up_rows[$i]); $j++) {
+                                if ($up_rows[$i][$j] == '') $up_rows[$i][$j] = ' ';
+                            }
+                        }
 
                         $valueRange = new \Google_Service_Sheets_ValueRange();
                         $valueRange->setValues($up_rows);
