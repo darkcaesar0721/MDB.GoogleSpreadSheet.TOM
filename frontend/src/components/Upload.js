@@ -1,4 +1,4 @@
-import {Button, Col, Divider, message, Radio, Row, Select, Spin, Table} from "antd";
+import {Button, Col, Divider, message, Popconfirm, Radio, Row, Select, Spin, Table} from "antd";
 import Path from "./Path/Path";
 import React, {useEffect, useState} from "react";
 import {connect} from "react-redux";
@@ -18,6 +18,8 @@ import GroupCampaignUploadOneByOne from "./GroupCampaignUploadOneByOne";
 import MenuList from "./MenuList";
 import GroupCampaignUploadAll from "./GroupCampaignUploadAll";
 import moment from "moment/moment";
+import {DraggableModal, DraggableModalProvider} from "@cubetiq/antd-modal";
+import CampaignGetLastPhoneStatusList from "./CampaignGetLastPhoneStatusList";
 
 const Upload = (props) => {
     const [options, setOptions] = useState([]);
@@ -34,6 +36,13 @@ const Upload = (props) => {
     });
     const [columns, setColumns] = useState([]);
     const [campaigns, setCampaigns] = useState([]);
+    const [getLastPhoneStatusList, setGetLastPhoneStatusList] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [getLastPhoneIndex, setGetLastPhoneIndex] = useState(0);
+    const [isPaused, setIsPaused] = useState(false);
+    const [isResumed, setIsResumed] = useState(true);
+    const [isClose, setIsClose] = useState(false);
+    const [currentController, setCurrentController] = useState('');
 
     useEffect(function() {
         props.getSchedulePath();
@@ -57,6 +66,8 @@ const Upload = (props) => {
             })
         });
         setOptions(_options);
+
+        // initGetLastPhoneStatusList();
     }, [props.groups.data, props.campaigns.data]);
 
     useEffect(function() {
@@ -223,6 +234,8 @@ const Upload = (props) => {
         }
     }, [props.groups, campaigns]);
 
+
+
     const handleGroupChange = function(value) {
         setGroup(value);
         props.updateUpload({group: value});
@@ -331,6 +344,133 @@ const Upload = (props) => {
         });
     }
 
+    const initGetLastPhoneStatusList = function() {
+        setGetLastPhoneStatusList((oldState) => {
+            let newState = [];
+            props.campaigns.data.forEach((c, i) => {
+                newState.push({
+                    no: i + 1,
+                    index: i,
+                    key: c.key,
+                    query: c.query,
+                    status: i === 0 ? 'loading' : 'normal'
+                });
+            });
+            return newState;
+        });
+    }
+
+    const updateGetLastPhoneStatus = function(index, data) {
+        setGetLastPhoneStatusList((oldState) => {
+            let newState = [...oldState];
+            return newState.map((u, i) => {
+                if (i === index) {
+                    if (data === undefined) {
+                        u.status = 'error';
+                    } else {
+                        u.status = 'complete'; u.last_phone = data.last_phone; u.SystemCreateDate = data.SystemCreateDate;
+                    }
+                }
+                if (index + 1 !== newState.length && index + 1 === i) {
+                    u.status = 'loading';
+                }
+                return u;
+            })
+        })
+    }
+
+    const handleOneGetLastPhone = (index) => {
+        setGetLastPhoneIndex(index);
+
+        const controller = new AbortController();
+        setCurrentController(controller);
+
+        axios.get(APP_API_URL + 'api.php?class=Upload&fn=get_last_phone&campaignIndex=' + index, {
+            signal: controller.signal,
+        }).then(function(resp) {
+            if (typeof resp.data === "string") {
+                updateGetLastPhoneStatus(index);
+                props.getCampaigns();
+
+                props.getUpload(function(uploadConfig) {
+                    if (uploadConfig.pause_get_last_phone_index != index) {
+                        if (props.campaigns.data.length === (index + 1)) {
+                            setIsClose(true);
+                            setTimeout(function() {
+                                messageApi.success('Get all last phone success');
+                            }, 1000);
+                        } else {
+                            handleOneGetLastPhone(parseInt(index) + 1);
+                        }
+                    } else {
+                        props.updateUpload({resume_get_last_phone_index: index, pause_get_last_phone_index: -1});
+                    }
+                })
+            } else {
+                updateGetLastPhoneStatus(index, resp.data.campaign);
+                props.getCampaigns();
+
+                if (resp.data.config.pause_get_last_phone_index != index) {
+                    if (props.campaigns.data.length === (index + 1)) {
+                        setIsClose(true);
+                        setTimeout(function() {
+                            messageApi.success('Get all last phone success');
+                        }, 1000);
+                    } else {
+                        handleOneGetLastPhone(parseInt(index) + 1);
+                    }
+                } else {
+                    props.updateUpload({resume_get_last_phone_index: index, pause_get_last_phone_index: -1});
+                }
+            }
+        });
+    }
+
+    const handleAllGetLastPhone = () => {
+        setIsPaused(false);
+        setIsResumed(true);
+
+        initGetLastPhoneStatusList();
+        handleOneGetLastPhone(0);
+        setIsClose(false);
+        setOpen(true);
+    }
+
+    const pause = function() {
+        setIsPaused(true);
+        setIsResumed(false);
+
+        props.updateUpload({pause_get_last_phone_index: getLastPhoneIndex, resume_get_last_phone_index: -1});
+    }
+
+    const resume = function() {
+        setIsPaused(false);
+        setIsResumed(true);
+
+        props.getUpload(function(config) {
+            if (config.resume_get_last_phone_index !== undefined && parseInt(config.resume_get_last_phone_index) !== -1) {
+                if (props.campaigns.data.length === (parseInt(config.resume_get_last_phone_index) + 1)) {
+                    setTimeout(function () {
+                        setIsClose(true);
+                        messageApi.success('Get all last phone success');
+                    }, 1000)
+                } else {
+                    handleOneGetLastPhone(parseInt(config.resume_get_last_phone_index) + 1);
+                }
+            }
+            props.updateUpload({resume_get_last_phone_index: -1, pause_get_last_phone_index: -1});
+        })
+    }
+
+    const cancel = function() {
+        props.updateUpload({resume_get_last_phone_index: -1, pause_get_last_phone_index: -1});
+
+        props.getCampaigns();
+
+        currentController.abort();
+        setOpen(false);
+    }
+
     return (
         <Spin spinning={loading} tip={tip} delay={500}>
             {contextHolder}
@@ -361,6 +501,18 @@ const Upload = (props) => {
                         <Radio value="all">Upload all campaigns</Radio>
                         <Radio value="one">Upload one by one</Radio>
                     </Radio.Group>
+                </Col>
+                <Col span={3}>
+                    <Popconfirm
+                        title="All Last Phone"
+                        description="Are you sure to get last phone of all campaigns?"
+                        onConfirm={handleAllGetLastPhone}
+                        okText="Yes"
+                        cancelText="No"
+                    >
+                        <Button type="primary">All Last Phone</Button>
+                    </Popconfirm>
+
                 </Col>
             </Row>
             {
@@ -419,6 +571,28 @@ const Upload = (props) => {
                     />
                 </Col>
             </Row>
+
+            <DraggableModalProvider>
+                <DraggableModal
+                    title="GET LAST PHONE STATUS LIST"
+                    open={open}
+                    header={null}
+                    footer={null}
+                    closable={false}
+                >
+                    <CampaignGetLastPhoneStatusList
+                        onPause={pause}
+                        isPaused={isPaused}
+                        onResume={resume}
+                        isResumed={isResumed}
+                        onCancel={cancel}
+                        isClose={isClose}
+                        setOpen={setOpen}
+                        getLastPhoneStatusList={getLastPhoneStatusList}
+                        getLastPhoneIndex={getLastPhoneIndex}
+                    />
+                </DraggableModal>
+            </DraggableModalProvider>
         </Spin>
     )
 }

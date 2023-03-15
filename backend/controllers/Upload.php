@@ -152,11 +152,11 @@ class Upload
             $c->isGetLastPhone = true;
             $this->campaign_obj->save_data($c);
             $this->campaigns[$c_i] = $c;
-            echo json_encode($this->campaigns);
+
+            $this->upload_config = $this->upload_config_obj->get_upload_config();
+            echo json_encode(array('campaign' => $this->campaigns[$c_i], 'config' => $this->upload_config));
             exit;
         }
-        echo json_encode($this->campaigns);
-        exit;
 	}
 
     public function upload_after_preview()
