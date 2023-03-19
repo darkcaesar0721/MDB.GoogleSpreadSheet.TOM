@@ -557,9 +557,8 @@ const GroupCampaignUploadAll = (props) => {
             {contextHolder}
             <Row style={{marginTop: 10}}>
                 <Col span={24}>
-                    <Divider style={{fontSize: '0.8rem'}}>GROUP CAMPAIGN LIST</Divider>
                     <Row style={{marginBottom: '0.5rem'}}>
-                        <Col span={1} offset={11} style={{paddingLeft: '2.4rem'}}>
+                        <Col span={2} offset={17} style={{paddingLeft: '2.4rem'}}>
                             <Popconfirm
                                 title="Upload data"
                                 description="Are you sure to upload the row of this campaign?"
@@ -567,12 +566,13 @@ const GroupCampaignUploadAll = (props) => {
                                 okText="Yes"
                                 cancelText="No"
                             >
-                                <Button type="primary">
+                                <Button type="primary" style={{top: '-3rem'}}>
                                     Upload
                                 </Button>
                             </Popconfirm>
                         </Col>
                     </Row>
+                    <Divider style={{fontSize: '0.8rem'}}>GROUP CAMPAIGN LIST</Divider>
                     <Table
                         bordered={true}
                         size="small"

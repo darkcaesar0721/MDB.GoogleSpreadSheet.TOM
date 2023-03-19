@@ -480,7 +480,18 @@ const Upload = (props) => {
             <Path/>
             <Divider>MDB QUERY UPLOAD</Divider>
             <Row>
-                <Col span={3} offset={4} style={{textAlign: 'right', lineHeight: '2rem', marginRight: '1rem'}}>
+                <Col span={2} offset={5} style={{paddingLeft: '1.4rem'}}>
+                    <Popconfirm
+                        title="All Last Phone"
+                        description="Are you sure to get last phone of all campaigns?"
+                        onConfirm={handleAllGetLastPhone}
+                        okText="Yes"
+                        cancelText="No"
+                    >
+                        <Button type="primary">All Last Phone</Button>
+                    </Popconfirm>
+                </Col>
+                <Col span={2} style={{textAlign: 'right', lineHeight: '2rem', marginRight: '1rem'}}>
                     <span>Select Group:</span>
                 </Col>
                 <Col span={3}>
@@ -493,7 +504,7 @@ const Upload = (props) => {
                         value={group}
                     />
                 </Col>
-                <Col span={3} style={{textAlign: 'right', lineHeight: '2rem', marginRight: '1rem'}}>
+                <Col span={2} style={{textAlign: 'right', lineHeight: '2rem', marginRight: '1rem'}}>
                     <span>Send Type:</span>
                 </Col>
                 <Col span={4}>
@@ -501,18 +512,6 @@ const Upload = (props) => {
                         <Radio value="all">Upload all campaigns</Radio>
                         <Radio value="one">Upload one by one</Radio>
                     </Radio.Group>
-                </Col>
-                <Col span={3}>
-                    <Popconfirm
-                        title="All Last Phone"
-                        description="Are you sure to get last phone of all campaigns?"
-                        onConfirm={handleAllGetLastPhone}
-                        okText="Yes"
-                        cancelText="No"
-                    >
-                        <Button type="primary">All Last Phone</Button>
-                    </Popconfirm>
-
                 </Col>
             </Row>
             {
