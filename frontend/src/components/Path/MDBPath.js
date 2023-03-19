@@ -24,7 +24,7 @@ function MDBPath(props) {
 
     return (
         <Row style={{marginTop: '2rem'}}>
-            <Col span={6} offset={9}>
+            <Col span={16} offset={1}>
                 <Input addonBefore="MDB PATH" onBlur={savePath} placeholder="C:\mdb_work\LeadDB_ThisSMALL.mdb" onChange={handleChange} value={path} />
             </Col>
         </Row>

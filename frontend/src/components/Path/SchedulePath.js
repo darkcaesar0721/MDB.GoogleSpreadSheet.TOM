@@ -24,7 +24,7 @@ function SchedulePath(props) {
 
     return (
         <Row style={{marginTop: '1rem'}}>
-            <Col span={16} offset={4}>
+            <Col span={16} offset={1}>
                 <Input addonBefore="SCHEDULE SHEET URL" onBlur={savePath} placeholder="C:\mdb_work\LeadDB_ThisSMALL.mdb" onChange={handleChange} value={path} />
             </Col>
         </Row>

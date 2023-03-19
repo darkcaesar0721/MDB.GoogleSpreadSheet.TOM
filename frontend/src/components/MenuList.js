@@ -3,7 +3,7 @@ import React from "react";
 
 const MenuList = function(props) {
     return (
-        <Row>
+        <Row style={{marginTop: '1rem'}}>
             <Col span={20} offset={1}>
                 <Breadcrumb>
                     <Breadcrumb.Item>

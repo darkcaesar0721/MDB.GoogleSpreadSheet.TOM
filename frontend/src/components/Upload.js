@@ -478,21 +478,9 @@ const Upload = (props) => {
                 currentPage="upload"
             />
             <Path/>
-            <Divider>MDB QUERY UPLOAD</Divider>
-            <Row>
-                <Col span={2} offset={5} style={{paddingLeft: '1.4rem'}}>
-                    <Popconfirm
-                        title="All Last Phone"
-                        description="Are you sure to get last phone of all campaigns?"
-                        onConfirm={handleAllGetLastPhone}
-                        okText="Yes"
-                        cancelText="No"
-                    >
-                        <Button type="primary">All Last Phone</Button>
-                    </Popconfirm>
-                </Col>
-                <Col span={2} style={{textAlign: 'right', lineHeight: '2rem', marginRight: '1rem'}}>
-                    <span>Select Group:</span>
+            <Row style={{marginTop: '1rem'}}>
+                <Col span={2} offset={1} style={{textAlign: 'right', lineHeight: '2rem', marginRight: '0.7rem', marginLeft: '1.8rem'}}>
+                    <span>Select Group :</span>
                 </Col>
                 <Col span={3}>
                     <Select
@@ -504,8 +492,8 @@ const Upload = (props) => {
                         value={group}
                     />
                 </Col>
-                <Col span={2} style={{textAlign: 'right', lineHeight: '2rem', marginRight: '1rem'}}>
-                    <span>Send Type:</span>
+                <Col span={2} style={{textAlign: 'right', lineHeight: '2rem', marginRight: '0.7rem', marginLeft: '-3rem'}}>
+                    <span>Send Type :</span>
                 </Col>
                 <Col span={4}>
                     <Radio.Group onChange={handleWayChange} defaultValue="all" value={way}>
@@ -513,6 +501,17 @@ const Upload = (props) => {
                         <Radio value="one">Upload one by one</Radio>
                     </Radio.Group>
                 </Col>
+            </Row>
+            <Row>
+                <Popconfirm
+                    title="All Last Phone"
+                    description="Are you sure to get last phone of all campaigns?"
+                    onConfirm={handleAllGetLastPhone}
+                    okText="Yes"
+                    cancelText="No"
+                >
+                    <Button type="primary" style={{display: "flex", marginLeft: "auto", marginRight: "10px"}}>All Last Phone</Button>
+                </Popconfirm>
             </Row>
             {
                 props.groups.data.length > 0 && props.campaigns.data.length > 0 && way === 'all' ?

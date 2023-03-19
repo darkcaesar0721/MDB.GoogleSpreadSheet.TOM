@@ -361,9 +361,8 @@ const GroupCampaignUploadOneByOne = (props) => {
 
     return (
         <>
-            <Row style={{marginTop: 10}}>
+            <Row>
                 <Col span={24}>
-                    <Divider style={{fontSize: '0.8rem'}}>GROUP CAMPAIGN LIST</Divider>
                     <Table
                         bordered={true}
                         size="small"
