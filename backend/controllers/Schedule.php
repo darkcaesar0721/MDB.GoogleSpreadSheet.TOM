@@ -180,7 +180,7 @@ class Schedule
 
             $row = ['', date('m/d/Y'), $name];
 
-            for ($i = 3; $i < 100; $i++) {
+            for ($i = 3; $i < 150; $i++) {
                 $ext = false;
                 foreach($campaigns as $c_index => $c){
                     if ($i == $c->scheduleIndex) {
@@ -231,7 +231,7 @@ class Schedule
             }
         } else {
             $row = ['', date('m/d/Y'), date('l')];
-            for ($i = 3; $i < 100; $i++) {
+            for ($i = 3; $i < 150; $i++) {
                 $ext = false;
                 foreach($campaigns as $c_index => $c){
                     if ($i == $c->scheduleIndex) {
