@@ -225,7 +225,6 @@ class Upload
         } else {
             $this->campaigns[$c_i]->isManually = true;
         }
-
 	    $this->campaign_obj->save_datas($this->campaigns);
 
         if ($manually == "false") {
@@ -288,7 +287,7 @@ class Upload
                 }
 
                 if (count($c->_upRows) > 0) {
-                    array_push($c->_up_rows, ['', '', '', '', '', '', '', '', '', '', '', '']);
+                    $c->_up_rows[] = ['', '', '', '', '', '', '', '', '', '', '', ''];
 
                     for($i = 1; $i < count($c->_up_rows); $i++) {
                         for ($j = 0; $j < count($c->_up_rows[$i]); $j++) {
@@ -369,22 +368,7 @@ class Upload
 
 	                if ($c->last_phone != "") {
 	                    $last_phone = $c->last_phone;
-	                } /*else {
-                        $response = $this->service->spreadsheets_values->get($spreadsheetId, $cur_sheet['properties']['title']);
-                        $values = $response->getValues();
-
-	                    for ($i = count($values) - 1; $i >= 0; $i--) {
-	                        if ($is_last_phone) break;
-
-	                        for ($j = 0; $j < count($values[$i]); $j++) {
-	                            if ($values[$i][$j] === 'Phone') {
-	                                $last_phone = $values[$i + 1][$j];
-	                                $is_last_phone = true;
-	                                break;
-	                            }
-	                        }
-	                    }
-	                }*/
+	                }
 
 	                $mdb_path = $this->mdb->path;
 
@@ -399,26 +383,26 @@ class Upload
 	                    if ($row['Phone'] === $last_phone) break;
 
 	                    $row['key'] = $row['Phone'];
-	                    array_push($rows, $row);
+	                    $rows[] = $row;
 	                }
 
-	                array_push($up_rows, ['', '', '', '', '', '', '', '', '', '', '', '']);
+	                $up_rows[] = ['', '', '', '', '', '', '', '', '', '', '', ''];
 	                $up_row = array();
 	                foreach ($g_c->columns as $column) {
-	                    if ($column->display == 'true') array_push($up_row, $column->field);
+	                    if ($column->display == 'true') $up_row[] = $column->field;
 	                }
-	                array_push($up_rows, $up_row);
+	                $up_rows[] = $up_row;
 
 	                if ($g_c->way === 'all') {
 	                    foreach ($rows as $row) {
 	                        $up_row = array();
 	                        foreach ($g_c->columns as $column) {
 	                            if ($column->display == 'true') {
-	                                array_push($up_row, $row[$column->name]);
+	                                $up_row[] = $row[$column->name];
 	                            }
 	                        }
-	                        array_push($up_rows_with_key, $row);
-	                        array_push($up_rows, $up_row);
+	                        $up_rows_with_key[] = $row;
+	                        $up_rows[] = $up_row;
 	                    }
 	                } else if ($g_c->way === 'static') {
 	                    $count = $g_c->staticCount;
@@ -432,11 +416,11 @@ class Upload
 	                        $up_row = array();
 	                        foreach ($g_c->columns as $column) {
 	                            if ($column->display == 'true') {
-	                                array_push($up_row, $row[$column->name]);
+	                                $up_row[] = $row[$column->name];
 	                            }
 	                        }
-	                        array_push($up_rows_with_key, $row);
-	                        array_push($up_rows, $up_row);
+	                        $up_rows_with_key[] = $row;
+	                        $up_rows[] = $up_row;
 	                    }
 	                } else if ($g_c->way === 'random') {
 	                    $count = rand($g_c->randomStart * 1, $g_c->randomEnd * 1);
@@ -445,16 +429,16 @@ class Upload
                                 $up_row = array();
                                 foreach ($g_c->columns as $column) {
                                     if ($column->display == 'true') {
-                                        array_push($up_row, $row[$column->name]);
+                                        $up_row[] = $row[$column->name];
                                     }
                                 }
-                                array_push($up_rows_with_key, $row);
-                                array_push($up_rows, $up_row);
+                                $up_rows_with_key[] = $row;
+                                $up_rows[] = $up_row;
                             }
                         } else {
 	                        $first = 0;
 	                        $arrs = $this->randomGen(1, count($rows) - 1, $count * 1 - 1);
-	                        array_push($arrs, $first);
+	                        $arrs[] = $first;
 	                        sort($arrs);
 
 	                        foreach ($rows as $index => $row) {
@@ -463,11 +447,11 @@ class Upload
 	                                    $up_row = array();
 	                                    foreach ($g_c->columns as $column) {
 	                                        if ($column->display == 'true') {
-	                                            array_push($up_row, $row[$column->name]);
+	                                            $up_row[] = $row[$column->name];
 	                                        }
 	                                    }
-	                                    array_push($up_rows_with_key, $row);
-	                                    array_push($up_rows, $up_row);
+	                                    $up_rows_with_key[] = $row;
+	                                    $up_rows[] = $up_row;
 	                                }
 	                            }
 	                        }
@@ -479,11 +463,11 @@ class Upload
                                 $up_row = array();
                                 foreach ($g_c->columns as $column) {
                                     if ($column->display == 'true') {
-                                        array_push($up_row, $row[$column->name]);
+                                        $up_row[] = $row[$column->name];
                                     }
                                 }
-                                array_push($up_rows_with_key, $row);
-                                array_push($up_rows, $up_row);
+                                $up_rows_with_key[] = $row;
+                                $up_rows[] = $up_row;
                             }
                         } else {
                             $end = $g_c->randomFirst;
@@ -491,7 +475,7 @@ class Upload
 
                             $first = 0;
                             $arrs = $this->randomGen(1, $end * 1 - 1, $count * 1 - 1);
-                            array_push($arrs, $first);
+                            $arrs[] = $first;
                             sort($arrs);
 
                             foreach ($rows as $index => $row) {
@@ -500,11 +484,11 @@ class Upload
                                         $up_row = array();
                                         foreach ($g_c->columns as $column) {
                                             if ($column->display == 'true') {
-                                                array_push($up_row, $row[$column->name]);
+                                                $up_row[] = $row[$column->name];
                                             }
                                         }
-                                        array_push($up_rows_with_key, $row);
-                                        array_push($up_rows, $up_row);
+                                        $up_rows_with_key[] = $row;
+                                        $up_rows[] = $up_row;
                                     }
                                 }
                             }
@@ -525,11 +509,11 @@ class Upload
 	                                $up_row = array();
 	                                foreach ($g_c->columns as $column) {
 	                                    if ($column->display == 'true') {
-	                                        array_push($up_row, $row[$column->name]);
+	                                        $up_row[] = $row[$column->name];
 	                                    }
 	                                }
-	                                array_push($up_rows_with_key, $row);
-	                                array_push($up_rows, $up_row);
+	                                $up_rows_with_key[] = $row;
+	                                $up_rows[] = $up_row;
 	                            }
 	                        } else {
                                 $g_date = strtotime(date("m/d/Y"));
@@ -543,11 +527,11 @@ class Upload
 	                                $up_row = array();
 	                                foreach ($g_c->columns as $column) {
 	                                    if ($column->display == 'true') {
-	                                        array_push($up_row, $row[$column->name]);
+	                                        $up_row[] = $row[$column->name];
 	                                    }
 	                                }
-	                                array_push($up_rows_with_key, $row);
-	                                array_push($up_rows, $up_row);
+	                                $up_rows_with_key[] = $row;
+	                                $up_rows[] = $up_row;
 	                            }
 	                        }
 	                    }
@@ -580,7 +564,7 @@ class Upload
 
                 if ($manually == "false") {
                     if (count($up_rows_with_key) > 0) {
-                        array_push($up_rows, ['', '', '', '', '', '', '', '', '', '', '', '']);
+                        $up_rows[] = ['', '', '', '', '', '', '', '', '', '', '', ''];
 
                         for($i = 1; $i < count($up_rows); $i++) {
                             for ($j = 0; $j < count($up_rows[$i]); $j++) {

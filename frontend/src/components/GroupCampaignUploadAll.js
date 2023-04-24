@@ -1,4 +1,4 @@
-import {Button, Checkbox, Col, Divider, message, Modal, Popconfirm, Radio, Row, Switch, Table} from "antd";
+import {Button, Checkbox, Col, message, Popconfirm, Radio, Row, Switch, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {Link} from "react-router-dom";
 import {Input} from "antd/lib";
@@ -7,10 +7,10 @@ import axios from "axios";
 import {APP_API_URL} from "../constants";
 import moment from "moment/moment";
 import StyledCheckBox from "../shared/StyledCheckBox";
-import { DraggableModal, DraggableModalProvider } from '@cubetiq/antd-modal'
-import '@cubetiq/antd-modal/dist/index.css'
+import {DraggableModal, DraggableModalProvider} from '@cubetiq/antd-modal';
+import '@cubetiq/antd-modal/dist/index.css';
 
-let current_date = new Date()
+let current_date = new Date();
 let pstDate = current_date.toLocaleString("en-US", {
     timeZone: "America/Los_Angeles"
 });
@@ -34,6 +34,9 @@ const GroupCampaignUploadAll = (props) => {
     const [isResumed, setIsResumed] = useState(true);
     const [isClose, setIsClose] = useState(false);
     const [currentController, setCurrentController] = useState('');
+    const [errorCampaignKeys, setErrorCampaignKeys] = useState([]);
+    const [uploadDoneStatus, setUploadDoneStatus] = useState(false);
+    const [errorCampaignRunningStatus, setErrorCampaignRunningStatus] = useState(false);
 
     useEffect(function() {
         initUploadStatusList();
@@ -58,6 +61,22 @@ const GroupCampaignUploadAll = (props) => {
     useEffect(function() {
         props.updateUpload({'selectedCampaignKeys': selectedCampaignKeys.length > 0 ? selectedCampaignKeys : ''});
     }, [selectedCampaignKeys]);
+
+    useEffect(function() {
+        if (uploadDoneStatus === true) {
+            setUploadDoneStatus(false);
+            if (errorCampaignKeys.length !== 0) {
+                setErrorCampaignRunningStatus(true);
+                handleUploadStart(true);
+            } else {
+                setErrorCampaignRunningStatus(false);
+                setIsClose(true);
+                setTimeout(function() {
+                    messageApi.success('Upload Success');
+                }, 1000);
+            }
+        }
+    }, [uploadDoneStatus]);
 
     const setColumnInfo = () => {
         let _columns = [
@@ -351,8 +370,8 @@ const GroupCampaignUploadAll = (props) => {
         })
     };
 
-    const initUploadStatusList = () => {
-        let campaignKeys = selectedCampaignKeys;
+    const initUploadStatusList = (currentErrorRunningStatus = false) => {
+        let campaignKeys = currentErrorRunningStatus ? errorCampaignKeys : selectedCampaignKeys;
         if (!campaignKeys) campaignKeys = [];
 
         setUploadStatusList((oldState) => {
@@ -400,7 +419,9 @@ const GroupCampaignUploadAll = (props) => {
         })
     }
 
-    const handleUploadOne = function(key, index) {
+    const handleUploadOne = function(key, index = 0, currentErrorRunningStatus = false) {
+        let campaignKeys = currentErrorRunningStatus ? errorCampaignKeys : selectedCampaignKeys;
+
         props.campaigns.forEach(c => {
             if (c.key == key) {
                 setUploadIndex(index);
@@ -413,61 +434,55 @@ const GroupCampaignUploadAll = (props) => {
                     signal: controller.signal,
                 }).then((resp) => {
                     if (typeof resp.data === "string") {
-                        updateUploadStatus(index);
-                        props.getCampaigns();
-
-                        props.getUpload(function(uploadConfig) {
-                            if (uploadConfig.pause_index != index) {
-                                if (selectedCampaignKeys.length == (index + 1)) {
-                                    setIsClose(true);
-                                    setTimeout(function() {
-                                        messageApi.success('Upload success');
-                                    }, 1000);
-                                } else {
-                                    handleUploadOne(selectedCampaignKeys[index + 1], index + 1);
-                                }
-                            } else {
-                                props.updateUpload({resume_index: index, pause_index: -1});
-                            }
-                        })
+                        handleUploadErrorCallback(key, index, currentErrorRunningStatus);
                     } else {
                         updateUploadStatus(index, resp.data.campaign);
                         props.getCampaigns();
 
                         if (resp.data.config.pause_index != index) {
-                            if (selectedCampaignKeys.length == (index + 1)) {
-                                setIsClose(true);
-                                setTimeout(function() {
-                                    messageApi.success('Upload success');
-                                }, 1000);
+                            if (campaignKeys.length == (index + 1)) {
+                                handleUploadDoneCallback();
                             } else {
-                                handleUploadOne(selectedCampaignKeys[index + 1], index + 1);
+                                handleUploadOne(campaignKeys[index + 1], index + 1, currentErrorRunningStatus);
                             }
                         } else {
                             props.updateUpload({resume_index: index, pause_index: -1});
                         }
                     }
                 }).catch((resp) => {
-                    updateUploadStatus(index);
-                    props.getCampaigns();
-
-                    props.getUpload(function(uploadConfig) {
-                        if (uploadConfig.pause_index != index) {
-                            if (selectedCampaignKeys.length == (index + 1)) {
-                                setIsClose(true);
-                                setTimeout(function() {
-                                    messageApi.success('Upload Done');
-                                }, 1000);
-                            } else {
-                                handleUploadOne(selectedCampaignKeys[index + 1], index + 1);
-                            }
-                        } else {
-                            props.updateUpload({resume_index: index, pause_index: -1});
-                        }
-                    })
+                    handleUploadErrorCallback(key, index, currentErrorRunningStatus);
                 });
             }
         })
+    }
+
+    const handleUploadErrorCallback = function(key, index, currentErrorRunningStatus = false) {
+        let campaignKeys = currentErrorRunningStatus ? errorCampaignKeys : selectedCampaignKeys;
+
+        setErrorCampaignKeys((oldState) => {
+            let newState = [...oldState];
+            newState.push(key);
+            return newState;
+        });
+
+        updateUploadStatus(index);
+        props.getCampaigns();
+
+        props.getUpload(function(uploadConfig) {
+            if (uploadConfig.pause_index != index) {
+                if (campaignKeys.length == (index + 1)) {
+                    handleUploadDoneCallback();
+                } else {
+                    handleUploadOne(campaignKeys[index + 1], index + 1, currentErrorRunningStatus);
+                }
+            } else {
+                props.updateUpload({resume_index: index, pause_index: -1});
+            }
+        });
+    }
+
+    const handleUploadDoneCallback = function() {
+        setUploadDoneStatus(true);
     }
 
     const handleUploadClick = function() {
@@ -490,6 +505,9 @@ const GroupCampaignUploadAll = (props) => {
 
         setIsPaused(false);
         setIsResumed(true);
+        setUploadDoneStatus(false);
+        setErrorCampaignRunningStatus(false);
+        setErrorCampaignKeys([]);
 
         if (props.whatsapp.isWhatsApp === undefined || props.whatsapp.isWhatsApp === true || props.whatsapp.isWhatsApp === 'true') {
             props.setLoading(true);
@@ -503,18 +521,20 @@ const GroupCampaignUploadAll = (props) => {
                     messageApi.error(resp.data.error);
                     return;
                 }
-
-                initUploadStatusList();
-                handleUploadOne(selectedCampaignKeys[0], 0);
-                setIsClose(false);
-                setOpen(true);
+                handleUploadStart();
             });
         } else {
-            initUploadStatusList();
-            handleUploadOne(selectedCampaignKeys[0], 0);
-            setIsClose(false);
-            setOpen(true);
+            handleUploadStart();
         }
+    }
+
+    const handleUploadStart = function(currentErrorRunningStatus = false) {
+        let campaignKeys = currentErrorRunningStatus ? errorCampaignKeys : selectedCampaignKeys;
+        initUploadStatusList(currentErrorRunningStatus);
+        setErrorCampaignKeys([]);
+        handleUploadOne(campaignKeys[0]);
+        setIsClose(false);
+        setOpen(true);
     }
 
     const pause = function() {
@@ -525,18 +545,20 @@ const GroupCampaignUploadAll = (props) => {
     }
 
     const resume = function() {
+        let campaignKeys = errorCampaignRunningStatus ? errorCampaignKeys : selectedCampaignKeys;
+
         setIsPaused(false);
         setIsResumed(true);
 
         props.getUpload(function(config) {
             if (config.resume_index !== undefined && parseInt(config.resume_index) !== -1) {
-                if (selectedCampaignKeys.length === (parseInt(config.resume_index) + 1)) {
+                if (campaignKeys.length === (parseInt(config.resume_index) + 1)) {
                     setTimeout(function () {
                         setIsClose(true);
                         messageApi.success('Upload success');
                     }, 1000)
                 } else {
-                    handleUploadOne(selectedCampaignKeys[parseInt(config.resume_index) + 1], parseInt(config.resume_index) + 1);
+                    handleUploadOne(campaignKeys[parseInt(config.resume_index) + 1], parseInt(config.resume_index) + 1, errorCampaignRunningStatus);
                 }
             }
             props.updateUpload({resume_index: -1, pause_index: -1});
@@ -550,6 +572,9 @@ const GroupCampaignUploadAll = (props) => {
 
         currentController.abort();
         setOpen(false);
+        setErrorCampaignKeys([]);
+        setErrorCampaignRunningStatus(false);
+        setUploadDoneStatus(false);
     }
 
     return (
