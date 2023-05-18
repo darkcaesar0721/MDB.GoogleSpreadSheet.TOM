@@ -184,6 +184,9 @@ const GroupCampaignUploadOneByOne = (props) => {
                                 let old = (record.dayOld == "0" || record.dayOld == "") ? 'today' : record.dayOld + ' day old ';
                                 count = old + (record.isTime == "true" ? '  ' + record.time + record.meridiem : '');
                                 break;
+                            case 'period':
+                                count = "(" + record.periodStart + ' ~ ' + record.periodEnd + ")" + " days";
+                                break;
                         }
 
                         return (

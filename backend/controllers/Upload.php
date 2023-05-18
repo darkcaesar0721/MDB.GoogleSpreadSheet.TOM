@@ -493,6 +493,32 @@ class Upload
                                 }
                             }
                         }
+                    } else if ($g_c->way === 'period') {
+                        date_default_timezone_set('America/Los_Angeles');
+                        $start = $g_c->periodStart * 1;
+                        $end = $g_c->periodEnd * 1;
+                        $today = strtotime(date("m/d/Y"));
+
+                        foreach ($rows as $row) {
+                            $start_date = strtotime((0 - $start) . " day", $today);
+                            $start_date = strtotime(date("m/d/Y", $start_date));
+
+                            $end_date = strtotime((0 - $end) . " day", $today);
+                            $end_date = strtotime(date("m/d/Y", $end_date));
+
+                            $r_date = strtotime(date("m/d/Y", strtotime($row['SystemCreateDate'])));
+
+                            if ($r_date >= $end_date && $r_date <= $start_date) {
+                                $up_row = array();
+                                foreach ($g_c->columns as $column) {
+                                    if ($column->display == 'true') {
+                                        $up_row[] = $row[$column->name];
+                                    }
+                                }
+                                $up_rows_with_key[] = $row;
+                                $up_rows[] = $up_row;
+                            }
+                        }
                     } else {
                         date_default_timezone_set('America/Los_Angeles');
 

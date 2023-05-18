@@ -81,6 +81,8 @@ const Upload = (props) => {
                 campaign.randomFirst = c.randomFirst;
                 campaign.randomStart = c.randomStart;
                 campaign.randomEnd = c.randomEnd;
+                campaign.periodStart = c.periodStart;
+                campaign.periodEnd = c.periodEnd;
                 campaign.staticCount = c.staticCount;
                 campaign.isEditPhone = c.isEditPhone;
                 campaign.dayOld = c.dayOld;

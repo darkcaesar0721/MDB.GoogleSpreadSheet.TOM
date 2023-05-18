@@ -194,6 +194,10 @@ const GroupCampaignSetting = (props) => {
                         group['date'] = moment(pstDate).add(0 - (parseInt(dayOld) + 1), 'day').format('MM/DD/YYYY');
                     }
                     break;
+                case 'period':
+                    group['periodStart'] = form.periodStart;
+                    group['periodEnd'] = form.periodEnd;
+                    break;
             }
             group.isWhatsApp = form.isWhatsApp;
             group.whatsapp_message = form.whatsapp_message;
@@ -247,6 +251,20 @@ const GroupCampaignSetting = (props) => {
             }
             if (isTime && !time) {
                 messageApi.warning('Please input time field.');
+                return false;
+            }
+        }
+        if (form.way === 'period') {
+            if (!form.periodStart) {
+                messageApi.warning('Please input period start value.');
+                return false;
+            }
+            if (!form.periodEnd) {
+                messageApi.warning('Please input period end value.');
+                return false;
+            }
+            if (parseInt(form.periodStart) > parseInt(form.periodEnd)) {
+                messageApi.warning('Period start value must be less than period end value.');
                 return false;
             }
         }
@@ -395,6 +413,7 @@ const GroupCampaignSetting = (props) => {
                                         <Radio value="random">Random Select</Radio>
                                         <Radio value="random_first">Random First Select</Radio>
                                         <Radio value="date">Date & Time</Radio>
+                                        <Radio value="period">Date Period</Radio>
                                     </Radio.Group>
                                 </Form.Item>
                                 {
@@ -517,6 +536,42 @@ const GroupCampaignSetting = (props) => {
                                                 </Col>
                                             </Row>
                                         </Form.Item> : ''
+                                }
+                                {
+                                    way === 'period' ?
+                                        <Col span={24}>
+                                            <Form.Item
+                                                {...randomLayout}
+                                                name={['periodStart']}
+                                                label="Date Period"
+                                                style={{
+                                                    display: 'inline-block',
+                                                    width: 'calc(30% - 5px)',
+                                                }}
+                                            >
+                                                <Input placeholder="Start"/>
+                                            </Form.Item>
+                                            <Form.Item
+                                                name={['period']}
+                                                style={{
+                                                    display: 'inline-block',
+                                                    width: 'calc(3% - 5px)',
+                                                    margin: '0 5px',
+                                                }}
+                                            >
+                                                <span>~</span>
+                                            </Form.Item>
+                                            <Form.Item
+                                                name={['periodEnd']}
+                                                style={{
+                                                    display: 'inline-block',
+                                                    width: 'calc(13% - 5px)',
+                                                    margin: '0 5px',
+                                                }}
+                                            >
+                                                <Input placeholder="End"/>
+                                            </Form.Item>
+                                        </Col> : ''
                                 }
                                 <Form.Item
                                     name={['isWhatsApp']}

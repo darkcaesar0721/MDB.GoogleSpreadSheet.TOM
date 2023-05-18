@@ -328,6 +328,9 @@ const GroupCampaignUploadAll = (props) => {
                 let old = (r.dayOld == "0" || r.dayOld == "") ? 'today' : r.dayOld + ' day old ';
                 count = old + (r.isTime == "true" ? '  ' + r.time + r.meridiem : '');
                 break;
+            case 'period':
+                count = "(" + r.periodStart + ' ~ ' + r.periodEnd + ")" + " days";
+                break;
         }
         return count;
     }

@@ -200,6 +200,7 @@ const CampaignUploadManually = (props) => {
                                 <Radio value="random">Random Select</Radio>
                                 <Radio value="random_first">Random First Select</Radio>
                                 <Radio value="date">Date & Time</Radio>
+                                <Radio value="period">Period</Radio>
                             </Radio.Group>
                         </Form.Item>
                         {
@@ -319,6 +320,42 @@ const CampaignUploadManually = (props) => {
                                         </Col>
                                     </Row>
                                 </Form.Item> : ''
+                        }
+                        {
+                            way === 'period' ?
+                                <Col span={24}>
+                                    <Form.Item
+                                        {...randomLayout}
+                                        name={['periodStart']}
+                                        label="Date Period"
+                                        style={{
+                                            display: 'inline-block',
+                                            width: 'calc(30% - 5px)',
+                                        }}
+                                    >
+                                        <Input placeholder="Start"/>
+                                    </Form.Item>
+                                    <Form.Item
+                                        name={['period']}
+                                        style={{
+                                            display: 'inline-block',
+                                            width: 'calc(3% - 5px)',
+                                            margin: '0 5px',
+                                        }}
+                                    >
+                                        <span>~</span>
+                                    </Form.Item>
+                                    <Form.Item
+                                        name={['periodEnd']}
+                                        style={{
+                                            display: 'inline-block',
+                                            width: 'calc(13% - 5px)',
+                                            margin: '0 5px',
+                                        }}
+                                    >
+                                        <Input placeholder="End"/>
+                                    </Form.Item>
+                                </Col> : ''
                         }
                     </Form>
                 </Col>
