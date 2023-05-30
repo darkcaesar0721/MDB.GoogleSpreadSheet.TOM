@@ -37,6 +37,8 @@ const GroupCampaignUploadAll = (props) => {
     const [errorCampaignKeys, setErrorCampaignKeys] = useState([]);
     const [uploadDoneStatus, setUploadDoneStatus] = useState(false);
     const [errorCampaignRunningStatus, setErrorCampaignRunningStatus] = useState(false);
+    const [currentDate, setCurrentDate] = useState('');
+    const [inputDate, setInputDate] = useState('');
 
     useEffect(function() {
         initUploadStatusList();
@@ -524,10 +526,23 @@ const GroupCampaignUploadAll = (props) => {
                     messageApi.error(resp.data.error);
                     return;
                 }
-                handleUploadStart();
+                props.setLoading(true);
+                axios.post(APP_API_URL + 'api.php?class=Upload&fn=get_current_inputdate').then((resp) => {
+                    props.setLoading(false);
+                    setInputDate(resp.data.input_date);
+                    setCurrentDate(resp.data.current_date);
+                    handleUploadStart();
+                });
             });
         } else {
-            handleUploadStart();
+            props.setLoading(true);
+            props.setTip('Checking 002_DateInput Date');
+            axios.post(APP_API_URL + 'api.php?class=Upload&fn=get_current_inputdate').then((resp) => {
+                props.setLoading(false);
+                setInputDate(resp.inputDate);
+                setCurrentDate(resp.currentDate);
+                handleUploadStart();
+            });
         }
     }
 
@@ -640,6 +655,7 @@ const GroupCampaignUploadAll = (props) => {
                     header={null}
                     footer={null}
                     closable={false}
+                    width={1100}
                 >
                     <GroupCampaignUploadStatusList
                         onPause={pause}
@@ -651,6 +667,8 @@ const GroupCampaignUploadAll = (props) => {
                         setOpen={setOpen}
                         uploadStatusList={uploadStatusList}
                         uploadIndex={uploadIndex}
+                        inputDate={inputDate}
+                        currentDate={currentDate}
                     />
                 </DraggableModal>
             </DraggableModalProvider>

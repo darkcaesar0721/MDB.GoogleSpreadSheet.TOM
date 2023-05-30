@@ -159,6 +159,31 @@ class Upload
         }
 	}
 
+    public function get_current_inputdate()
+    {
+        date_default_timezone_set('America/Los_Angeles');
+
+        $mdb_path = $this->mdb->path;
+
+        $db = new PDO("odbc:Driver={Microsoft Access Driver (*.mdb, *.accdb)}; DBq=$mdb_path;Uid=;Pwd=;");
+        $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        $query = '002_DateInput';
+        $sth = $db->prepare("select * from [$query]");
+        $sth->execute();
+
+        $date = '';
+        while ($row = $sth->fetch(PDO::FETCH_ASSOC)) {
+            $date = $row['Date'];
+            break;
+        }
+        if ($date == '') $date = date('m/d/Y');
+        $input_date = date('Y-m-d', strtotime($date));
+        $current_date = date('Y-m-d');
+
+        echo json_encode(['input_date' => $input_date, 'current_date' => $current_date]);
+    }
+
     public function upload_after_preview()
     {
         $g_i = $_REQUEST['groupIndex'];

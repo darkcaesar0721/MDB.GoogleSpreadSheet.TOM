@@ -1,3 +1,4 @@
+/* eslint-disable default-case */
 import {Button, Col, Row, Switch, Table} from "antd";
 import React, {useEffect, useState} from "react";
 import {WarningOutlined, LoadingOutlined, CheckCircleTwoTone, Loading3QuartersOutlined} from "@ant-design/icons";
@@ -21,7 +22,6 @@ const GroupCampaignUploadStatusList = (props) => {
         {
             title: 'Status',
             key: 'status',
-            width: 90,
             render: (_, r) => {
                 let element = '';
                 if (props.isPaused === true && r.index === props.uploadIndex) {
@@ -49,7 +49,8 @@ const GroupCampaignUploadStatusList = (props) => {
                         {element}
                     </>
                 )
-            }
+            },
+            width: 50
         },
         {
             title: 'Query Name',
@@ -70,6 +71,18 @@ const GroupCampaignUploadStatusList = (props) => {
             }
         },
         {
+            title: 'Send Type',
+            dataIndex: 'way',
+            key: 'way',
+            width: 100,
+        },
+        {
+            title: 'Send Amount',
+            dataIndex: 'amount',
+            key: 'amount',
+            width: 100,
+        },
+        {
             title: 'Qty Available',
             key: 'query',
             render: (_, r) => {
@@ -81,7 +94,8 @@ const GroupCampaignUploadStatusList = (props) => {
                         }
                     </>
                 )
-            }
+            },
+            width: 70,
         },
         {
             title: 'Qty Uploaded',
@@ -95,7 +109,8 @@ const GroupCampaignUploadStatusList = (props) => {
                         }
                     </>
                 )
-            }
+            },
+            width: 70,
         },
         {
             title: 'Last Phone',
@@ -144,10 +159,25 @@ const GroupCampaignUploadStatusList = (props) => {
                 <Col span={2}>
                     <Button type="primary" disabled={!props.isClose} onClick={(e) => {props.setOpen(false)}}>Close Window</Button>
                 </Col>
-                <Col span={15} offset={5}>
+                <Col span={8} offset={5}>
                     <Button type="primary" disabled={props.isPaused} onClick={props.onPause}>Pause</Button>
                     <Button type="primary" disabled={props.isResumed} onClick={props.onResume} style={{marginLeft: '0.4rem'}}>Resume</Button>
                     <Button type="primary" disabled={props.isCanceled} onClick={props.onCancel} style={{marginLeft: '0.4rem'}}>Cancel</Button>
+                </Col>
+                <Col span={4} offset={5}>
+                    {
+                        props.inputDate != props.currentDate ?
+                            <span style={{fontSize: '25px', color: 'red', fontWeight: 1000}}>
+                                {
+                                    props.inputDate
+                                }
+                            </span> :
+                            <span style={{fontSize: '17px'}}>
+                                {
+                                    props.inputDate
+                                }
+                            </span>
+                    }
                 </Col>
             </Row>
             <Row style={{marginTop: '0.4rem'}}>
