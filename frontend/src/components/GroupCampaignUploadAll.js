@@ -650,7 +650,7 @@ const GroupCampaignUploadAll = (props) => {
 
             <DraggableModalProvider>
                 <DraggableModal
-                    title="UPLOAD STATUS LIST"
+                    title={<div><span style={{fontSize: '18px'}}>UPLOAD STATUS LIST</span><span style={inputDate == currentDate ? {marginLeft: '20px', fontSize: '18px'} : {marginLeft: '20px', fontSize: '25px', color: 'red', fontWeight: 1000}}>{inputDate}</span></div>}
                     open={open}
                     header={null}
                     footer={null}

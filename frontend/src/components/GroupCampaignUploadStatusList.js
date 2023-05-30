@@ -164,21 +164,6 @@ const GroupCampaignUploadStatusList = (props) => {
                     <Button type="primary" disabled={props.isResumed} onClick={props.onResume} style={{marginLeft: '0.4rem'}}>Resume</Button>
                     <Button type="primary" disabled={props.isCanceled} onClick={props.onCancel} style={{marginLeft: '0.4rem'}}>Cancel</Button>
                 </Col>
-                <Col span={4} offset={5}>
-                    {
-                        props.inputDate != props.currentDate ?
-                            <span style={{fontSize: '25px', color: 'red', fontWeight: 1000}}>
-                                {
-                                    props.inputDate
-                                }
-                            </span> :
-                            <span style={{fontSize: '17px'}}>
-                                {
-                                    props.inputDate
-                                }
-                            </span>
-                    }
-                </Col>
             </Row>
             <Row style={{marginTop: '0.4rem'}}>
                 <Col span={24}>

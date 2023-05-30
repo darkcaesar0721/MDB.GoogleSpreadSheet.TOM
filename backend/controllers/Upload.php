@@ -178,8 +178,8 @@ class Upload
             break;
         }
         if ($date == '') $date = date('m/d/Y');
-        $input_date = date('Y-m-d', strtotime($date));
-        $current_date = date('Y-m-d');
+        $input_date = date('m/d/Y', strtotime($date));
+        $current_date = date('m/d/Y');
 
         echo json_encode(['input_date' => $input_date, 'current_date' => $current_date]);
     }
