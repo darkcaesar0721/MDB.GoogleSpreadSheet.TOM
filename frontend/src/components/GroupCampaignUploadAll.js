@@ -603,18 +603,18 @@ const GroupCampaignUploadAll = (props) => {
                     <Row>
                         <Col span={2} offset={10}>
                             {
-                                props.uploadInfo.group === "0" && (wday === 'Monday' || wday === 'Tuesday' || wday === 'Wednesday' || wday === 'Thursday') ?
-                                    <Popconfirm
-                                        title="Upload data"
-                                        description={<span style={{color: 'red', fontWeight: 700, fontSize: '18px'}}>Good Morning, did you change the SystemCreateDate Manually from 4PM to 4AM?</span>}
-                                        onConfirm={handleUploadClick}
-                                        okText="Yes"
-                                        cancelText="No"
-                                    >
-                                        <Button type="primary" style={{top: '-4.5rem'}}>
-                                            Upload
-                                        </Button>
-                                    </Popconfirm> :
+                                // props.uploadInfo.group === "0" && (wday === 'Monday' || wday === 'Tuesday' || wday === 'Wednesday' || wday === 'Thursday') ?
+                                //     <Popconfirm
+                                //         title="Upload data"
+                                //         description={<span style={{color: 'red', fontWeight: 700, fontSize: '18px'}}>Good Morning, did you change the SystemCreateDate Manually from 4PM to 4AM?</span>}
+                                //         onConfirm={handleUploadClick}
+                                //         okText="Yes"
+                                //         cancelText="No"
+                                //     >
+                                //         <Button type="primary" style={{top: '-4.5rem'}}>
+                                //             Upload
+                                //         </Button>
+                                //     </Popconfirm> :
                                     <Popconfirm
                                         title="Upload data"
                                         description="Are you sure to upload the row of this campaign?"

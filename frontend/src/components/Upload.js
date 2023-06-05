@@ -349,14 +349,19 @@ const Upload = (props) => {
     const initGetLastPhoneStatusList = function() {
         setGetLastPhoneStatusList((oldState) => {
             let newState = [];
-            props.campaigns.data.forEach((c, i) => {
-                newState.push({
-                    no: i + 1,
-                    index: i,
-                    key: c.key,
-                    query: c.query,
-                    status: i === 0 ? 'loading' : 'normal'
-                });
+
+            props.groups.data.forEach((g, i) => {
+                if (i === parseInt(props.upload.group)) {
+                    g.campaigns.forEach((c, j) => {
+                        newState.push({
+                            no: j + 1,
+                            index: j,
+                            key: c.key,
+                            query: c.key,
+                            status: j === 0 ? 'loading' : 'normal'
+                        });
+                    });
+                }
             });
             return newState;
         });
