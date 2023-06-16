@@ -487,6 +487,8 @@ const GroupCampaignUploadAll = (props) => {
     }
 
     const handleUploadDoneCallback = function() {
+        axios.post(APP_API_URL + 'api.php?class=Upload&fn=backup');
+
         setUploadDoneStatus(true);
     }
 

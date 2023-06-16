@@ -184,6 +184,12 @@ class Upload
         echo json_encode(['input_date' => $input_date, 'current_date' => $current_date]);
     }
 
+    public function backup()
+    {
+        $this->backup_obj->run(false);
+        echo json_encode('success');
+    }
+
     public function upload_after_preview()
     {
         $g_i = $_REQUEST['groupIndex'];
@@ -220,7 +226,7 @@ class Upload
             $this->whatsapp_obj->send($this->groups[$g_i]->campaigns[$g_c_i]);
         }
 
-        $this->backup_obj->run(false);
+        // $this->backup_obj->run(false);
         echo json_encode($this->campaigns);
         exit;
     }
@@ -260,7 +266,7 @@ class Upload
             }
         }
 
-	    $this->backup_obj->run(false);
+	    // $this->backup_obj->run(false);
 
         $this->upload_config = $this->upload_config_obj->get_upload_config();
 	    echo json_encode(array('campaign' => $this->campaigns[$c_i], 'config' => $this->upload_config));
