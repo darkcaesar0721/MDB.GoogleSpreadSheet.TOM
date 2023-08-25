@@ -198,6 +198,10 @@ label, span, div, input {
   background-color: pink !important;
 }
 
+.campaign_zero {
+  background-color: lightpink !important;
+}
+
 .campaign_red {
   background-color: indianred !important;
 }

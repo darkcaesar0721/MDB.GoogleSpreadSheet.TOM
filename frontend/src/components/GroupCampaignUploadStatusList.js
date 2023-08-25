@@ -1,7 +1,7 @@
 /* eslint-disable default-case */
 import {Button, Col, Row, Switch, Table} from "antd";
 import React, {useEffect, useState} from "react";
-import {WarningOutlined, LoadingOutlined, CheckCircleTwoTone, Loading3QuartersOutlined} from "@ant-design/icons";
+import {WarningOutlined, QuestionCircleOutlined, LoadingOutlined, CheckCircleTwoTone, Loading3QuartersOutlined} from "@ant-design/icons";
 import moment from "moment";
 
 const GroupCampaignUploadStatusList = (props) => {
@@ -32,6 +32,9 @@ const GroupCampaignUploadStatusList = (props) => {
                     switch (r.status) {
                         case 'error':
                             element = <WarningOutlined />;
+                            break;
+                        case 'zero':
+                            element = <QuestionCircleOutlined />;
                             break;
                         case 'loading':
                             element = <LoadingOutlined />;
@@ -175,7 +178,7 @@ const GroupCampaignUploadStatusList = (props) => {
                         pagination={tableParams.pagination}
                         onChange={handleTableChange}
                         className="antd-custom-table upload-status-list"
-                        rowClassName={(record, index) => ((record.status === "error") ? "campaign_red" : '') }
+                        rowClassName={(record, index) => ((record.status === "error") ? "campaign_red" : ((record.status === "zero") ? "campaign_zero" : "")) }
                     />
                 </Col>
             </Row>
