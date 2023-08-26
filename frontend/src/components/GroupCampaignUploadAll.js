@@ -35,10 +35,8 @@ const GroupCampaignUploadAll = (props) => {
     const [isClose, setIsClose] = useState(false);
     const [currentController, setCurrentController] = useState('');
     const [errorCampaignKeys, setErrorCampaignKeys] = useState([]);
-    const [zeroCampaignKeys, setZeroCampaignKeys] = useState([]);
     const [uploadDoneStatus, setUploadDoneStatus] = useState(false);
     const [errorCampaignRunningStatus, setErrorCampaignRunningStatus] = useState(false);
-    const [zeroCampaignRunningStatus, setZeroCampaignRunningStatus] = useState(false);
     const [currentDate, setCurrentDate] = useState('');
     const [inputDate, setInputDate] = useState('');
 
@@ -71,19 +69,13 @@ const GroupCampaignUploadAll = (props) => {
             setUploadDoneStatus(false);
             if (errorCampaignKeys.length !== 0) {
                 setErrorCampaignRunningStatus(true);
-                handleUploadStart();
+                handleUploadStart(true);
             } else {
-                if (zeroCampaignKeys.length !== 0) {
-                    setZeroCampaignRunningStatus(true);
-                    handleUploadStart();
-                } else {
-                    setErrorCampaignRunningStatus(false);
-                    setZeroCampaignRunningStatus(false);
-                    setIsClose(true);
-                    setTimeout(function() {
-                        messageApi.success('Upload Success');
-                    }, 1000);
-                }
+                setErrorCampaignRunningStatus(false);
+                setIsClose(true);
+                setTimeout(function() {
+                    messageApi.success('Upload Success');
+                }, 1000);
             }
         }
     }, [uploadDoneStatus]);
@@ -383,8 +375,8 @@ const GroupCampaignUploadAll = (props) => {
         })
     };
 
-    const initUploadStatusList = () => {
-        let campaignKeys = errorCampaignRunningStatus ? errorCampaignKeys : (zeroCampaignRunningStatus ? zeroCampaignKeys : selectedCampaignKeys);
+    const initUploadStatusList = (currentErrorRunningStatus = false) => {
+        let campaignKeys = currentErrorRunningStatus ? errorCampaignKeys : selectedCampaignKeys;
         if (!campaignKeys) campaignKeys = [];
 
         setUploadStatusList((oldState) => {
@@ -403,7 +395,7 @@ const GroupCampaignUploadAll = (props) => {
                             way: c.way,
                             amount: customUploadAmount(c),
                             isWhatsApp: c.isWhatsApp,
-                            status: newState.length === 0 ? 'loading' : 'normal'
+                            status: newState.length == 0 ? 'loading' : 'normal'
                         });
                     }
                 });
@@ -419,9 +411,6 @@ const GroupCampaignUploadAll = (props) => {
                 if (i === index) {
                     if (data === undefined) {
                         u.status = 'error';
-                    } else if (parseInt(data.less_qty) === 0) {
-                        u.status = 'zero'; u.last_phone = data.last_phone; u.SystemCreateDate = data.SystemCreateDate;
-                        u.last_qty = data.last_qty; u.less_qty = data.less_qty;
                     } else {
                         u.status = 'complete'; u.last_phone = data.last_phone; u.SystemCreateDate = data.SystemCreateDate;
                         u.last_qty = data.last_qty; u.less_qty = data.less_qty;
@@ -435,8 +424,8 @@ const GroupCampaignUploadAll = (props) => {
         })
     }
 
-    const handleUploadOne = function(key, index = 0) {
-        let campaignKeys = errorCampaignRunningStatus ? errorCampaignKeys : (zeroCampaignRunningStatus ? zeroCampaignKeys : selectedCampaignKeys);
+    const handleUploadOne = function(key, index = 0, currentErrorRunningStatus = false) {
+        let campaignKeys = currentErrorRunningStatus ? errorCampaignKeys : selectedCampaignKeys;
 
         props.campaigns.forEach(c => {
             if (c.key == key) {
@@ -450,16 +439,8 @@ const GroupCampaignUploadAll = (props) => {
                     signal: controller.signal,
                 }).then((resp) => {
                     if (typeof resp.data === "string") {
-                        handleUploadErrorCallback(key, index);
+                        handleUploadErrorCallback(key, index, currentErrorRunningStatus);
                     } else {
-                        if (parseInt(resp.data.campaign.less_qty) === 0) {
-                            setZeroCampaignKeys((oldState) => {
-                                let newState = [...oldState];
-                                newState.push(key);
-                                return newState;
-                            });
-                        }
-
                         updateUploadStatus(index, resp.data.campaign);
                         props.getCampaigns();
 
@@ -467,21 +448,21 @@ const GroupCampaignUploadAll = (props) => {
                             if (campaignKeys.length == (index + 1)) {
                                 handleUploadDoneCallback();
                             } else {
-                                handleUploadOne(campaignKeys[index + 1], index + 1);
+                                handleUploadOne(campaignKeys[index + 1], index + 1, currentErrorRunningStatus);
                             }
                         } else {
                             props.updateUpload({resume_index: index, pause_index: -1});
                         }
                     }
                 }).catch((resp) => {
-                    handleUploadErrorCallback(key, index);
+                    handleUploadErrorCallback(key, index, currentErrorRunningStatus);
                 });
             }
         })
     }
 
-    const handleUploadErrorCallback = function(key, index) {
-        let campaignKeys = zeroCampaignRunningStatus ? zeroCampaignKeys : selectedCampaignKeys;
+    const handleUploadErrorCallback = function(key, index, currentErrorRunningStatus = false) {
+        let campaignKeys = currentErrorRunningStatus ? errorCampaignKeys : selectedCampaignKeys;
 
         setErrorCampaignKeys((oldState) => {
             let newState = [...oldState];
@@ -497,7 +478,7 @@ const GroupCampaignUploadAll = (props) => {
                 if (campaignKeys.length == (index + 1)) {
                     handleUploadDoneCallback();
                 } else {
-                    handleUploadOne(campaignKeys[index + 1], index + 1);
+                    handleUploadOne(campaignKeys[index + 1], index + 1, currentErrorRunningStatus);
                 }
             } else {
                 props.updateUpload({resume_index: index, pause_index: -1});
@@ -534,8 +515,6 @@ const GroupCampaignUploadAll = (props) => {
         setUploadDoneStatus(false);
         setErrorCampaignRunningStatus(false);
         setErrorCampaignKeys([]);
-        setZeroCampaignRunningStatus(false);
-        setZeroCampaignKeys([]);
 
         if (props.whatsapp.isWhatsApp === undefined || props.whatsapp.isWhatsApp === true || props.whatsapp.isWhatsApp === 'true') {
             props.setLoading(true);
@@ -569,9 +548,9 @@ const GroupCampaignUploadAll = (props) => {
         }
     }
 
-    const handleUploadStart = function() {
-        let campaignKeys = errorCampaignRunningStatus ? errorCampaignKeys : (zeroCampaignRunningStatus ? zeroCampaignKeys : selectedCampaignKeys);
-        initUploadStatusList();
+    const handleUploadStart = function(currentErrorRunningStatus = false) {
+        let campaignKeys = currentErrorRunningStatus ? errorCampaignKeys : selectedCampaignKeys;
+        initUploadStatusList(currentErrorRunningStatus);
         setErrorCampaignKeys([]);
         handleUploadOne(campaignKeys[0]);
         setIsClose(false);
@@ -586,7 +565,7 @@ const GroupCampaignUploadAll = (props) => {
     }
 
     const resume = function() {
-        let campaignKeys = errorCampaignRunningStatus ? errorCampaignKeys : (zeroCampaignRunningStatus ? zeroCampaignKeys : selectedCampaignKeys);
+        let campaignKeys = errorCampaignRunningStatus ? errorCampaignKeys : selectedCampaignKeys;
 
         setIsPaused(false);
         setIsResumed(true);
@@ -599,7 +578,7 @@ const GroupCampaignUploadAll = (props) => {
                         messageApi.success('Upload success');
                     }, 1000)
                 } else {
-                    handleUploadOne(campaignKeys[parseInt(config.resume_index) + 1], parseInt(config.resume_index) + 1);
+                    handleUploadOne(campaignKeys[parseInt(config.resume_index) + 1], parseInt(config.resume_index) + 1, errorCampaignRunningStatus);
                 }
             }
             props.updateUpload({resume_index: -1, pause_index: -1});
@@ -615,8 +594,6 @@ const GroupCampaignUploadAll = (props) => {
         setOpen(false);
         setErrorCampaignKeys([]);
         setErrorCampaignRunningStatus(false);
-        setZeroCampaignKeys([]);
-        setZeroCampaignRunningStatus(false);
         setUploadDoneStatus(false);
     }
 
@@ -640,17 +617,17 @@ const GroupCampaignUploadAll = (props) => {
                                 //             Upload
                                 //         </Button>
                                 //     </Popconfirm> :
-                                    <Popconfirm
-                                        title="Upload data"
-                                        description="Are you sure to upload the row of this campaign?"
-                                        onConfirm={handleUploadClick}
-                                        okText="Yes"
-                                        cancelText="No"
-                                    >
-                                        <Button type="primary" style={{top: '-4.5rem'}}>
-                                            Upload
-                                        </Button>
-                                    </Popconfirm>
+                                <Popconfirm
+                                    title="Upload data"
+                                    description="Are you sure to upload the row of this campaign?"
+                                    onConfirm={handleUploadClick}
+                                    okText="Yes"
+                                    cancelText="No"
+                                >
+                                    <Button type="primary" style={{top: '-4.5rem'}}>
+                                        Upload
+                                    </Button>
+                                </Popconfirm>
                             }
                         </Col>
                     </Row>

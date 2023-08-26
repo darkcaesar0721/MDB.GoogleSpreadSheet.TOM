@@ -46,6 +46,7 @@ const UploadPreview = (props) => {
 
     useEffect(function() {
         if (props.groups.data.length > 0 && props.campaigns.data.length > 0) {
+            let selectedCampaign = {};
             form.setFieldsValue(props.groups.data[groupIndex].campaigns[groupCampaignIndex]);
             setStaticCount(props.groups.data[groupIndex].campaigns[groupCampaignIndex].staticCount);
         }
@@ -68,6 +69,7 @@ const UploadPreview = (props) => {
                 props.getGroups();
                 messageApi.success('upload success');
                 setTimeout(function() {
+                    // navigate('/preview/' + groupIndex + '/' + groupCampaignIndex + '/' + campaignIndex);
                     navigate('/');
                 }, [700]);
             })
