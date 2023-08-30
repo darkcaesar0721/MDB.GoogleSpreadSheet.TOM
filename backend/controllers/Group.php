@@ -233,6 +233,32 @@ class Group
         exit;
     }
 
+    public function update_group_manually_campaigns()
+    {
+        $g_i = $_REQUEST['groupIndex'];
+        $rows = $_REQUEST['rows'];
+
+        $campaigns = $this->group_lists[$g_i]->campaigns;
+        foreach($campaigns as $i => $c) {
+            $exist = false;
+            foreach($rows as $row) {
+                if ($c->key == $row) {
+                    $exist = true;
+                }
+            }
+            $this->group_lists[$g_i]->campaigns[$i]->isCampaignManually = $exist;
+        }
+
+        $group = $this->group_lists[$g_i];
+
+        $fp = fopen($this->folder_path . '/' . $group->file_name, 'w');
+        fwrite($fp, json_encode($group));
+        fclose($fp);
+
+        echo json_encode($this->group_lists);
+        exit;
+    }
+
     public function get_data()
     {
         echo json_encode($this->group_lists);

@@ -7,7 +7,7 @@ import {
     getGroups, getLastPhone, getSchedulePath,
     getUpload, getWhatsApp,
     updateCampaign,
-    updateGroupCampaign, updateGroupCampaignWeekday,
+    updateGroupCampaign, updateGroupCampaignWeekday, updateGroupManuallyCampaigns,
     updateUpload, uploadAfterPreview, uploadOne
 } from "../redux/actions";
 import axios from "axios";
@@ -534,6 +534,7 @@ const Upload = (props) => {
                         updateCampaign={props.updateCampaign}
                         updateUpload={props.updateUpload}
                         updateGroupCampaign={props.updateGroupCampaign}
+                        updateGroupManuallyCampaigns={props.updateGroupManuallyCampaigns}
                         uploadOne={props.uploadOne}
                         getLastPhone={getLastPhone}
                         getCampaigns={props.getCampaigns}
@@ -608,5 +609,5 @@ const mapStateToProps = state => {
 
 export default connect(
     mapStateToProps,
-    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateCampaign, getLastPhone, uploadAfterPreview, uploadOne, getSchedulePath, updateGroupCampaignWeekday, getWhatsApp }
+    { getCampaigns, getGroups, getUpload, updateUpload, updateGroupCampaign, updateGroupManuallyCampaigns, updateCampaign, getLastPhone, uploadAfterPreview, uploadOne, getSchedulePath, updateGroupCampaignWeekday, getWhatsApp }
 )(Upload);

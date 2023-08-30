@@ -216,6 +216,22 @@ export const updateGroupCampaign = (groupIndex, groupCampaignIndex, rows = {}, c
     })
 }
 
+export const updateGroupManuallyCampaigns = (groupIndex, rows = [], callback = function() {}) => async (dispatch) => {
+    axios.post(APP_API_URL + 'api.php?class=Group&fn=update_group_manually_campaigns', qs.stringify({
+        groupIndex,
+        rows
+    })).then(function(resp) {
+        axios.get(APP_API_URL + 'api.php?class=Group&fn=get_data')
+            .then(function(resp) {
+                dispatch({
+                    type: INIT_GROUP_DATA,
+                    data: resp.data
+                });
+                callback();
+            })
+    })
+}
+
 export const updateGroupCampaignWeekday = (groupIndex, groupCampaignIndex, weekday = {}, callback = function() {}) => async (dispatch) => {
     axios.post(APP_API_URL + 'api.php?class=Group&fn=update_group_campaign_weekday', qs.stringify({
         groupIndex,

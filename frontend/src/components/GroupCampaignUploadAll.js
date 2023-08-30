@@ -25,6 +25,7 @@ const GroupCampaignUploadAll = (props) => {
     });
     const [columns, setColumns] = useState([]);
     const [selectedCampaignKeys, setSelectedCampaignKeys] = useState([]);
+    const [selectedManualCampaignKeys, setSelectedManualCampaignKeys] = useState([]);
     const [campaigns, setCampaigns] = useState([]);
     const [open, setOpen] = useState(false);
     const [uploadStatusList, setUploadStatusList] = useState([]);
@@ -39,6 +40,7 @@ const GroupCampaignUploadAll = (props) => {
     const [errorCampaignRunningStatus, setErrorCampaignRunningStatus] = useState(false);
     const [currentDate, setCurrentDate] = useState('');
     const [inputDate, setInputDate] = useState('');
+    const [isUploadManual, setIsUploadManual] = useState(false);
 
     useEffect(function() {
         initUploadStatusList();
@@ -69,9 +71,10 @@ const GroupCampaignUploadAll = (props) => {
             setUploadDoneStatus(false);
             if (errorCampaignKeys.length !== 0) {
                 setErrorCampaignRunningStatus(true);
-                handleUploadStart(true);
+                handleUploadStart(true, isUploadManual);
             } else {
                 setErrorCampaignRunningStatus(false);
+                setIsUploadManual(false);
                 setIsClose(true);
                 setTimeout(function() {
                     messageApi.success('Upload Success');
@@ -293,7 +296,15 @@ const GroupCampaignUploadAll = (props) => {
                 if (c.weekday[wday] === 'true' || c.weekday[wday] === true) newState.push(c.key);
             });
             return newState;
-        })
+        });
+
+        setSelectedManualCampaignKeys((oldState) => {
+            let newState = [];
+            props.group.campaigns.forEach(c => {
+                if (c.isCampaignManually === 'true' || c.isCampaignManually === true) newState.push(c.key);
+            });
+            return newState;
+        });
     }, [props.group]);
 
     const handleIsWhatsAppChange = function(v, r) {
@@ -370,13 +381,20 @@ const GroupCampaignUploadAll = (props) => {
 
     // rowSelection object indicates the need for row selection
     const rowSelection = {
+        onChange: (selectedRowKeys, selectedRows) => {
+            setSelectedManualCampaignKeys((oldState) => {
+                return [...selectedRowKeys];
+            });
+
+            props.updateGroupManuallyCampaigns(props.groupIndex, selectedRowKeys);
+        },
         getCheckboxProps: r => ({
-            disabled: true
+            disabled: false
         })
     };
 
-    const initUploadStatusList = (currentErrorRunningStatus = false) => {
-        let campaignKeys = currentErrorRunningStatus ? errorCampaignKeys : selectedCampaignKeys;
+    const initUploadStatusList = (currentErrorRunningStatus = false, isManual = false) => {
+        let campaignKeys = currentErrorRunningStatus ? errorCampaignKeys : (isManual ? selectedManualCampaignKeys : selectedCampaignKeys);
         if (!campaignKeys) campaignKeys = [];
 
         setUploadStatusList((oldState) => {
@@ -424,8 +442,8 @@ const GroupCampaignUploadAll = (props) => {
         })
     }
 
-    const handleUploadOne = function(key, index = 0, currentErrorRunningStatus = false) {
-        let campaignKeys = currentErrorRunningStatus ? errorCampaignKeys : selectedCampaignKeys;
+    const handleUploadOne = function(key, index = 0, currentErrorRunningStatus = false, isManual = false) {
+        let campaignKeys = currentErrorRunningStatus ? errorCampaignKeys : (isManual ? selectedManualCampaignKeys : selectedCampaignKeys);
 
         props.campaigns.forEach(c => {
             if (c.key == key) {
@@ -439,7 +457,7 @@ const GroupCampaignUploadAll = (props) => {
                     signal: controller.signal,
                 }).then((resp) => {
                     if (typeof resp.data === "string") {
-                        handleUploadErrorCallback(key, index, currentErrorRunningStatus);
+                        handleUploadErrorCallback(key, index, currentErrorRunningStatus, isManual);
                     } else {
                         updateUploadStatus(index, resp.data.campaign);
                         props.getCampaigns();
@@ -448,21 +466,21 @@ const GroupCampaignUploadAll = (props) => {
                             if (campaignKeys.length == (index + 1)) {
                                 handleUploadDoneCallback();
                             } else {
-                                handleUploadOne(campaignKeys[index + 1], index + 1, currentErrorRunningStatus);
+                                handleUploadOne(campaignKeys[index + 1], index + 1, currentErrorRunningStatus, isManual);
                             }
                         } else {
                             props.updateUpload({resume_index: index, pause_index: -1});
                         }
                     }
                 }).catch((resp) => {
-                    handleUploadErrorCallback(key, index, currentErrorRunningStatus);
+                    handleUploadErrorCallback(key, index, currentErrorRunningStatus, isManual);
                 });
             }
         })
     }
 
-    const handleUploadErrorCallback = function(key, index, currentErrorRunningStatus = false) {
-        let campaignKeys = currentErrorRunningStatus ? errorCampaignKeys : selectedCampaignKeys;
+    const handleUploadErrorCallback = function(key, index, currentErrorRunningStatus = false, isManual = false) {
+        let campaignKeys = currentErrorRunningStatus ? errorCampaignKeys : (isManual ? selectedManualCampaignKeys : selectedCampaignKeys);
 
         setErrorCampaignKeys((oldState) => {
             let newState = [...oldState];
@@ -478,7 +496,7 @@ const GroupCampaignUploadAll = (props) => {
                 if (campaignKeys.length == (index + 1)) {
                     handleUploadDoneCallback();
                 } else {
-                    handleUploadOne(campaignKeys[index + 1], index + 1, currentErrorRunningStatus);
+                    handleUploadOne(campaignKeys[index + 1], index + 1, currentErrorRunningStatus, isManual);
                 }
             } else {
                 props.updateUpload({resume_index: index, pause_index: -1});
@@ -493,7 +511,19 @@ const GroupCampaignUploadAll = (props) => {
     }
 
     const handleUploadClick = function() {
-        if (selectedCampaignKeys == undefined || selectedCampaignKeys.length == 0) {
+        setIsUploadManual(false);
+        upload(false);
+    }
+
+    const handleManuallyUploadClick = function() {
+        setIsUploadManual(true);
+        upload(true);
+    }
+
+    const upload = function(isManual) {
+        const campaignKeys = isManual ? selectedManualCampaignKeys : selectedCampaignKeys;
+
+        if (campaignKeys == undefined || campaignKeys.length == 0) {
             messageApi.warning('Please select campaign list.');
             return;
         }
@@ -533,7 +563,7 @@ const GroupCampaignUploadAll = (props) => {
                     props.setLoading(false);
                     setInputDate(resp.data.input_date);
                     setCurrentDate(resp.data.current_date);
-                    handleUploadStart();
+                    handleUploadStart(false, isManual);
                 });
             });
         } else {
@@ -543,16 +573,16 @@ const GroupCampaignUploadAll = (props) => {
                 props.setLoading(false);
                 setInputDate(resp.inputDate);
                 setCurrentDate(resp.currentDate);
-                handleUploadStart();
+                handleUploadStart(false, isManual);
             });
         }
     }
 
-    const handleUploadStart = function(currentErrorRunningStatus = false) {
-        let campaignKeys = currentErrorRunningStatus ? errorCampaignKeys : selectedCampaignKeys;
-        initUploadStatusList(currentErrorRunningStatus);
+    const handleUploadStart = function(currentErrorRunningStatus = false, isManual = false) {
+        let campaignKeys = currentErrorRunningStatus ? errorCampaignKeys : (isManual ? selectedManualCampaignKeys : selectedCampaignKeys);
+        initUploadStatusList(currentErrorRunningStatus, isManual);
         setErrorCampaignKeys([]);
-        handleUploadOne(campaignKeys[0]);
+        handleUploadOne(campaignKeys[0], 0, false, isManual);
         setIsClose(false);
         setOpen(true);
     }
@@ -565,7 +595,7 @@ const GroupCampaignUploadAll = (props) => {
     }
 
     const resume = function() {
-        let campaignKeys = errorCampaignRunningStatus ? errorCampaignKeys : selectedCampaignKeys;
+        let campaignKeys = errorCampaignRunningStatus ? errorCampaignKeys : (isUploadManual ? selectedManualCampaignKeys : selectedCampaignKeys);
 
         setIsPaused(false);
         setIsResumed(true);
@@ -578,7 +608,7 @@ const GroupCampaignUploadAll = (props) => {
                         messageApi.success('Upload success');
                     }, 1000)
                 } else {
-                    handleUploadOne(campaignKeys[parseInt(config.resume_index) + 1], parseInt(config.resume_index) + 1, errorCampaignRunningStatus);
+                    handleUploadOne(campaignKeys[parseInt(config.resume_index) + 1], parseInt(config.resume_index) + 1, errorCampaignRunningStatus, isUploadManual);
                 }
             }
             props.updateUpload({resume_index: -1, pause_index: -1});
@@ -594,6 +624,7 @@ const GroupCampaignUploadAll = (props) => {
         setOpen(false);
         setErrorCampaignKeys([]);
         setErrorCampaignRunningStatus(false);
+        setIsUploadManual(false);
         setUploadDoneStatus(false);
     }
 
@@ -605,18 +636,6 @@ const GroupCampaignUploadAll = (props) => {
                     <Row>
                         <Col span={2} offset={10}>
                             {
-                                // props.uploadInfo.group === "0" && (wday === 'Monday' || wday === 'Tuesday' || wday === 'Wednesday' || wday === 'Thursday') ?
-                                //     <Popconfirm
-                                //         title="Upload data"
-                                //         description={<span style={{color: 'red', fontWeight: 700, fontSize: '18px'}}>Good Morning, did you change the SystemCreateDate Manually from 4PM to 4AM?</span>}
-                                //         onConfirm={handleUploadClick}
-                                //         okText="Yes"
-                                //         cancelText="No"
-                                //     >
-                                //         <Button type="primary" style={{top: '-4.5rem'}}>
-                                //             Upload
-                                //         </Button>
-                                //     </Popconfirm> :
                                 <Popconfirm
                                     title="Upload data"
                                     description="Are you sure to upload the row of this campaign?"
@@ -626,6 +645,21 @@ const GroupCampaignUploadAll = (props) => {
                                 >
                                     <Button type="primary" style={{top: '-4.5rem'}}>
                                         Upload
+                                    </Button>
+                                </Popconfirm>
+                            }
+                        </Col>
+                        <Col span={2}>
+                            {
+                                <Popconfirm
+                                    title="Upload Manually data"
+                                    description="Are you sure to upload manually the rows of selected campaign?"
+                                    onConfirm={handleManuallyUploadClick}
+                                    okText="Yes"
+                                    cancelText="No"
+                                >
+                                    <Button type="primary" style={{top: '-4.5rem'}}>
+                                        Manually
                                     </Button>
                                 </Popconfirm>
                             }
@@ -640,7 +674,7 @@ const GroupCampaignUploadAll = (props) => {
                         onChange={handleTableChange}
                         rowSelection={{
                             type: 'checkbox',
-                            selectedRowKeys: selectedCampaignKeys,
+                            selectedRowKeys: selectedManualCampaignKeys,
                             ...rowSelection,
                         }}
                         className="antd-custom-table campaign-table antd-checked-custom-table"
